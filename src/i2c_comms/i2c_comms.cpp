@@ -18,7 +18,7 @@ bool TMF_COMMS::begin( TwoWire &wirePort ) : _i2cPort(&wirePort)
   
   _i2cPort->beginTransmission(_address);
   uint8_t _ret = _i2cPort->endTransmission();
-  return (!_ret ? true : false);  
+  return (_ret ? false : true);  
 
 }
 
@@ -40,71 +40,75 @@ bool TMF_COMMS::beginSpi(uint8_t userPin, uint32_t spiPortSpeed, SPIClass &spiPo
   return true; 
 }
 
-void TMF_COMMS::_writeRegister(uint8_t address, uint8_t dataToWrite)
+COMMS_STATUS_t TMF_COMMS::_writeRegister(uint8_t reg, uint8_t dataToWrite)
 {
   
   if(_i2cPort == NULL) {
     _spiPort->beginTransaction(tmfSPISettings); 
-    digitalWrite(_cs, LOW); /
-    _spiPort->transfer(wReg); 
+    digitalWrite(_cs, LOW);
+    _spiPort->transfer(reg); 
     _spiPort->transfer(_spiWrite);
     digitalWrite(_cs, HIGH); 
     _spiPort->endTransaction();
   }
   else { 
     _i2cPort->beginTransmission(_address); 
-    _i2cPort->write(wReg); 
+    _i2cPort->write(reg); 
     _i2cPort->write(dataToWrite); 
-    _i2cPort->endTransmission(); 
+    uint8_t retVal = _i2cPort->endTransmission(); 
+    return (retval ? COMMS_I2C_ERROR : COMMS_SUCCESS))
   }
 }
 
-void TMF_COMMS::_writeMultiRegister(uint8_t wReg, uint8_t dataToWrite[])
+COMMS_STATUS_t TMF_COMMS::_writeMultiRegister(uint8_t reg, uint8_t dataToWrite[])
 {
   
   if(_i2cPort == NULL) {
     _spiPort->beginTransaction(tmfSPISettings); 
-    digitalWrite(_cs, LOW); // Start communication
-    _spiPort->transfer(wReg); // Start write command at given register
-    _spiPort->transfer(_spiWrite); // Write to register
-    digitalWrite(_cs, HIGH); // End communcation
+    digitalWrite(_cs, LOW); 
+    _spiPort->transfer(reg);
+    _spiPort->transfer(_spiWrite);
+    digitalWrite(_cs, HIGH); 
     _spiPort->endTransaction();
   }
   else { 
     _i2cPort->beginTransmission(_address); 
-    _i2cPort->write(wReg); 
+    _i2cPort->write(reg); 
     _i2cPort->write(dataToWrite); 
-    _i2cPort->endTransmission(); 
+    uint8_t retVal = _i2cPort->endTransmission(); 
+    return (retval ? COMMS_I2C_ERROR : COMMS_SUCCESS))
   }
 }
 
-void TMF_COMMS::_updateRegister(uint8_t wReg, uint8_t _mask, uint8_t _bits, uint8_t _startPosition)
+// A write, but when you want to preserve what's in the registers. 
+COMMS_STATUS_t TMF_COMMS::_updateRegister(uint8_t reg, uint8_t mask, uint8_t bits, uint8_t startPosition)
 {
   
   if(_i2cPort == NULL) {
-    _spiWrite = readRegister(wReg); // Get the current value of the register
-    _spiWrite &= (~_mask); // Mask the position we want to write to
-    _spiWrite |= (_bits << _startPosition); // Write the given bits to the variable
+    _spiWrite = readRegister(reg);
+    _spiWrite &= mask; 
+    _spiWrite |= (bits << startPosition); 
     _spiPort->beginTransaction(tmfSPISettings); 
-    digitalWrite(_cs, LOW); // Start communication
-    _spiPort->transfer(wReg); // Start write command at given register
-    _spiPort->transfer(_spiWrite); // Write to register
-    digitalWrite(_cs, HIGH); // End communcation
+    digitalWrite(_cs, LOW); 
+    _spiPort->transfer(reg);
+    _spiPort->transfer(_spiWrite);
+    digitalWrite(_cs, HIGH); 
     _spiPort->endTransaction();
   }
   else { 
-    _i2cWrite = readRegister(wReg); // Get the current value of the register
-    _i2cWrite &= (~_mask); // Mask the position we want to write to.
-    _i2cWrite |= (_bits << _startPosition);  // Write the given bits to the variable
-    _i2cPort->beginTransmission(_address); // Start communication.
-    _i2cPort->write(wReg); // at register....
-    _i2cPort->write(_i2cWrite); // Write register...
-    _i2cPort->endTransmission(); // End communcation.
+    uint8_t _i2cWrite = readRegister(reg); 
+    _i2cWrite &= mask; 
+    _i2cWrite |= (bits << startPosition);  
+    _i2cPort->beginTransmission(_address);
+    _i2cPort->write(reg); 
+    _i2cPort->write(_i2cWrite); 
+    uint8_t retVal = _i2cPort->endTransmission(); 
+    return (retval ? COMMS_I2C_ERROR : COMMS_SUCCESS)
   }
 }
 
 //Sends a request to read a number of registers
-KX13X_STATUS_t QwiicKX13xCore::readMultipleRegisters(uint8_t reg, uint8_t dataBuffer[], uint16_t numBytes)
+COMMS_STATUS_t TMF_COMMS::readMultipleRegisters(uint8_t reg, uint8_t dataBuffer[], uint16_t numBytes)
 {
 	
 	if( _i2cPort == NULL ) {
@@ -118,35 +122,34 @@ KX13X_STATUS_t QwiicKX13xCore::readMultipleRegisters(uint8_t reg, uint8_t dataBu
 		}
 		digitalWrite(_cs, HIGH);
 		_spiPort->endTransaction();
-		return KX13X_SUCCESS;
+		return COMMS_SUCCESS;
 	}
 	else {
 
     if( numBytes > MAX_BUFFER_LENGTH ){
-      KX13X_STATUS_t returnError;
+      COMMS_STATUS_t returnError;
       returnError = overBufLenI2CRead(reg, dataBuffer, numBytes);
       return returnError;
     }
 
-    uint8_t i2cResult;
 		_i2cPort->beginTransmission(_deviceAddress);
 		_i2cPort->write(reg);
-    i2cResult = _i2cPort->endTransmission(false);
+    uint8_t i2cResult = _i2cPort->endTransmission(false);
     if( i2cResult != 0 )
-      return KX13X_I2C_ERROR; //Error: Sensor did not ack
+      return COMMS_I2C_ERROR; //Error: Sensor did not ack
 
 		i2cResult = _i2cPort->requestFrom(_deviceAddress, uint8_t(numBytes), uint8_t(true));
     if( i2cResult == 0 ) 
-      return KX13X_I2C_ERROR;
+      return COMMS_I2C_ERROR;
 		for(size_t i = 0; i < numBytes; i++) {
 			dataBuffer[i] = _i2cPort->read();
 		}
-    return KX13X_SUCCESS;
+    return COMMS_SUCCESS;
 	}
 }
 // This function is used when more than 32 bytes (TwoWire maximum buffer
 // length) of data are requested.
-KX13X_STATUS_t QwiicKX13xCore::overBufLenI2CRead(uint8_t reg, uint8_t dataBuffer[], int16_t numBytes)
+COMMS_STATUS_t TMF_COMMS::overBufLenI2CRead(uint8_t reg, uint8_t dataBuffer[], uint16_t numBytes)
 {
   uint8_t resizedRead; 
   uint8_t i2cResult; 
@@ -156,7 +159,7 @@ KX13X_STATUS_t QwiicKX13xCore::overBufLenI2CRead(uint8_t reg, uint8_t dataBuffer
   _i2cPort->write(reg); 
   i2cResult = _i2cPort->endTransmission(false);
   if( i2cResult != 0 )
-    return KX13X_I2C_ERROR; //Error: Sensor did not ack
+    return COMMS_I2C_ERROR; //Error: Sensor did not ack
 
   while(numBytes > 0) 
   {
@@ -167,14 +170,14 @@ KX13X_STATUS_t QwiicKX13xCore::overBufLenI2CRead(uint8_t reg, uint8_t dataBuffer
 
 		i2cResult = _i2cPort->requestFrom(_deviceAddress, resizedRead, uint8_t(false)); //false = repeated start
     if( i2cResult == 0 )
-      return KX13X_I2C_ERROR;
+      return COMMS_I2C_ERROR;
 		for(size_t i = 0; i < resizedRead; i++) {
 			dataBuffer[arrayPlaceHolder] = _i2cPort->read();
       arrayPlaceHolder++;
     }	
     numBytes = numBytes - MAX_BUFFER_LENGTH; // end condition
   }
-  return KX13X_SUCCESS;
+  return COMMS_SUCCESS;
 }
 
 // This generic function reads an eight bit register. It takes the register's
