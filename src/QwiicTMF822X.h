@@ -3,6 +3,10 @@
 
 #include "TMF_COMMS.h"
 
+enum TMF882X_ERROR {
+  TMF882X_GEN_ERROR = 0xFF;
+};
+
 enum TMF882X_REGISTERS {
   TMF882X_APPID_MAJOR = 0x00, 
   TMF882X_APPID_MINOR, 
@@ -87,7 +91,8 @@ class QwiicTMF882X
     QwiicTMF882X(uint8_t address); // I2C Constructor
 
     bool begin(TwoWire &wirePort = Wire); // begin function
-    bool beginSpi(uint8_t userCsPin, SPIClass &spiPort = SPI);
+    bool beginSpi(uint8_t userCsPin, uint32_t spiPortSpeed = 10000000, SPIClass &spiPort = SPI);
+    uint16_t getAppID();
 
   private:
     

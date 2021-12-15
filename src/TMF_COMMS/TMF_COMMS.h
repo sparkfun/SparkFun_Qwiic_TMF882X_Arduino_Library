@@ -21,8 +21,8 @@ class TMF_COMMS
     TMF_COMMS(); // SPI Constructor
     TMF_COMMS(uint8_t address = TMF_DEF_ADDR); // I2C Constructor
 
-    bool begin(TwoWire &wirePort = Wire); 
-    bool beginSpi(uint8_t userPin, uint32_t spiPortSpeed = MAX_SPI_SPEED, SPIClass &spiPort = SPI);
+    bool commsBegin(TwoWire &wirePort = Wire); 
+    bool commsBeginSpi(uint8_t userPin, uint32_t spiPortSpeed = MAX_SPI_SPEED, SPIClass &spiPort = SPI);
 
   private:
     

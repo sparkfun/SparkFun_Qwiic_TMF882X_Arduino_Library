@@ -12,7 +12,7 @@
 TMF_COMMS::TMF_COMMS()   
 TMF_COMMS::TMF_COMMS(uint8_t address) :  _address(address) 
 
-bool TMF_COMMS::begin( TwoWire &wirePort ) : _i2cPort(&wirePort)
+bool TMF_COMMS::commsBegin( TwoWire &wirePort ) : _i2cPort(&wirePort)
 {
   
   _i2cPort->beginTransmission(_address);
@@ -21,7 +21,7 @@ bool TMF_COMMS::begin( TwoWire &wirePort ) : _i2cPort(&wirePort)
 
 }
 
-bool TMF_COMMS::beginSpi(uint8_t userPin, uint32_t spiPortSpeed, SPIClass &spiPort) : _cs(userPin), _spiPort(&spiPort), _spiPortSpeed(spiPortSpeed);
+bool TMF_COMMS::commsBeginSpi(uint8_t userPin, uint32_t spiPortSpeed, SPIClass &spiPort) : _cs(userPin), _spiPort(&spiPort), _spiPortSpeed(spiPortSpeed);
 {
   _i2cPort = NULL;
   pinMode(_cs, OUTPUT);
