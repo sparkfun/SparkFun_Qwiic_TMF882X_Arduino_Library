@@ -25,16 +25,14 @@ bool TMF_COMMS::begin( TwoWire &wirePort ) : _i2cPort(&wirePort)
 bool TMF_COMMS::beginSpi(uint8_t userPin, uint32_t spiPortSpeed, SPIClass &spiPort) : _cs(userPin), _spiPort(&spiPort)
 {
   _i2cPort = NULL;
-
   pinMode(_cs, OUTPUT);
   digitalWrite(_cs, HIGH);
-
   _spiPort.begin();
 
 #ifdef ESP32 
-  mySpi = SPISettings(spiPortSpeed, SPI_MSBFIRST, userCsPin);
+  commsSPISettings = SPISettings(spiPortSpeed, SPI_MSBFIRST, userPin);
 #else
-  mySpi = SPISettings(spiPortSpeed, MSBFIRST, userCsPin);
+  commsSPISettings = SPISettings(spiPortSpeed, MSBFIRST, userPin);
 #endif
 
   return true; 
@@ -48,19 +46,20 @@ COMMS_STATUS_t TMF_COMMS::_writeRegister(uint8_t reg, uint8_t data)
 {
   
   if( _i2cPort == NULL ) {
-    _spiPort->beginTransaction(tmfSPISettings); 
+    _spiPort->beginTransaction(commsSPISettings); 
     digitalWrite(_cs, LOW);
     _spiPort->transfer(reg); 
-    _spiPort->transfer(_spiWrite);
+    _spiPort->transfer(data);
     digitalWrite(_cs, HIGH); 
     _spiPort->endTransaction();
+    return COMMS_SUCCESS;
   }
   else { 
     _i2cPort->beginTransmission(_address); 
     _i2cPort->write(reg); 
     _i2cPort->write(data); 
     uint8_t retVal = _i2cPort->endTransmission(); 
-    return (retval ? COMMS_I2C_ERROR : COMMS_SUCCESS))
+    return (retval ? COMMS_I2C_ERROR : COMMS_SUCCESS)
   }
 }
 
@@ -68,12 +67,12 @@ COMMS_STATUS_t TMF_COMMS::_writeMultiRegister(uint8_t reg, uint8_t data[])
 {
   
   if( _i2cPort == NULL ) {
-    _spiPort->beginTransaction(tmfSPISettings); 
+    _spiPort->beginTransaction(commsSPISettings); 
     digitalWrite(_cs, LOW); 
     _spiPort->transfer(reg);
-    _spiPort->transfer(_spiWrite);
     digitalWrite(_cs, HIGH); 
     _spiPort->endTransaction();
+    return COMMS_SUCCESS;
   }
 
   else { 
@@ -81,7 +80,7 @@ COMMS_STATUS_t TMF_COMMS::_writeMultiRegister(uint8_t reg, uint8_t data[])
     _i2cPort->write(reg); 
     _i2cPort->write(data); 
     uint8_t retVal = _i2cPort->endTransmission(); 
-    return (retval ? COMMS_I2C_ERROR : COMMS_SUCCESS))
+    return (retval ? COMMS_I2C_ERROR : COMMS_SUCCESS)
   }
 }
 
@@ -93,16 +92,20 @@ COMMS_STATUS_t TMF_COMMS::_updateRegister(uint8_t reg, uint8_t mask, uint8_t bit
   COMMS_STATUS_t result;
 
   if( _i2cPort == NULL ) {
-    _spiWrite = readRegister(reg);
-    _spiWrite &= mask; 
-    _spiWrite |= (bits << startPosition); 
-    _spiPort->beginTransaction(tmfSPISettings); 
+    result = readRegister(reg, &tempData);
+    if( result != COMMS_SUCCESS )
+      return result; 
+
+    tempData &= mask; 
+    tempData |= (bits << startPosition); 
+    _spiPort->beginTransaction(commsSPISettings); 
     digitalWrite(_cs, LOW); 
     _spiPort->transfer(reg);
-    _spiPort->transfer(_spiWrite);
     digitalWrite(_cs, HIGH); 
     _spiPort->endTransaction();
+    return COMMS_SUCCESS;
   }
+
   else { 
     result = readRegister(reg, &data); 
     if( result != COMMS_SUCCESS )
@@ -119,12 +122,9 @@ COMMS_STATUS_t TMF_COMMS::_updateRegister(uint8_t reg, uint8_t mask, uint8_t bit
 }
 
 
-
-//*******************************************
+//***********************************************************
 // Read Functions 
-//*******************************************
-
-
+//***********************************************************
 
 
 // This generic function reads an eight bit register. It takes the register's
@@ -133,10 +133,10 @@ uint8_t TMF_COMMS::_readRegister(uint8_t reg, uint8_t *data)
 {
 
   if( _i2cPort == NULL ) {
-    _spiPort->beginTransaction(mySpi); 
-    digitalWrite(_cs, LOW); // Start communication.
-    _spiPort->transfer(reg |= SPI_READ_M);  // Register OR'ed with SPI read command. 
-    regValue = _spiPort->transfer(0); // Get data from register.  
+    _spiPort->beginTransaction(commsSPISettings); 
+    digitalWrite(_cs, LOW); 
+    _spiPort->transfer(reg |= SPI_READ);  
+    data = _spiPort->transfer(0x00); 
     _spiPort->endTransaction();
     return(regValue); 
   }
@@ -159,12 +159,10 @@ COMMS_STATUS_t TMF_COMMS::readMultipleRegisters(uint8_t reg, uint8_t dataBuffer[
 {
 	
 	if( _i2cPort == NULL ) {
-		_spiPort->beginTransaction(kxSPISettings);
+		_spiPort->beginTransaction(commsSPISettings);
 		digitalWrite(_cs, LOW);
-		reg |= SPI_READ;
-    _spiPort->transfer(reg);
-		dataBuffer[0] = _spiPort->transfer(0x00); //first byte on transfer of address and read bit
-		for(size_t i = 1; i < numBytes; i++) {
+    _spiPort->transfer(reg | SPI_READ);
+		for(size_t i = 0; i < numBytes; i++) {
 			dataBuffer[i] = _spiPort->transfer(0x00); //Assuming this will initiate auto-increment behavior
 		}
 		digitalWrite(_cs, HIGH);
@@ -202,7 +200,7 @@ COMMS_STATUS_t TMF_COMMS::overBufLenI2CRead(uint8_t reg, uint8_t dataBuffer[], u
 {
   uint8_t resizedRead; 
   uint8_t i2cResult; 
-  size_t arrayPlaceHolder = 0;
+  size_t index = 0;
 
   _i2cPort->beginTransmission(_deviceAddress);
   _i2cPort->write(reg); 
@@ -212,17 +210,14 @@ COMMS_STATUS_t TMF_COMMS::overBufLenI2CRead(uint8_t reg, uint8_t dataBuffer[], u
 
   while(numBytes > 0) 
   {
-    if( numBytes > MAX_BUFFER_LENGTH )
-      resizedRead = MAX_BUFFER_LENGTH; 
-    else
-      resizedRead = numBytes; 
-
-		i2cResult = _i2cPort->requestFrom(static_cast<uint8_t>(_deviceAddress), resizedRead, uint8_t(false)); 
+    resizedRead =  numBytes > MAX_BUFFER_LENGTH ? MAX_BUFFER_LENGTH : numBytes 
+		i2cResult = _i2cPort->requestFrom(static_cast<uint8_t>(_deviceAddress), resizedRead, false); 
     if( i2cResult == 0 )
       return COMMS_I2C_ERROR;
+
 		for(size_t i = 0; i < resizedRead; i++) {
-			dataBuffer[arrayPlaceHolder] = _i2cPort->read();
-      arrayPlaceHolder++;
+			dataBuffer[index] = _i2cPort->read();
+      index++;
     }	
     numBytes = numBytes - MAX_BUFFER_LENGTH; // end condition
   }
