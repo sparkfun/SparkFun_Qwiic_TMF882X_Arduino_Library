@@ -1,13 +1,14 @@
-#ifndef _HEADER_PROTECTION_NAME_
-#define _HEADER_PROTECTION_NAME_
+#ifndef _TMF_COMMS_
+#define _TMF_COMMS_
 
 #include <Wire.h>
 #include <SPI.h>
-#include <Arduino.h>
 
-#define 
-#define 
-#define 
+#define TMF_DEF_ADDR 0x41
+#define MAX_SPI_SPEED 10000000
+#define MAX_BUFFER_LENGTH 32
+
+#define SPI_READ 0x80
 
 enum {
 };
@@ -16,44 +17,27 @@ class TMF_COMMS
 {  
   public:
     
-    // Public Variables
     
-    //Function declarations
-    Class_Name(); // SPI Constructor
-    Class_Name(uint8_t address); // I2C Constructor
+    TMF_COMMS(); // SPI Constructor
+    TMF_COMMS(uint8_t address = TMF_DEF_ADDR); // I2C Constructor
 
-    bool begin( TwoWire &wirePort );
-    bool beginSpi(uint8_t userCsPin, SPIClass &spiPort);
-
-    bool begin(TwoWire &wirePort = Wire); // begin function
-    bool beginSpi(SPIClass &spiPort = SPI); 
+    bool begin(TwoWire &wirePort = Wire); 
+    bool beginSpi(uint8_t userPin, uint32_t spiPortSpeed = MAX_SPI_SPEED, SPIClass &spiPort = SPI);
 
   private:
     
-    // Private Variables
+    COMMS_STATUS_t _writeRegister(uint8_t, uint8_t);
+    COMMS_STATUS_t _writeMultiRegister(uint8_t, uint8_t data[]);
+    COMMS_STATUS_t _updateRegister(uint8_t reg, uint8_t mask, uint8_t bits, uint8_t);
+    COMMS_STATUS_t _readRegister(uint8_t, uint8_t*);
+    COMMS_STATUS_t readMultipleRegisters(uint8_t, uint8_t data[], uint16_t);
+    COMMS_STATUS_t overBufLenI2CRead(uint8_t, uint8_t data[], uint16_t);
+
     uint8_t _address;
+    uint8_t _cs;
+    uint32_t _spiPortSpeed;
 
-    //SPI settings class sets the speed, chip select, and bit order
-    SPISettings mySpi; 
-
-    // This generic function handles I2C write commands for modifying individual
-    // bits in an eight bit register. Paramaters include the register's address, a mask 
-    // for bits that are ignored, the bits to write, and the bits' starting
-    // position.
-    void writeRegister(uint8_t _wReg, uint8_t _mask, uint8_t _bits, uint8_t _startPosition);
-
-    // This generic function does a basic I-squared-C write transaction at the
-    // given address, and writes the given _command argument. 
-    void _writeCommand(uint8_t _command);
-
-    // This generic function reads an eight bit register. It takes the register's
-    // address as its' parameter. 
-    uint8_t readRegister(uint8_t _reg);
-
-    // This generic function does a basic I-squared-C read transaction at the given
-    // addres, taking the number of reads as argument. 
-    uint8_t _readCommand(uint8_t _numReads);
-
+    SPISettings commsSPISettings; 
 
     TwoWire *_i2cPort;
     SPIClass *_spiPort;

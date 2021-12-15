@@ -1,10 +1,9 @@
 /*
-  This is a library for...
+  This library defines basic communication functions for the product. 
   By: Elias Santistevan
-  Date: 
+  Date: 1/01/2021
   License: This code is public domain but you buy me a beer if you use this and 
   we meet someday (Beerware license).
-
   Feel like supporting our work? Buy a board from SparkFun!
  */
 
@@ -22,12 +21,17 @@ bool TMF_COMMS::begin( TwoWire &wirePort ) : _i2cPort(&wirePort)
 
 }
 
-bool TMF_COMMS::beginSpi(uint8_t userPin, uint32_t spiPortSpeed, SPIClass &spiPort) : _cs(userPin), _spiPort(&spiPort)
+bool TMF_COMMS::beginSpi(uint8_t userPin, uint32_t spiPortSpeed, SPIClass &spiPort) : _cs(userPin), _spiPort(&spiPort), _spiPortSpeed(spiPortSpeed);
 {
   _i2cPort = NULL;
   pinMode(_cs, OUTPUT);
   digitalWrite(_cs, HIGH);
+
+  if( _spiPortSpeed > MAX_SPI_SPEED )
+    _spiPortSpeed = MAX_SPI_SPEED; 
+
   _spiPort.begin();
+
 
 #ifdef ESP32 
   commsSPISettings = SPISettings(spiPortSpeed, SPI_MSBFIRST, userPin);
@@ -129,7 +133,7 @@ COMMS_STATUS_t TMF_COMMS::_updateRegister(uint8_t reg, uint8_t mask, uint8_t bit
 
 // This generic function reads an eight bit register. It takes the register's
 // address as its' parameter. 
-uint8_t TMF_COMMS::_readRegister(uint8_t reg, uint8_t *data)
+COMMS_STATUS_t TMF_COMMS::_readRegister(uint8_t reg, uint8_t *data)
 {
 
   if( _i2cPort == NULL ) {
@@ -155,7 +159,7 @@ uint8_t TMF_COMMS::_readRegister(uint8_t reg, uint8_t *data)
 }
 
 //Sends a request to read a number of registers
-COMMS_STATUS_t TMF_COMMS::readMultipleRegisters(uint8_t reg, uint8_t dataBuffer[], uint16_t numBytes)
+COMMS_STATUS_t TMF_COMMS::readMultipleRegisters(uint8_t reg, uint8_t data[], uint16_t numBytes)
 {
 	
 	if( _i2cPort == NULL ) {
@@ -163,7 +167,7 @@ COMMS_STATUS_t TMF_COMMS::readMultipleRegisters(uint8_t reg, uint8_t dataBuffer[
 		digitalWrite(_cs, LOW);
     _spiPort->transfer(reg | SPI_READ);
 		for(size_t i = 0; i < numBytes; i++) {
-			dataBuffer[i] = _spiPort->transfer(0x00); //Assuming this will initiate auto-increment behavior
+			data[i] = _spiPort->transfer(0x00); //Assuming this will initiate auto-increment behavior
 		}
 		digitalWrite(_cs, HIGH);
 		_spiPort->endTransaction();
@@ -174,7 +178,7 @@ COMMS_STATUS_t TMF_COMMS::readMultipleRegisters(uint8_t reg, uint8_t dataBuffer[
 
     if( numBytes > MAX_BUFFER_LENGTH ){
       COMMS_STATUS_t returnError;
-      returnError = overBufLenI2CRead(reg, dataBuffer, numBytes);
+      returnError = overBufLenI2CRead(reg, data, numBytes);
       return returnError;
     }
 
@@ -188,7 +192,7 @@ COMMS_STATUS_t TMF_COMMS::readMultipleRegisters(uint8_t reg, uint8_t dataBuffer[
     if( i2cResult == 0 ) 
       return COMMS_I2C_ERROR;
 		for(size_t i = 0; i < numBytes; i++) {
-			dataBuffer[i] = _i2cPort->read();
+			data[i] = _i2cPort->read();
 		}
     return COMMS_SUCCESS;
 	}
@@ -196,7 +200,7 @@ COMMS_STATUS_t TMF_COMMS::readMultipleRegisters(uint8_t reg, uint8_t dataBuffer[
 
 // This function is used when more than 32 bytes (TwoWire maximum buffer
 // length) of data are requested.
-COMMS_STATUS_t TMF_COMMS::overBufLenI2CRead(uint8_t reg, uint8_t dataBuffer[], uint16_t numBytes)
+COMMS_STATUS_t TMF_COMMS::overBufLenI2CRead(uint8_t reg, uint8_t data[], uint16_t numBytes)
 {
   uint8_t resizedRead; 
   uint8_t i2cResult; 
@@ -206,7 +210,7 @@ COMMS_STATUS_t TMF_COMMS::overBufLenI2CRead(uint8_t reg, uint8_t dataBuffer[], u
   _i2cPort->write(reg); 
   i2cResult = _i2cPort->endTransmission(false);
   if( i2cResult != 0 )
-    return COMMS_I2C_ERROR; //Error: Sensor did not ack
+    return COMMS_I2C_ERROR; 
 
   while(numBytes > 0) 
   {
@@ -216,7 +220,7 @@ COMMS_STATUS_t TMF_COMMS::overBufLenI2CRead(uint8_t reg, uint8_t dataBuffer[], u
       return COMMS_I2C_ERROR;
 
 		for(size_t i = 0; i < resizedRead; i++) {
-			dataBuffer[index] = _i2cPort->read();
+			data[index] = _i2cPort->read();
       index++;
     }	
     numBytes = numBytes - MAX_BUFFER_LENGTH; // end condition
