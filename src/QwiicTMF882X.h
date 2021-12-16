@@ -1,10 +1,12 @@
 #ifndef _SPARKFUN_TMF882X_H_
 #define _SPARKFUN_TMF882X_H_
 
-#include "TMF_COMMS.h"
+#define TMF_DEF_ADDR 0x41
+
+#include "TMF_COMMS/TMF_COMMS.h"
 
 enum TMF882X_ERROR {
-  TMF882X_GEN_ERROR = 0xFF;
+  TMF882X_GEN_ERROR = 0xFF
 };
 
 enum TMF882X_REGISTERS {
@@ -15,9 +17,9 @@ enum TMF882X_REGISTERS {
   TMF882X_APP_STAT, 
   TMF882X_MEAS_STAT, 
   TMF882X_ALGO_STAT, 
-  TMF882X_CALIB_STAT
-  TMF882X_CMD_STAT
-  TMF882X_PREV_CMD
+  TMF882X_CALIB_STAT,
+  TMF882X_CMD_STAT,
+  TMF882X_PREV_CMD,
   TMF882X_MODE, //TMF8828 ONLY
   TMF882X_LIVE_BEAT,
   TMF882X_LIVE_GPIO,
@@ -78,23 +80,24 @@ enum TMF882X_REGISTERS {
   TMF882X_I2C_ADDR,
   TMF882X_OSC_TRIM_LSB,
   TMF882X_OSC_TRIM_MSB,
-  TMF882X_I2C_CHANGE,
+  TMF882X_I2C_CHANGE
   //......SPAD REGS SKIPPED
   //.....CROSSTALK REGS SKIPPED  
 };
 
-class QwiicTMF882X
+class QwiicTMF882X : public TMF_COMMS
 {  
   public:
     
-    QwiicTMF882X(); // SPI Constructor
-    QwiicTMF882X(uint8_t address); // I2C Constructor
+    QwiicTMF882X(); 
 
-    bool begin(TwoWire &wirePort = Wire); // begin function
+    bool begin(uint8_t address = TMF_DEF_ADDR, TwoWire &wirePort = Wire); // begin function
     bool beginSpi(uint8_t userCsPin, uint32_t spiPortSpeed = 10000000, SPIClass &spiPort = SPI);
     uint16_t getAppID();
 
   private:
+    
+    uint8_t _address;
     
 };
 #endif
