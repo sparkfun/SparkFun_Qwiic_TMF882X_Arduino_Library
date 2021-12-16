@@ -10,7 +10,6 @@
 #include "TMF_COMMS.h"
 
 //TMF_COMMS::TMF_COMMS() {}  
-//TMF_COMMS::TMF_COMMS(uint8_t address) :  _address(address) {}
 
 bool TMF_COMMS::commsBegin( uint8_t address, TwoWire &commsWirePort ) 
 {

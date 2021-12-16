@@ -40,6 +40,29 @@ uint16_t QwiicTMF882X::getAppID(){
   
 }
 
-//uint8_t QwiicTMF882X::someFunc(){
+//Address 0xE3, Bits[5:0]
+//Should return 0x08
+uint16_t QwiicTMF882X::getDeviceID(){
+
+  uint8_t tempData; 
+  COMMS_STATUS_t result = readRegister(TMF882X_DEVICE_ID, &tempData);
+  if( result != COMMS_SUCCESS )
+
+    return static_cast<uint8_t>(TMF882X_GEN_ERROR); 
+
+  return (tempData & 0x3F);
+}
+
+// Address 0xE0: Bit [6]
+uint8_t QwiicTMF882X::getDeviceStatus(){
+
+  uint8_t tempData; 
+
+  COMMS_STATUS_t result = readRegister(TMF882X_ENABLE, &tempData);
+  if( result != COMMS_SUCCESS )
+    return static_cast<uint8_t>(TMF882X_GEN_ERROR); 
+
+  return (tempData >> 6);
   
-//}
+}
+

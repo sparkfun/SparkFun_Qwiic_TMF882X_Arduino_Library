@@ -80,9 +80,15 @@ enum TMF882X_REGISTERS {
   TMF882X_I2C_ADDR,
   TMF882X_OSC_TRIM_LSB,
   TMF882X_OSC_TRIM_MSB,
-  TMF882X_I2C_CHANGE
+  TMF882X_I2C_CHANGE,
   //......SPAD REGS SKIPPED
   //.....CROSSTALK REGS SKIPPED  
+  TMF882X_ENABLE = 0xE0,
+  TMF882X_INT_STATUS,
+  TMF882X_INT_ENAB,
+  TMF882X_DEVICE_ID,
+  TMF882X_REV_ID,
+
 };
 
 class QwiicTMF882X : public TMF_COMMS
@@ -94,6 +100,8 @@ class QwiicTMF882X : public TMF_COMMS
     bool begin(uint8_t address = TMF_DEF_ADDR, TwoWire &wirePort = Wire); // begin function
     bool beginSpi(uint8_t userCsPin, uint32_t spiPortSpeed = 10000000, SPIClass &spiPort = SPI);
     uint16_t getAppID();
+    uint16_t getDeviceID();
+    uint8_t getDeviceStatus();
 
   private:
     

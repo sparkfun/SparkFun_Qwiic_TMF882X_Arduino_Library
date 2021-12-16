@@ -7,10 +7,13 @@ void setup(){
 
   Serial.begin(115200);
   while(!Serial) { delay(100); }
-  Serial.print("Nice.");
 
   Wire.begin();
-  mydToF.begin();
+  if ( mydToF.begin() ) 
+    Serial.println("Wooomp Weeee Wooooo."); 
+
+  Serial.println(mydToF.getDeviceID(), HEX); 
+  while(1);
 
 }
 

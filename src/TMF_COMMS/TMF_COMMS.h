@@ -23,8 +23,7 @@ class TMF_COMMS
 {  
   public:
     
-//    TMF_COMMS(); // SPI Constructor
-//    TMF_COMMS(uint8_t address = TMF_DEF_ADDR); // I2C Constructor
+//    TMF_COMMS(); 
 
     bool commsBegin(uint8_t address, TwoWire &commsWirePort = Wire); 
     bool commsBeginSpi(uint8_t userPin, uint32_t spiPortSpeed = MAX_SPI_SPEED, SPIClass &commsSpiPort = SPI);
