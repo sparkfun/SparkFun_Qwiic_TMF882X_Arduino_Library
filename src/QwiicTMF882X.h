@@ -1,9 +1,11 @@
 #ifndef _SPARKFUN_TMF882X_H_
 #define _SPARKFUN_TMF882X_H_
 
-#define TMF_DEF_ADDR 0x41
 
 #include "TMF_COMMS/TMF_COMMS.h"
+
+#define TMF_DEF_ADDR 0x41
+#define START_MEAS 0x10
 
 enum TMF882X_ERROR {
   TMF882X_GEN_ERROR = 0xFF
@@ -32,7 +34,7 @@ enum TMF882X_REGISTERS {
   TMF882X_SIZE_LSB,
   TMF882X_SIZE_MSB,
   TMF882X_RES_NUM,
-  TMF882X_TEMP,
+  TMF882X_TEMP, // 0x25
   TMF882X_NUM_VAL_RES,
   TMF882X_AMB_ZERO,
   TMF882X_AMB_ONE,
@@ -57,7 +59,7 @@ enum TMF882X_REGISTERS {
   TMF882X_RES_DIST_ONE_LSB,
   TMF882X_RES_DIST_ONE_MSB,
   //................0xA3
-  TMF882X_PER_MS_LSB = 0x24,
+  TMF882X_PER_MS_LSB,
   TMF882X_PER_MS_MSB,
   TMF882X_KILO_ITER_LSB,
   TMF882X_KILO_ITER_MSB,
@@ -76,7 +78,7 @@ enum TMF882X_REGISTERS {
   TMF882X_SPAD_MAP_ID,
   TMF882X_ALG_SET_ZERO,
   //....RESERVERD 0x36 - 0x38
-  TMF882X_HIST_DUMP = 0x39,
+  TMF882X_HIST_DUMP,
   TMF882X_I2C_ADDR,
   TMF882X_OSC_TRIM_LSB,
   TMF882X_OSC_TRIM_MSB,
@@ -100,8 +102,12 @@ class QwiicTMF882X : public TMF_COMMS
     bool begin(uint8_t address = TMF_DEF_ADDR, TwoWire &wirePort = Wire); // begin function
     bool beginSpi(uint8_t userCsPin, uint32_t spiPortSpeed = 10000000, SPIClass &spiPort = SPI);
     uint16_t getAppID();
-    uint16_t getDeviceID();
+    uint8_t getDeviceID();
     uint8_t getDeviceStatus();
+    uint8_t getTemp();
+		uint8_t getAppStatus();
+		uint8_t getMeasStat();
+		COMMS_STATUS_t setCommand(uint8_t);
 
   private:
     
