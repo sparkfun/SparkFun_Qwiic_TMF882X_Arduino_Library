@@ -7,7 +7,9 @@
 #define TMF_DEF_ADDR 0x41
 #define START_MEAS 0x10
 
+
 enum TMF882X_ERROR {
+  TMF882X_SUCCESS = 0x00,
   TMF882X_GEN_ERROR = 0xFF
 };
 
@@ -107,7 +109,12 @@ class QwiicTMF882X : public TMF_COMMS
     uint8_t getTemp();
 		uint8_t getAppStatus();
 		uint8_t getMeasStat();
-		COMMS_STATUS_t setCommand(uint8_t);
+		bool setCommand(uint8_t);
+		bool enableApp();
+		bool powerSelect(uint8_t);
+		bool setImage(uint8_t*);
+		uint8_t getCommandStat(uint8_t commandVals[], uint8_t);
+		bool issueReset();
 
   private:
     

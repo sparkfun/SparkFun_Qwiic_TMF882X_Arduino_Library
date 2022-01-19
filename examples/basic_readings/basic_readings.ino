@@ -3,6 +3,8 @@
 
 QwiicTMF882X mydToF; 
 
+#define PWR_EN 6
+
 void setup(){
 
   Serial.begin(115200);
@@ -12,22 +14,36 @@ void setup(){
   if ( mydToF.begin() ) 
     Serial.println("Wooomp Weeee Wooooo."); 
 
-  Serial.print("0x");
-  Serial.println(mydToF.getAppID(), HEX); 
+	mydToF.enableApp();
 
-  Serial.print("0x");
-  Serial.println(mydToF.getDeviceID(), HEX); 
+	while( mydToF.getDeviceStatus() != 0x41 )
+	{
+		delay(500);
+		Serial.print(".");
+	}
+	Serial.println();
 
-  Serial.print("0x");
-  Serial.println(mydToF.getAppStatus(), HEX); 
+	Serial.print("0x");
+	Serial.println(mydToF.getAppID(), HEX);
 
-  Serial.print("0x");
-  Serial.println(mydToF.getMeasStat(), HEX); 
+	mydToF.powerSelect(0x02);
 
-  mydToF.setCommand(START_MEAS);
-	delay(10);
-  Serial.print("0x");
-  Serial.println(mydToF.getAppID(), HEX); 
+	mydToF.setCommand(0x11);
+	delay(5);
+
+	Serial.print("0x");
+	Serial.println(mydToF.getAppID(), HEX);
+
+	Serial.print("Status (Should read 0x22): 0x");
+	Serial.println(mydToF.getDeviceStatus(), HEX);
+
+
+	delay(500);
+
+	Serial.print("ID (Should read 0x0300): 0x");
+	Serial.println(mydToF.getAppID(), HEX);
+
+	Serial.println("Ready.");
 	while(1);
 }
 

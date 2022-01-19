@@ -74,10 +74,19 @@ uint8_t QwiicTMF882X::getDeviceStatus(){
   if( result != COMMS_SUCCESS )
     return static_cast<uint8_t>(TMF882X_GEN_ERROR); 
 
-  return (tempData >> 6);
+  return (tempData);
   
 }
 
+// Adress 0xE0: bit [0]
+bool QwiicTMF882X::enableApp(){
+
+	uint8_t enable = 0x01; //(1 << 4); 
+
+	COMMS_STATUS_t result = writeRegister(TMF882X_ENABLE, enable);
+	return (result == COMMS_SUCCESS ? true : false);
+		
+}
 
 //0x04 Bits[7:0]
 uint8_t QwiicTMF882X::getTemp(){
@@ -102,9 +111,44 @@ uint8_t QwiicTMF882X::getMeasStat(){
 	return tempData;
 }
 
-COMMS_STATUS_t QwiicTMF882X::setCommand(uint8_t command){
+bool QwiicTMF882X::setCommand(uint8_t command){
 
 	COMMS_STATUS_t result = writeRegister(TMF882X_CMD_STAT, command);
-	return result;
+	return (result == COMMS_SUCCESS ? true : false);
+
+}
+
+bool QwiicTMF882X::powerSelect(uint8_t powOpt){
+
+	COMMS_STATUS_t result = writeRegister(TMF882X_ENABLE, (powOpt << 4));
+	return (result == COMMS_SUCCESS ? true : false);
+
+}
+
+bool QwiicTMF882X::setImage(uint8_t *image){
+
+	COMMS_STATUS_t result = writeMultiRegister(TMF882X_CMD_STAT, image, 4);
+	return (result == COMMS_SUCCESS ? true : false);
+
+}
+
+
+uint8_t QwiicTMF882X::getCommandStat(uint8_t commandVals[], uint8_t len){
+
+
+	COMMS_STATUS_t result = readMultiRegisters(TMF882X_CMD_STAT, commandVals, len);
+	if( result != COMMS_SUCCESS)
+		return static_cast<uint8_t>(TMF882X_GEN_ERROR);
+
+	return static_cast<uint8_t>(TMF882X_SUCCESS);
+	
+}
+
+bool QwiicTMF882X::issueReset(){
+
+	uint8_t RAMREMAP_RESET[] = {0x11, 0x00, 0xEE};
+
+	COMMS_STATUS_t result = writeMultiRegister(TMF882X_CMD_STAT, RAMREMAP_RESET, 3);
+	return (result == COMMS_SUCCESS ? true : false);
 
 }
