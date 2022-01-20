@@ -34,6 +34,7 @@
 #include "platform_wrapper.h"
 #include "tmf882x.h"
 #include "tmf882x_interface.h"
+//#include "TMF_COMMS.h"
 
 #define TMF882X_CAL_ITERATIONS        4000
 #define TMF882X_8X8_ITERATIONS        125

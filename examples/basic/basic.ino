@@ -149,7 +149,7 @@ void loop()
             fwdl_fd.close();
         }
 
-        fwdl_file_size = fwdl_file_size.read(fwdl_file_contents, MAX_FWDL_FILESIZE);
+        fwdl_file_size = fwdl_fd.read(fwdl_file_contents, MAX_FWDL_FILESIZE);
         if (fwdl_file_size == -1) {
             Serial.println("Error reading FWDL file");
 						free(fwdl_file_contents);

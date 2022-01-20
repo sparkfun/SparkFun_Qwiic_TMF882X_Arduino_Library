@@ -4,17 +4,9 @@
 #define SD_FAT_TYPE 0
 #define SPI_CLOCK SD_SCK_MHZ(50)
 
-
-//#ifdef CS
-//const uint8_t SD_CS_PIN = CS;
-//#else
-//const uint8_t SD_CS_PIN = 10;
-//#endif
-
 File fac_cal_file;
 File root; 
 
-//#define SD_CONFIG SdSpiConfig(SD_CS_PIN, DEDICATED_SPI, SPI_CLOCK)
 
 static int32_t read_factory_calibration_file(const char *filename,
                                              struct tmf882x_mode_app_calib *calib)
@@ -26,6 +18,7 @@ static int32_t read_factory_calibration_file(const char *filename,
 
     fac_cal_file.open(filename, "r");
 
+		fac_cal_file.read(filename);
     while( fac_cal_file.read(&line, &len, fac_cal_file) ) {
         error = sscanf(line, "%hhx", &calib->data[calib->calib_len++]);
         if (error != 1)
