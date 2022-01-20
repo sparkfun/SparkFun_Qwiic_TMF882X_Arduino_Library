@@ -29,7 +29,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
-#include <Wire.h>
 #include "mcu_tmf882x_config.h"
 #include "inc\platform_wrapper.h"
 #include "inc\tmf882x.h"
@@ -67,12 +66,10 @@ static void print_result(struct platform_ctx *ctx,
 
 void platform_wrapper_power_on(uint8_t pwrEn)
 {
-    digitalWrite(pwrEn, HIGH); 
 }
 
 void platform_wrapper_power_off(uint8_t pwrEn)
 {
-    digitalWrite(pwrEn, HIGH); 
 }
 
 // overload this?

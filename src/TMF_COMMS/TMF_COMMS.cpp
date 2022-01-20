@@ -8,6 +8,7 @@
  */
 
 #include "TMF_COMMS.h"
+#include <Wire.h>
 
 //TMF_COMMS::TMF_COMMS() {}  
 
