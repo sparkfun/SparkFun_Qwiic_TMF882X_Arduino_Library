@@ -40,7 +40,7 @@
 #define TMF882X_DEFAULT_CONF_TH       6
 #define TMF882X_DEFAULT_ITERATIONS    550
 #define TMF882X_DEFAULT_REP_PERIOD_MS 30
-#define _HAS_BUILTIN_FW 1
+//#define _HAS_BUILTIN_FW 1
 
 static void print_result(struct platform_ctx *ctx,
                          struct tmf882x_msg_meas_results *result_msg)
@@ -64,11 +64,11 @@ static void print_result(struct platform_ctx *ctx,
     return;
 }
 
-void platform_wrapper_power_on(uint8_t pwrEn)
+int32_t platform_wrapper_power_on()
 {
 }
 
-void platform_wrapper_power_off(uint8_t pwrEn)
+void platform_wrapper_power_off()
 {
 }
 

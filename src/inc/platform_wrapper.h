@@ -38,8 +38,8 @@ struct platform_ctx {
     struct tmf882x_tof *tof;
 };
 
-extern int32_t platform_wrapper_power_on(uint8_t);
-extern void platform_wrapper_power_off(uint8_t);
+extern int32_t platform_wrapper_power_on();
+extern void platform_wrapper_power_off();
 extern int32_t platform_wrapper_init_device(struct platform_ctx *ctx, const uint8_t *hex_records, uint32_t size);
 extern int32_t platform_wrapper_factory_calibration(struct platform_ctx *ctx, struct tmf882x_mode_app_calib *calib);
 extern int32_t platform_wrapper_cfg_device(struct platform_ctx *ctx);
