@@ -31,8 +31,8 @@
 #include <unistd.h>
 #include <Wire.h>
 #include "mcu_tmf882x_config.h"
-#include "platform_wrapper.h"
-#include "tmf882x.h"
+#include "inc\platform_wrapper.h"
+#include "inc\tmf882x.h"
 #include "tmf882x_interface.h"
 //#include "TMF_COMMS.h"
 
