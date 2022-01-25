@@ -93,9 +93,9 @@ static inline void tof_usleep(struct platform_ctx *ctx, uint32_t usec)
 
 }
 
-//static inline void tof_get_timespec(struct timespec *ts)
-//{
+static inline void tof_get_timespec(struct timespec *ts)
+{
 //    clock_gettime(CLOCK_MONOTONIC, ts);
-//}
-//
+}
+
 #endif

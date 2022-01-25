@@ -33,7 +33,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "mcu_tmf882x_config.h"
-#include "inc\platform_wrapper.h"
+//#include "inc\platform_wrapper.h"
 #include <Wire.h>
 
 #define TMF882X_I2C_ADDR 0x41
@@ -41,8 +41,11 @@
 
 static struct tmf882x_tof tof;
 static struct platform_ctx ctx = {
+		ctx.i2cdev = NULL, 
+		ctx.debug = 0,
     ctx.i2c_addr = TMF882X_I2C_ADDR,
     ctx.debug = 0,
+		ctx.mode_8x8 = 0,
     ctx.tof = &tof
 };
 

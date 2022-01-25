@@ -286,12 +286,12 @@ int32_t platform_wrapper_write_i2c_block(struct platform_ctx *ctx, uint8_t reg,
                                 const uint8_t *buf, uint32_t len)
 {
     if (!ctx) return -1;
-    return write_i2c_block(ctx->i2cdev, ctx->i2c_addr, reg, buf, len);
+    return write_i2c_block(ctx->i2c_addr, reg, buf, len);
 }
 
 int32_t platform_wrapper_read_i2c_block(struct platform_ctx *ctx, uint8_t reg,
                                uint8_t *buf, uint32_t len)
 {
     if (!ctx) return -1;
-    return read_i2c_block(ctx->i2cdev, ctx->i2c_addr, reg, buf, len);
+    return read_i2c_block(ctx->i2c_addr, reg, buf, len);
 }
