@@ -34,9 +34,9 @@
 #include "inc\tmf882x.h"
 #include "tmf882x_interface.h"
 
-#ifdef __cplusplus
-#include "TMF_COMMS\TMF_COMMS.h"
-#endif
+// #include "TMF_COMMS\TMF_COMMS.h"
+extern int32_t write_i2c_block(uint8_t, uint8_t, const uint8_t* data, uint32_t);
+extern int32_t read_i2c_block(uint8_t, uint8_t, const uint8_t* data, uint32_t);
 
 #define TMF882X_CAL_ITERATIONS        4000
 #define TMF882X_8X8_ITERATIONS        125

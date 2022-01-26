@@ -97,3 +97,14 @@ int32_t TMF_COMMS::overBufLenI2CRead(uint8_t addr, uint8_t reg, const uint8_t* d
   return 0;
 }
 
+TMF_COMMS comms;
+
+int32_t write_i2c_block(uint8_t addr, uint8_t reg, const uint8_t data[], uint32_t numBytes)
+{
+  comms.write_i2c_block(addr, reg, data, numBytes);
+}
+
+int32_t read_i2c_block(uint8_t addr, uint8_t reg, const uint8_t* data, uint32_t numBytes)
+{
+  comms.read_i2c_block(addr, reg, data, numBytes);
+}
