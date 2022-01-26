@@ -36,6 +36,10 @@
 #include <time.h>
 #include "platform_wrapper.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define tof_err(p, fmt, ...) \
 ({ \
     struct platform_ctx *__ctx = (struct platform_ctx*)p; \
@@ -97,5 +101,9 @@ static inline void tof_get_timespec(struct timespec *ts)
 {
 //    clock_gettime(CLOCK_MONOTONIC, ts);
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

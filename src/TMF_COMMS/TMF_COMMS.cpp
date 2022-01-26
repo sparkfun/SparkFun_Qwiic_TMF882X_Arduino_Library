@@ -8,9 +8,7 @@
  */
 
 #include "TMF_COMMS.h"
-#include <Wire.h>
 
-//TMF_COMMS::TMF_COMMS() {}  
 
 bool TMF_COMMS::commsBegin( uint8_t address, TwoWire &commsWirePort ) 
 {
@@ -26,25 +24,15 @@ bool TMF_COMMS::commsBegin( uint8_t address, TwoWire &commsWirePort )
 // Write Functions 
 //*************************************************************************
 
-COMMS_STATUS_t TMF_COMMS::writeMultiRegister(uint8_t reg, uint8_t data[], uint8_t numBytes)
+int32_t TMF_COMMS::writeMultiRegister(uint8_t addr, uint8_t reg, const uint8_t data[], uint32_t numBytes)
 {
   
-  if( _i2cPort == NULL ) {
-    _spiPort->beginTransaction(commsSPISettings); 
-    digitalWrite(_cs, LOW); 
-    _spiPort->transfer(reg);
-    digitalWrite(_cs, HIGH); 
-    _spiPort->endTransaction();
-    return COMMS_SUCCESS;
-  }
+	_i2cPort->beginTransmission(_address); 
+	_i2cPort->write(reg); 
+	_i2cPort->write(data, numBytes); 
+	uint8_t retVal = _i2cPort->endTransmission(); 
+	return (retVal ? -1 : 0);
 
-  else { 
-    _i2cPort->beginTransmission(_address); 
-    _i2cPort->write(reg); 
-    _i2cPort->write(data, numBytes); 
-    uint8_t retVal = _i2cPort->endTransmission(); 
-    return (retVal ? COMMS_I2C_ERROR : COMMS_SUCCESS);
-  }
 }
 
 
@@ -53,48 +41,35 @@ COMMS_STATUS_t TMF_COMMS::writeMultiRegister(uint8_t reg, uint8_t data[], uint8_
 //***********************************************************
 
 //Sends a request to read a number of registers
-COMMS_STATUS_t TMF_COMMS::readMultiRegisters(uint8_t reg, uint8_t data[], uint16_t numBytes)
+int32_t TMF_COMMS::readMultiRegisters(uint8_t addr, uint8_t reg, const uint8_t* data, uint32_t numBytes)
 {
-	
-	if( _i2cPort == NULL ) {
-		_spiPort->beginTransaction(commsSPISettings);
-		digitalWrite(_cs, LOW);
-    _spiPort->transfer(reg | SPI_READ);
-		for(size_t i = 0; i < numBytes; i++) {
-			data[i] = _spiPort->transfer(0x00); //Assuming this will initiate auto-increment behavior
-		}
-		digitalWrite(_cs, HIGH);
-		_spiPort->endTransaction();
-		return COMMS_SUCCESS;
+
+	if( numBytes > MAX_BUFFER_LENGTH ){
+		int32_t returnError;
+		returnError = overBufLenI2CRead(addr, reg, data, numBytes);
+		return returnError;
 	}
 
-	else {
+	_i2cPort->beginTransmission(_address);
+	_i2cPort->write(reg);
+	uint8_t i2cResult = _i2cPort->endTransmission(false);
+	if( i2cResult != 0 )
+		return -1; //Error: Sensor did not ack
 
-    if( numBytes > MAX_BUFFER_LENGTH ){
-      COMMS_STATUS_t returnError;
-      returnError = overBufLenI2CRead(reg, data, numBytes);
-      return returnError;
-    }
-
-		_i2cPort->beginTransmission(_address);
-		_i2cPort->write(reg);
-    uint8_t i2cResult = _i2cPort->endTransmission(false);
-    if( i2cResult != 0 )
-      return COMMS_I2C_ERROR; //Error: Sensor did not ack
-
-		i2cResult = _i2cPort->requestFrom(static_cast<uint8_t>(_address), static_cast<uint8_t>(numBytes), static_cast<uint8_t>(true));
-    if( i2cResult == 0 ) 
-      return COMMS_I2C_ERROR;
-		for(size_t i = 0; i < numBytes; i++) {
-			data[i] = _i2cPort->read();
-		}
-    return COMMS_SUCCESS;
+	i2cResult = _i2cPort->requestFrom(static_cast<uint8_t>(_address), static_cast<uint8_t>(numBytes), static_cast<uint8_t>(true));
+	if( i2cResult == 0 ) 
+		return -1;
+	for(size_t i = 0; i < numBytes; i++) {
+		data = _i2cPort->read();
 	}
+
+	return 0;
+
 }
 
 // This function is used when more than 32 bytes (TwoWire maximum buffer
 // length) of data are requested.
-COMMS_STATUS_t TMF_COMMS::overBufLenI2CRead(uint8_t reg, uint8_t data[], uint16_t numBytes)
+int32_t TMF_COMMS::overBufLenI2CRead(uint8_t addr, uint8_t reg, const uint8_t* data, uint32_t numBytes)
 {
   uint8_t resizedRead; 
   uint8_t i2cResult; 
@@ -104,21 +79,21 @@ COMMS_STATUS_t TMF_COMMS::overBufLenI2CRead(uint8_t reg, uint8_t data[], uint16_
   _i2cPort->write(reg); 
   i2cResult = _i2cPort->endTransmission(false);
   if( i2cResult != 0 )
-    return COMMS_I2C_ERROR; 
+    return -1; 
 
   while(numBytes > 0) 
   {
     resizedRead =  numBytes > MAX_BUFFER_LENGTH ? MAX_BUFFER_LENGTH : numBytes;
 		i2cResult = _i2cPort->requestFrom(static_cast<uint8_t>(_address), resizedRead, static_cast<uint8_t>(false)); 
     if( i2cResult == 0 )
-      return COMMS_I2C_ERROR;
+      return -1;
 
 		for(size_t i = 0; i < resizedRead; i++) {
-			data[index] = _i2cPort->read();
+			data = _i2cPort->read();
       index++;
     }	
     numBytes = numBytes - MAX_BUFFER_LENGTH; // end condition
   }
-  return COMMS_SUCCESS;
+  return 0;
 }
 

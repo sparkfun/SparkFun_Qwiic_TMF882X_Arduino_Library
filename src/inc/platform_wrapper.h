@@ -52,6 +52,7 @@ extern void platform_wrapper_start_measurements(struct platform_ctx *ctx, uint32
 extern int32_t platform_wrapper_handle_msg(struct platform_ctx *ctx, struct tmf882x_msg *msg);
 extern int32_t platform_wrapper_write_i2c_block(struct platform_ctx *ctx, uint8_t reg, const uint8_t *buf, uint32_t len);
 extern int32_t platform_wrapper_read_i2c_block(struct platform_ctx *ctx, uint8_t reg, uint8_t *buf, uint32_t len);
+
 #ifdef __cplusplus
 }
 #endif
