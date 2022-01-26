@@ -24,7 +24,7 @@ bool TMF_COMMS::commsBegin( uint8_t address, TwoWire &commsWirePort )
 // Write Functions 
 //*************************************************************************
 
-int32_t TMF_COMMS::writeMultiRegister(uint8_t addr, uint8_t reg, const uint8_t data[], uint32_t numBytes)
+int32_t TMF_COMMS::write_i2c_block(uint8_t addr, uint8_t reg, const uint8_t data[], uint32_t numBytes)
 {
   
 	_i2cPort->beginTransmission(_address); 
@@ -41,7 +41,7 @@ int32_t TMF_COMMS::writeMultiRegister(uint8_t addr, uint8_t reg, const uint8_t d
 //***********************************************************
 
 //Sends a request to read a number of registers
-int32_t TMF_COMMS::readMultiRegisters(uint8_t addr, uint8_t reg, const uint8_t* data, uint32_t numBytes)
+int32_t TMF_COMMS::read_i2c_block(uint8_t addr, uint8_t reg, const uint8_t* data, uint32_t numBytes)
 {
 
 	if( numBytes > MAX_BUFFER_LENGTH ){
