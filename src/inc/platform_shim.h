@@ -33,7 +33,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <time.h>
+//#include <time.h>
 #include "platform_wrapper.h"
 
 #ifdef __cplusplus

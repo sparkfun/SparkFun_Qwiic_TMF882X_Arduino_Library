@@ -214,7 +214,7 @@ struct tmf882x_mode_app {
         uint8_t uid[sizeof(uint32_t)];
 
         // cached timestamp used for clock correction
-        struct timespec timestamp;
+        timespec timestamp;
 
     } volat_data;
 

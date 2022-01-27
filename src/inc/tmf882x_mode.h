@@ -166,20 +166,23 @@ struct mode_vtable {
  * @var tmf882x_info_record::record::patch_ver
  *      This member is the patch version of the current mode
  */
+struct decl_record{
+		uint8_t app_id;
+		uint8_t min_ver;
+		uint8_t build_ver;
+		uint8_t patch_ver;
+		uint8_t reserved_4;
+		uint8_t reserved_5;
+		uint8_t reserved_6;
+		uint8_t reserved_7;
+};
+
+
 struct tmf882x_info_record {
-    union {
-        struct record{
-            uint8_t app_id;
-            uint8_t min_ver;
-            uint8_t build_ver;
-            uint8_t patch_ver;
-            uint8_t reserved_4;
-            uint8_t reserved_5;
-            uint8_t reserved_6;
-            uint8_t reserved_7;
-        }record;
-        uint8_t data[sizeof(struct record)];
-    };
+	union {
+		decl_record record;
+		uint8_t data[sizeof(struct decl_record)];
+	};
 };
 
 /**
