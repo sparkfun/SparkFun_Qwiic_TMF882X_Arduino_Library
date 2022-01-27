@@ -175,13 +175,13 @@ struct decl_record{
 		uint8_t reserved_5;
 		uint8_t reserved_6;
 		uint8_t reserved_7;
-};
+}record;
 
 
 struct tmf882x_info_record {
 	union {
-		decl_record record;
-		uint8_t data[sizeof(struct decl_record)];
+		struct decl_record record;
+		uint8_t data[sizeof(record)];
 	};
 };
 
