@@ -24,7 +24,7 @@ bool TMF_COMMS::commsBegin( uint8_t address, TwoWire &commsWirePort )
 // Write Functions 
 //*************************************************************************
 
-int32_t TMF_COMMS::write_i2c_block(uint8_t addr, uint8_t reg, const uint8_t data[], uint32_t numBytes)
+int32_t TMF_COMMS::write_i2c_block(uint8_t addr, uint8_t reg, const uint8_t* data, uint32_t numBytes)
 {
   
 	_i2cPort->beginTransmission(_address); 
@@ -41,7 +41,7 @@ int32_t TMF_COMMS::write_i2c_block(uint8_t addr, uint8_t reg, const uint8_t data
 //***********************************************************
 
 //Sends a request to read a number of registers
-int32_t TMF_COMMS::read_i2c_block(uint8_t addr, uint8_t reg, const uint8_t* data, uint32_t numBytes)
+int32_t TMF_COMMS::read_i2c_block(uint8_t addr, uint8_t reg, uint8_t* data, uint32_t numBytes)
 {
 
 	if( numBytes > MAX_BUFFER_LENGTH ){
@@ -60,7 +60,7 @@ int32_t TMF_COMMS::read_i2c_block(uint8_t addr, uint8_t reg, const uint8_t* data
 	if( i2cResult == 0 ) 
 		return -1;
 	for(size_t i = 0; i < numBytes; i++) {
-		data = _i2cPort->read();
+		*data = _i2cPort->read();
 	}
 
 	return 0;
@@ -69,7 +69,7 @@ int32_t TMF_COMMS::read_i2c_block(uint8_t addr, uint8_t reg, const uint8_t* data
 
 // This function is used when more than 32 bytes (TwoWire maximum buffer
 // length) of data are requested.
-int32_t TMF_COMMS::overBufLenI2CRead(uint8_t addr, uint8_t reg, const uint8_t* data, uint32_t numBytes)
+int32_t TMF_COMMS::overBufLenI2CRead(uint8_t addr, uint8_t reg, uint8_t* data, uint32_t numBytes)
 {
   uint8_t resizedRead; 
   uint8_t i2cResult; 
@@ -89,7 +89,7 @@ int32_t TMF_COMMS::overBufLenI2CRead(uint8_t addr, uint8_t reg, const uint8_t* d
       return -1;
 
 		for(size_t i = 0; i < resizedRead; i++) {
-			data = _i2cPort->read();
+			*data = _i2cPort->read();
       index++;
     }	
     numBytes = numBytes - MAX_BUFFER_LENGTH; // end condition
@@ -99,12 +99,12 @@ int32_t TMF_COMMS::overBufLenI2CRead(uint8_t addr, uint8_t reg, const uint8_t* d
 
 TMF_COMMS comms;
 
-int32_t write_i2c_block(uint8_t addr, uint8_t reg, const uint8_t data[], uint32_t numBytes)
+int32_t write_i2c_block(uint8_t addr, uint8_t reg, const uint8_t* data, uint32_t numBytes)
 {
   comms.write_i2c_block(addr, reg, data, numBytes);
 }
 
-int32_t read_i2c_block(uint8_t addr, uint8_t reg, const uint8_t* data, uint32_t numBytes)
+int32_t read_i2c_block(uint8_t addr, uint8_t reg, uint8_t* data, uint32_t numBytes)
 {
   comms.read_i2c_block(addr, reg, data, numBytes);
 }

@@ -63,8 +63,8 @@ void loop()
     uint32_t exit_num_results = 0;
     struct tmf882x_mode_app_calib tof_calib = {0};
 
-    platform_wrapper_power_off();
-    platform_wrapper_power_on();
+//    platform_wrapper_power_off();
+//    platform_wrapper_power_on();
 
     // Init application mode on device
     if (platform_wrapper_init_device(&ctx, 0, 0)) 
@@ -82,6 +82,6 @@ void loop()
         platform_wrapper_start_measurements(&ctx, exit_num_results, &tof_calib);
     }
 
-    platform_wrapper_power_off();
+    //platform_wrapper_power_off();
 }
 
