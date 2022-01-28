@@ -33,8 +33,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
-//#include <time.h>
-#include "platform_wrapper.h"
+#include "TMF_COMMS\TMF_COMMS.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -91,9 +90,11 @@ static inline int32_t tof_queue_msg(struct platform_ctx *ctx, struct tmf882x_msg
 
 static inline void tof_usleep(struct platform_ctx *ctx, uint32_t usec)
 {
-    uint32_t sec = usec / 1000000;//microseconds
-    //sleep.tv_nsec = (usec - (sec * 1000000)) * 1000; //seconds * 1000 = too long 
-		delay(sec); // Temporary
+    //struct tmf_timespec sleep;
+    uint32_t sec = usec / 1000000;
+    //sleep.tv_sec = sec;
+    //sleep.tv_nsec = (usec - (sec * 1000000)) * 1000;
+		tmf_delay(sec);
 
 }
 
