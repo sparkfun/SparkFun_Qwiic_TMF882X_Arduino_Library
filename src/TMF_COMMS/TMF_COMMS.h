@@ -1,7 +1,7 @@
 #ifndef _TMF_COMMS_
 #define _TMF_COMMS_
 
-//#include <Arduino.h>
+#include <Arduino.h>
 #include <Wire.h>
 #define MAX_BUFFER_LENGTH 32
 

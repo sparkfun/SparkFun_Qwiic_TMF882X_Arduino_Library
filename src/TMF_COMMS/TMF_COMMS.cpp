@@ -111,5 +111,5 @@ int32_t read_i2c_block(uint8_t addr, uint8_t reg, uint8_t* data, uint32_t numByt
 
 void tmf_delay(unsigned long ms)
 {
-	delay(ms);
+	comms.delay(ms);
 }

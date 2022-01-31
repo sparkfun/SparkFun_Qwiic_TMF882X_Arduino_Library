@@ -33,7 +33,9 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "platform_wrapper.h"
 #include "TMF_COMMS\TMF_COMMS.h"
+
 
 #ifdef __cplusplus
 extern "C" {
