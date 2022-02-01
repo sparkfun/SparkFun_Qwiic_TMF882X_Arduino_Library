@@ -261,7 +261,7 @@ void platform_wrapper_start_measurements(struct platform_ctx *ctx,
             return;
         }
 
-        delay(5000); // poll period
+        tmf_delay(5000); // poll period
         if (num_measurements &&
             ctx->curr_num_measurements == num_measurements) {
             //Serial.print("Read %u results\n", num_measurements);

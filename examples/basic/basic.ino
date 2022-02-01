@@ -30,7 +30,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include <unistd.h>
+//#include <unistd.h>
 #include <fcntl.h>
 #include "mcu_tmf882x_config.h"
 #include "inc\platform_wrapper.h"
