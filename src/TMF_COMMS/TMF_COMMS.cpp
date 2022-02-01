@@ -29,7 +29,7 @@ int32_t TMF_COMMS::write_i2c_block(uint8_t addr, uint8_t reg, const uint8_t* dat
   
 	_i2cPort->beginTransmission(_address); 
 	_i2cPort->write(reg); 
-	_i2cPort->write(data, numBytes); 
+	_i2cPort->write(data, (int)numBytes); 
 	uint8_t retVal = _i2cPort->endTransmission(); 
 	return (retVal ? -1 : 0);
 
@@ -111,5 +111,6 @@ int32_t read_i2c_block(uint8_t addr, uint8_t reg, uint8_t* data, uint32_t numByt
 
 void tmf_delay(unsigned long ms)
 {
-	comms.delay(ms);
+	delay(ms);
 }
+
