@@ -40,9 +40,10 @@
 #define PWR_EN_PIN 10
 
 tmf882x_tof tof;
+
 platform_ctx ctx = {
 	NULL, //char* i2ccdev
-	TMF882X_I2C_ADDR, // Address
+	TMF882X_I2C_ADDR, // i2c_addr
 	0, //debug
 	0, //curr_num_measurements
 	0, //mode_8x8
