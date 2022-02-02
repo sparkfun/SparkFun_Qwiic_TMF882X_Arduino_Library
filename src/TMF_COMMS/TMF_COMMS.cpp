@@ -9,14 +9,15 @@
 
 #include "TMF_COMMS.h"
 
+TMF_COMMS::TMF_COMMS(){}
 
-bool TMF_COMMS::commsBegin( uint8_t address, TwoWire &commsWirePort ) 
+int32_t TMF_COMMS::commsBegin( uint8_t address, TwoWire &commsWirePort ) 
 {
   _address = address;
   _i2cPort = &commsWirePort;
   _i2cPort->beginTransmission(_address);
   uint8_t _ret = _i2cPort->endTransmission();
-  return (_ret ? false : true);  
+  return (_ret ? -1 : 0);  
 
 }
 

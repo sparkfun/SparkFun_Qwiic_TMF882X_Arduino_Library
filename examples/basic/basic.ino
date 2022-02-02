@@ -67,8 +67,10 @@ void loop()
 //    platform_wrapper_power_on();
 
     // Init application mode on device
-    if (platform_wrapper_init_device(&ctx, 0, 0)) 
+    if (platform_wrapper_init_device(&ctx, 0, 0)) {
         Serial.print("Error loading application mode\n");
+				while(1);
+		}
 
     rc = platform_wrapper_cfg_device(&ctx);
 

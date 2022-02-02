@@ -34,7 +34,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "platform_wrapper.h"
-// #include "TMF_COMMS.h"
 
 extern void tmf_delay(unsigned long ms);
 
