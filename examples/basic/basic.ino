@@ -55,6 +55,9 @@ void setup(){
 
 	Wire.begin();
 	Serial.begin(115200);
+	Wire.beginTransmission(TMF882X_I2C_ADDR);
+	Serial.println(Wire.endTransmission());
+
 
 }
 
