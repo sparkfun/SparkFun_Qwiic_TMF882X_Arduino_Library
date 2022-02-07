@@ -34,10 +34,15 @@
 #include <fcntl.h>
 #include "mcu_tmf882x_config.h"
 #include "inc\platform_wrapper.h"
+#include "tof_bin_image.h"
 #include <Wire.h>
+
 
 #define TMF882X_I2C_ADDR 0x41
 #define PWR_EN_PIN 10
+
+
+const uint8_t *hexRecords = tof_bin_image;
 
 tmf882x_tof tof;
 
@@ -55,9 +60,6 @@ void setup(){
 
 	Wire.begin();
 	Serial.begin(115200);
-	Wire.beginTransmission(TMF882X_I2C_ADDR);
-	Serial.println(Wire.endTransmission());
-
 
 }
 
@@ -67,13 +69,14 @@ void loop()
     uint32_t exit_num_results = 0;
     struct tmf882x_mode_app_calib tof_calib = {0};
 
+// Device is tied high so always on......
 //    platform_wrapper_power_off();
 //    platform_wrapper_power_on();
 
     // Init application mode on device
-    if (platform_wrapper_init_device(&ctx, 0, 0)) {
+    if (platform_wrapper_init_device(&ctx, hexRecords, tof_bin_image_length)) {
         Serial.print("Error loading application mode\n");
-				while(1);
+				while(1); //<-----Stops here
 		}
 
     rc = platform_wrapper_cfg_device(&ctx);
@@ -90,4 +93,3 @@ void loop()
 
     //platform_wrapper_power_off();
 }
-
