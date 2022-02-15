@@ -28,6 +28,7 @@
 
 #include "tmf882x.h"
 #include "tmf882x_mode_app_ioctl.h"
+#include "tof_factory_cal.h"
 
 #ifdef __cplusplus
 extern "C" {

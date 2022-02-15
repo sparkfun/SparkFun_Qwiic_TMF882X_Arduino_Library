@@ -8,6 +8,7 @@
  */
 
 #include "TMF_COMMS.h"
+#include <stdio.h>
 
 TMF_COMMS::TMF_COMMS(){}
 
@@ -27,10 +28,11 @@ int32_t TMF_COMMS::commsBegin( uint8_t address, TwoWire &commsWirePort )
 
 int32_t TMF_COMMS::write_i2c_block(uint8_t addr, uint8_t reg, const uint8_t* data, uint32_t numBytes)
 {
-  
+
 	_i2cPort->beginTransmission(_address); 
 	_i2cPort->write(reg); 
 	_i2cPort->write(data, (int)numBytes); 
+
 	uint8_t retVal = _i2cPort->endTransmission(); 
 	return (retVal ? -1 : 0);
 
@@ -61,7 +63,7 @@ int32_t TMF_COMMS::read_i2c_block(uint8_t addr, uint8_t reg, uint8_t* data, uint
 	if( i2cResult == 0 ) 
 		return -1;
 	for(size_t i = 0; i < numBytes; i++) {
-		*data = _i2cPort->read();
+		data[i] = _i2cPort->read();
 	}
 
 	return 0;
@@ -90,13 +92,14 @@ int32_t TMF_COMMS::overBufLenI2CRead(uint8_t addr, uint8_t reg, uint8_t* data, u
       return -1;
 
 		for(size_t i = 0; i < resizedRead; i++) {
-			*data = _i2cPort->read();
+			data[i] = _i2cPort->read();
       index++;
     }	
     numBytes = numBytes - MAX_BUFFER_LENGTH; // end condition
   }
   return 0;
 }
+
 
 TMF_COMMS comms;
 

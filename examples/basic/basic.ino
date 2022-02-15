@@ -34,13 +34,11 @@
 #include <fcntl.h>
 #include "mcu_tmf882x_config.h"
 #include "inc\platform_wrapper.h"
-#include "tof_bin_image.h"
 #include <Wire.h>
 
 
 #define TMF882X_I2C_ADDR 0x41
 #define PWR_EN_PIN 10
-
 
 const uint8_t *hexRecords = tof_bin_image;
 
@@ -49,7 +47,7 @@ tmf882x_tof tof;
 platform_ctx ctx = {
 	NULL, //char* i2ccdev
 	TMF882X_I2C_ADDR, // i2c_addr
-	0, //debug
+	2, //debug
 	0, //curr_num_measurements
 	0, //mode_8x8
 	&tof //struct above
@@ -60,23 +58,23 @@ void setup(){
 
 	Wire.begin();
 	Serial.begin(115200);
+	Wire.beginTransmission(TMF882X_I2C_ADDR);
+	Serial.println(Wire.endTransmission());
 
 }
 
 void loop()
 {
     int32_t rc = 0;
-    uint32_t exit_num_results = 0;
-    struct tmf882x_mode_app_calib tof_calib = {0};
+    uint32_t exit_num_results = 100;
 
 // Device is tied high so always on......
 //    platform_wrapper_power_off();
 //    platform_wrapper_power_on();
 
     // Init application mode on device
-    if (platform_wrapper_init_device(&ctx, hexRecords, tof_bin_image_length)) {
+    if (platform_wrapper_init_device(&ctx, 0, 0)) {
         Serial.print("Error loading application mode\n");
-				while(1); //<-----Stops here
 		}
 
     rc = platform_wrapper_cfg_device(&ctx);
@@ -86,9 +84,14 @@ void loop()
 				Serial.println(rc);
     }
 
+		rc = platform_wrapper_factory_calibration(&ctx, &calibration_data);
+		if (rc) {
+				fprintf(stderr, "Error performing factory calibration: %d\n", rc);
+		}
+
 		else {
         // Function only returns if a specified number of measurements are given
-        platform_wrapper_start_measurements(&ctx, exit_num_results, &tof_calib);
+        platform_wrapper_start_measurements(&ctx, exit_num_results, &calibration_data);
     }
 
     //platform_wrapper_power_off();
