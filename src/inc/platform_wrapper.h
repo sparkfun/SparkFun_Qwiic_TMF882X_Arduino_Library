@@ -55,8 +55,12 @@ extern int32_t platform_wrapper_write_i2c_block(struct platform_ctx *ctx, uint8_
 extern int32_t platform_wrapper_read_i2c_block(struct platform_ctx *ctx, uint8_t reg, uint8_t *buf, uint32_t len);
 
 // KDB add
+
+typedef void (*measurement_handler_t)(struct tmf882x_msg_meas_results *measurment);
+
 struct tmf882x_msg_meas_results * platform_wrapper_get_last_measurement(void);
 void platform_wrapper_print_measurment(struct platform_ctx *ctx, struct tmf882x_msg_meas_results *measurment);
+void platform_wrapper_set_measurement_handler( measurement_handler_t measurment_handler);
 #ifdef __cplusplus
 }
 #endif

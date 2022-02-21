@@ -44,6 +44,9 @@
 // KDB Hack
 static struct tmf882x_msg_meas_results * lastMeasurment = NULL;
 
+static measurement_handler_t measurementCB=NULL;
+
+
 struct tmf882x_msg_meas_results * platform_wrapper_get_last_measurement(void){
     return lastMeasurment;
 }
@@ -73,7 +76,11 @@ void platform_wrapper_print_measurment(struct platform_ctx *ctx, struct tmf882x_
 
     print_result(ctx, measurment);
 }
+void platform_wrapper_set_measurement_handler( measurement_handler_t measurement_handler){
 
+    measurementCB = measurement_handler;
+
+}
 int32_t platform_wrapper_power_on()
 {
 }
@@ -293,6 +300,9 @@ int32_t platform_wrapper_handle_msg(struct platform_ctx *ctx,
     if (msg->hdr.msg_id == ID_MEAS_RESULTS) {
         ctx->curr_num_measurements++;
         lastMeasurment = &msg->meas_result_msg;
+        // Callback function?
+        if(measurementCB)
+            measurementCB(lastMeasurment);
         //print_result(ctx, &msg->meas_result_msg);
     }
     return 0;

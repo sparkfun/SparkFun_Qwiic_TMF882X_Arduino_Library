@@ -109,7 +109,28 @@ bool Qwiic_TMF882X::getMeasurement(TMF882XMeasurement_t *results){
 
     return true;
 }
+//////////////////////////////////////////////////////////////////////////////
+// setMeasurementHandler()
+//
+// Take N number of measurements. The user should get the results via a callback
+// that was set.
+void Qwiic_TMF882X::takeMeasurements(int nMeasurements){
 
+    if(nMeasurements < 1)
+        return;
+
+    platform_wrapper_start_measurements(&ctx, nMeasurements, NULL);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// setMeasurementHandler()
+//
+// Set a callback function that is called when a measurement is detected.
+
+void Qwiic_TMF882X::setMeasurementHandler(TMF882XMeasurementHandler_t handler){
+
+    platform_wrapper_set_measurement_handler(handler);
+}
 //////////////////////////////////////////////////////////////////////////////
 // printMeasurement()
 

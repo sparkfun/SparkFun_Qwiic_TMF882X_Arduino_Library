@@ -32,6 +32,8 @@
 // define a type for the results -- just alias the underlying measurment struct - easier to type
 typedef struct tmf882x_msg_meas_results TMF882XMeasurement_t;
 
+typedef void (*TMF882XMeasurementHandler_t)(TMF882XMeasurement_t *measurment);
+
 class Qwiic_TMF882X
 {
 
@@ -44,6 +46,8 @@ public:
     bool isConnected(); //Checks if sensor ack's the I2C request
 
 
+    void setMeasurementHandler(TMF882XMeasurementHandler_t handler);
+    void takeMeasurements(int nMeasurements);
     bool getMeasurement(TMF882XMeasurement_t * results);
     void printMeasurement(TMF882XMeasurement_t * results);
 
