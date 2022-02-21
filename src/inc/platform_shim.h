@@ -33,9 +33,9 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <time.h>
 #include "platform_wrapper.h"
-
-extern void tmf_delay(unsigned long ms);
+#include "sfe_arduino_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -92,17 +92,15 @@ static inline int32_t tof_queue_msg(struct platform_ctx *ctx, struct tmf882x_msg
 
 static inline void tof_usleep(struct platform_ctx *ctx, uint32_t usec)
 {
-    //struct tmf_timespec sleep;
-    uint32_t sec = usec / 1000000;
-    //sleep.tv_sec = sec;
-    //sleep.tv_nsec = (usec - (sec * 1000000)) * 1000;
-		tmf_delay(sec);
-
+    sfe_usleep(usec);
+    
 }
 
-static inline void tof_get_timespec(struct tmf_timespec *ts)
+static inline void tof_get_timespec(struct timespec *ts)
 {
-//    clock_gettime(CLOCK_MONOTONIC, ts);
+    ts->tv_sec = sfe_millis();
+    ts->tv_nsec = 0;
+
 }
 
 #ifdef __cplusplus

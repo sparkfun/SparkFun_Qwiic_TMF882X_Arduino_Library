@@ -27,10 +27,10 @@
 /***** tmf882x_interface.c *****/
 
 #include "tmf882x_interface.h"
-#include "inc\tmf882x_host_interface.h"
-#include "inc\tmf882x_mode.h"
-#include "inc\tmf882x_mode_app.h"
-#include "inc\tmf882x_mode_bl.h"
+#include "inc/tmf882x_host_interface.h"
+#include "inc/tmf882x_mode.h"
+#include "inc/tmf882x_mode_app.h"
+#include "inc/tmf882x_mode_bl.h"
 
 static inline void * to_priv(struct tmf882x_mode *self)
 {
@@ -89,6 +89,7 @@ int32_t tmf882x_open(struct tmf882x_tof * tof)
         }
 
         mode = tmf882x_get_mode(tof);
+
         // Try to initialize mode context with requested mode and open()
         initialize_state_from_mode(tof, mode);
     }

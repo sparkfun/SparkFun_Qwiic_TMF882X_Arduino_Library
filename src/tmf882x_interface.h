@@ -32,10 +32,10 @@
 #ifndef __TMF882X_INTERFACE_H
 #define __TMF882X_INTERFACE_H
 
-#include "inc\tmf882x.h"
-#include "inc\tmf882x_mode.h"
-#include "inc\tmf882x_mode_bl.h"
-#include "inc\tmf882x_mode_app.h"
+#include "inc/tmf882x.h"
+#include "inc/tmf882x_mode.h"
+#include "inc/tmf882x_mode_bl.h"
+#include "inc/tmf882x_mode_app.h"
 
 #ifdef __cplusplus
 extern "C" {

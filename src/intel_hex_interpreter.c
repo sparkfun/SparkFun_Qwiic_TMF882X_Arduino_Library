@@ -24,8 +24,8 @@
  * INCLUDES
  *****************************************************************************
  */
-#include "inc\tmf882x_host_interface.h"
-#include "inc\intel_hex_interpreter.h"
+#include "inc/tmf882x_host_interface.h"
+#include "inc/intel_hex_interpreter.h"
 
 /*
  *****************************************************************************

@@ -54,6 +54,9 @@ extern int32_t platform_wrapper_handle_msg(struct platform_ctx *ctx, struct tmf8
 extern int32_t platform_wrapper_write_i2c_block(struct platform_ctx *ctx, uint8_t reg, const uint8_t *buf, uint32_t len);
 extern int32_t platform_wrapper_read_i2c_block(struct platform_ctx *ctx, uint8_t reg, uint8_t *buf, uint32_t len);
 
+// KDB add
+struct tmf882x_msg_meas_results * platform_wrapper_get_last_measurement(void);
+void platform_wrapper_print_measurment(struct platform_ctx *ctx, struct tmf882x_msg_meas_results *measurment);
 #ifdef __cplusplus
 }
 #endif

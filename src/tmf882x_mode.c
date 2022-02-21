@@ -26,8 +26,8 @@
 
 /***** tmf882x_mode.c *****/
 #include "tmf882x_interface.h"
-#include "inc\tmf882x_mode.h"
-#include "inc\tmf882x_host_interface.h"
+#include "inc/tmf882x_mode.h"
+#include "inc/tmf882x_host_interface.h"
 
 #define TMF882X_MODE_TAG            0
 

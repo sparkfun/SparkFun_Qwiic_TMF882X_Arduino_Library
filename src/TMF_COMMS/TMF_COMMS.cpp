@@ -92,7 +92,7 @@ int32_t TMF_COMMS::overBufLenI2CRead(uint8_t addr, uint8_t reg, uint8_t* data, u
       return -1;
 
 		for(size_t i = 0; i < resizedRead; i++) {
-			data[i] = _i2cPort->read();
+			data[index] = _i2cPort->read();
       index++;
     }	
     numBytes = numBytes - MAX_BUFFER_LENGTH; // end condition
@@ -115,6 +115,6 @@ int32_t read_i2c_block(uint8_t addr, uint8_t reg, uint8_t* data, uint32_t numByt
 
 void tmf_delay(unsigned long ms)
 {
-	delay(ms);
+	//delay(ms);
 }
 

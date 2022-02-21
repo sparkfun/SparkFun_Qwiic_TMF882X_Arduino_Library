@@ -30,12 +30,10 @@
 #include <string.h>
 #include <unistd.h>
 #include "mcu_tmf882x_config.h"
-#include "inc\platform_wrapper.h"
-#include "inc\tmf882x.h"
+#include "inc/platform_wrapper.h"
+#include "inc/tmf882x.h"
 #include "tmf882x_interface.h"
-
-extern int32_t write_i2c_block(uint8_t, uint8_t, const uint8_t* data, uint32_t);
-extern int32_t read_i2c_block(uint8_t, uint8_t, uint8_t* data, uint32_t);
+#include "inc/sfe_arduino_C.h"
 
 #define TMF882X_CAL_ITERATIONS        4000
 #define TMF882X_8X8_ITERATIONS        125
@@ -43,6 +41,12 @@ extern int32_t read_i2c_block(uint8_t, uint8_t, uint8_t* data, uint32_t);
 #define TMF882X_DEFAULT_ITERATIONS    550
 #define TMF882X_DEFAULT_REP_PERIOD_MS 30
 
+// KDB Hack
+static struct tmf882x_msg_meas_results * lastMeasurment = NULL;
+
+struct tmf882x_msg_meas_results * platform_wrapper_get_last_measurement(void){
+    return lastMeasurment;
+}
 static void print_result(struct platform_ctx *ctx,
                          struct tmf882x_msg_meas_results *result_msg)
 {
@@ -63,6 +67,11 @@ static void print_result(struct platform_ctx *ctx,
            result_msg->photon_count, result_msg->ref_photon_count,
            result_msg->ambient_light);
     return;
+}
+
+void platform_wrapper_print_measurment(struct platform_ctx *ctx, struct tmf882x_msg_meas_results *measurment){
+
+    print_result(ctx, measurment);
 }
 
 int32_t platform_wrapper_power_on()
@@ -88,6 +97,7 @@ int32_t platform_wrapper_init_device(struct platform_ctx *ctx,
         fprintf(stderr, "%s Error opening driver\n", __func__);
         return -1;
     }
+
 
     // if FWDL file is supplied, use that
     if (hex_records && hex_size) {
@@ -251,6 +261,8 @@ void platform_wrapper_start_measurements(struct platform_ctx *ctx,
         return;
     }
 
+    // KDB - clear out our last measurement stash
+    lastMeasurment = NULL;
     while(1) {
         rc = tmf882x_process_irq(ctx->tof);
         if (rc) {
@@ -259,10 +271,12 @@ void platform_wrapper_start_measurements(struct platform_ctx *ctx,
             return;
         }
 
-        tmf_delay(5000); // poll period
+        // KDB
+        sfe_usleep(20000); // micro sec poll period (5 millis)
+
         if (num_measurements &&
             ctx->curr_num_measurements == num_measurements) {
-            printf("Read %u results\n", num_measurements);
+            //printf("Read %u results\n", num_measurements);
             break;
         }
     }
@@ -278,7 +292,8 @@ int32_t platform_wrapper_handle_msg(struct platform_ctx *ctx,
 
     if (msg->hdr.msg_id == ID_MEAS_RESULTS) {
         ctx->curr_num_measurements++;
-        print_result(ctx, &msg->meas_result_msg);
+        lastMeasurment = &msg->meas_result_msg;
+        //print_result(ctx, &msg->meas_result_msg);
     }
     return 0;
 }
@@ -286,13 +301,17 @@ int32_t platform_wrapper_handle_msg(struct platform_ctx *ctx,
 int32_t platform_wrapper_write_i2c_block(struct platform_ctx *ctx, uint8_t reg,
                                 const uint8_t *buf, uint32_t len)
 {
-    if (!ctx) return -1;
-    return write_i2c_block(ctx->i2c_addr, reg, buf, len);
+    if(!ctx) 
+        return -1;
+
+    return sfe_write_i2c_block(ctx->i2c_addr, reg, buf, len);
 }
 
 int32_t platform_wrapper_read_i2c_block(struct platform_ctx *ctx, uint8_t reg,
                                uint8_t *buf, uint32_t len)
 {
-    if (!ctx) return -1;
-    return read_i2c_block(ctx->i2c_addr, reg, buf, len);
+    if (!ctx) 
+        return -1;
+
+    return sfe_read_i2c_block(ctx->i2c_addr, reg, buf, len);
 }

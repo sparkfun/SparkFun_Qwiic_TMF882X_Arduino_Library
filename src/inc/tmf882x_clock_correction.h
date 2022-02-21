@@ -29,7 +29,7 @@
 #ifndef __TMF882X_CLOCK_CORRECTION_H
 #define __TMF882X_CLOCK_CORRECTION_H
 
-#include "inc\tmf882x_host_interface.h"
+#include "inc/tmf882x_host_interface.h"
 
 #ifdef __cplusplus
 extern "C" {

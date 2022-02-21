@@ -24,8 +24,8 @@
  *****************************************************************************
  */
 
-#include "inc\tmf882x_host_interface.h"
-#include "inc\tmf882x_clock_correction.h"
+#include "inc/tmf882x_host_interface.h"
+#include "inc/tmf882x_clock_correction.h"
 
 #define CLK_CORR_WRAPAROUND      0x80000000L        // 32 bits
 #define CLK_CORR_MINCOUNT        3

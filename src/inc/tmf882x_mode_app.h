@@ -170,11 +170,7 @@ struct tmf882x_mode_app_i2c_msg {
  * @var tmf882x_mode_app::volat_data::timestamp
  *      This member is the cached previous timestamp used in clock correction
  */
-struct tmf_timespec
-{
-    time_t tv_sec;  // Seconds - >= 0
-    long   tv_nsec; // Nanoseconds - [0, 999999999]
-}timestamp;
+
 
 struct tmf882x_mode_app {
 
@@ -214,7 +210,7 @@ struct tmf882x_mode_app {
         uint8_t uid[sizeof(uint32_t)];
 
         // cached timestamp used for clock correction
-        struct tmf_timespec timestamp;
+        struct timespec timestamp;
 
     } volat_data;
 

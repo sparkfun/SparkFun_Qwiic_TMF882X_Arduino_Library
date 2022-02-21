@@ -25,11 +25,11 @@
  */
 
 /***** tmf882x_mode_bl.c *****/
-#include "inc\tmf882x.h"
-#include "inc\tmf882x_mode.h"
-#include "inc\tmf882x_mode_bl.h"
-#include "inc\intel_hex_interpreter.h"
-#include "inc\tmf882x_host_interface.h"
+#include "inc/tmf882x.h"
+#include "inc/tmf882x_mode.h"
+#include "inc/tmf882x_mode_bl.h"
+#include "inc/intel_hex_interpreter.h"
+#include "inc/tmf882x_host_interface.h"
 #include "tmf882x_interface.h"
 
 #define TMF882X_BL_MODE_TAG        0x80
