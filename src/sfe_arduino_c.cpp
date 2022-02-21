@@ -38,7 +38,6 @@ void sfe_usleep(uint32_t usec){
 
 	// We're passed in microsecs, but we'll use Arduino::delay, which uses milli-secs, so this 
 	// will lose some fine resolution...which is fine
-
 	delay(usec/1000);
 }
 
@@ -119,8 +118,8 @@ int sfe_read_i2c_block(uint8_t addr, uint8_t reg, uint8_t* data, uint32_t numByt
 		// We're chunking in data - keeping the max chunk to kMaxI2CBufferLength
 		nChunk =  numBytes > kMaxI2CBufferLength ? kMaxI2CBufferLength : numBytes;
 
-    	// Grab the chunk data - note, if reading last data chunk (nChunk == numBytes),
-    	// send stop as "true" to release the i2c bus
+		// Grab the chunk data - note, if reading last data chunk (nChunk == numBytes),
+		// send stop as "true" to release the i2c bus
 		nReturned = i2cPort->requestFrom(tmf_address, nChunk, nChunk == numBytes); 
 
 		// No data returned, no dice    	
