@@ -114,25 +114,25 @@ int sfe_read_i2c_block(uint8_t addr, uint8_t reg, uint8_t* data, uint32_t numByt
   	// the number of bytes requested is greater than kMaxI2CBufferLenth
   	while(numBytes > 0){
     	
-    	int i;
+		int i;
 
-    	// We're chunking in data - keeping the max chunk to kMaxI2CBufferLength
-    	nChunk =  numBytes > kMaxI2CBufferLength ? kMaxI2CBufferLength : numBytes;
+		// We're chunking in data - keeping the max chunk to kMaxI2CBufferLength
+		nChunk =  numBytes > kMaxI2CBufferLength ? kMaxI2CBufferLength : numBytes;
 
     	// Grab the chunk data - note, if reading last data chunk (nChunk == numBytes),
     	// send stop as "true" to release the i2c bus
 		nReturned = i2cPort->requestFrom(tmf_address, nChunk, nChunk == numBytes); 
 
 		// No data returned, no dice    	
-    	if(nReturned == 0 )
-    		return -1; // error 
+		if(nReturned == 0 )
+			return -1; // error 
 
-    	// Copy the retrieved data chunk to the current index in the data segment
+		// Copy the retrieved data chunk to the current index in the data segment
 		for(i = 0; i < nReturned; i++) 
 			*data++ = i2cPort->read();
 
 		// Decrement the amount of data recieved from the overall data request amount 
-    	numBytes = numBytes - nReturned; 
+		numBytes = numBytes - nReturned; 
   	}
   	return 0;  // Success
 }
