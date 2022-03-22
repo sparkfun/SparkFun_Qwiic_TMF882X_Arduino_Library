@@ -27,11 +27,12 @@
 #include "qwiic_tmf882x.h"
 
 // Arduino things
+#include <Arduino.h>
 #include <Wire.h>
 
 
 
-class SparkFun_TMF882X : public Qwiic_TMF882X
+class SparkFun_TMF882X : public QwDevTMF882X
 {
 
 public:
@@ -41,7 +42,14 @@ public:
 
     bool begin(TwoWire &wirePort = Wire, uint8_t deviceAddress = kDefaultTMF882XAddress){
 
-        return this->Qwiic_TMF882X::begin(wirePort, deviceAddress);
+        _i2cBus.init(wirePort);
+
+        set_comm_bus(_i2cBus, deviceAddress);
+
+        return this->QwDevTMF882X::init();
     };
 
+private:
+
+    QwI2C _i2cBus;
 };

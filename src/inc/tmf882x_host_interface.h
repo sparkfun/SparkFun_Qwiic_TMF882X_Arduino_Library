@@ -33,6 +33,6 @@
 #ifndef __TMF882X_HOST_INTERFACE_H
 #define __TMF882X_HOST_INTERFACE_H
 
-#include "platform_shim.h"
+#include "sfe_shim.h"
 
 #endif
