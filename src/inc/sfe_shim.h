@@ -24,6 +24,7 @@ extern "C" {
 
 #define tof_dbg(p, fmt, ...) \
 ({ \
+    printf(fmt "\n", ##__VA_ARGS__); \
 })
 
 int32_t tof_i2c_read(void *pTarget, uint8_t reg, uint8_t *buf, int32_t len);

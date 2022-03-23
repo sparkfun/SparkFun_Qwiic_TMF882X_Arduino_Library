@@ -68,7 +68,7 @@
 
 // What we use for transfer chunk size
 
-const static 	uint16_t kChunkSize = kMaxTransferBuffer - 1;
+const static uint16_t kChunkSize = kMaxTransferBuffer - 1;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // Constructor
@@ -113,6 +113,9 @@ bool QwI2C::init(void){
 // Is a device connected?
 bool QwI2C::ping(uint8_t i2c_address){
 
+    if(!_i2cPort)
+        return false;
+
 	_i2cPort->beginTransmission(i2c_address);
 	return _i2cPort->endTransmission() == 0;	
 }
@@ -123,6 +126,9 @@ bool QwI2C::ping(uint8_t i2c_address){
 // Write a byte to a register
 
 bool QwI2C::writeRegisterByte(uint8_t i2c_address, uint8_t offset, uint8_t dataToWrite){
+
+    if(!_i2cPort)
+        return false;
 
 	_i2cPort->beginTransmission(i2c_address);
 	_i2cPort->write(offset);
@@ -141,6 +147,14 @@ int QwI2C::writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *dat
     uint16_t nRemaining=length;
     uint16_t nToWrite;
 
+    printf("ENTER - WRITE I2C\n");
+    if(!_i2cPort){
+        printf("NO I2C port\n");
+        return -1;
+    }
+
+    printf("Writing %d bytes\n", nRemaining);
+    
     while(nRemaining > 0){
 
         _i2cPort->beginTransmission(i2c_address);
@@ -153,11 +167,13 @@ int QwI2C::writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *dat
         data += nSent; // move up to remaining data in buffer
 
         // only release bus if we've sent all data
-        if( _i2cPort->endTransmission( nRemaining <= 0 ) )
+        if( _i2cPort->endTransmission( nRemaining <= 0 ) ){
+            printf("No Ack Ack on Write\n");
             return -1; // the client didn't ACK
+        }
     }
-
-    return length - nRemaining;
+    printf("Success I2c write \n");
+    return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -172,6 +188,9 @@ int QwI2C::readRegisterRegion(uint8_t addr, uint8_t reg, uint8_t* data, uint16_t
 {
     uint8_t nChunk; 
     uint8_t nReturned; 
+
+    if(!_i2cPort)
+        return -1;
 
     _i2cPort->beginTransmission(addr);
     _i2cPort->write(reg); 
@@ -190,16 +209,20 @@ int QwI2C::readRegisterRegion(uint8_t addr, uint8_t reg, uint8_t* data, uint16_t
 
         // Grab the chunk data - note, if reading last data chunk (nChunk == numBytes),
         // send stop as "true" to release the i2c bus
-        nReturned = _i2cPort->requestFrom(addr, nChunk, nChunk == numBytes); 
+        nReturned = _i2cPort->requestFrom((int)addr, (int)nChunk, (int)(nChunk == numBytes)); 
 
+        printf("Read Reg Region returned: %d\n",nReturned );
         // No data returned, no dice        
         if(nReturned == 0 )
             return -1; // error 
 
         // Copy the retrieved data chunk to the current index in the data segment
-        for(i = 0; i < nReturned; i++) 
-            *data++ = _i2cPort->read();
-
+        for(i = 0; i < nReturned; i++){ 
+            uint8_t dd =_i2cPort->read();
+            printf("DATA: %d\n", dd);
+            *data++ = dd;
+//            *data++ = _i2cPort->read();
+        }
         // Decrement the amount of data recieved from the overall data request amount 
         numBytes = numBytes - nReturned; 
     }

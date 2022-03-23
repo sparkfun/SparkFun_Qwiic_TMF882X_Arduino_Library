@@ -19,11 +19,18 @@
 
 
 #include "qwiic_tmf882x.h"
+#include "mcu_tmf882x_config.h"
 #include "tmf882x_interface.h"
 #include "inc/sfe_arduino_c.h"
 
 
 #define kTMF882XCalInterations 4000
+
+// if not using built in firmware, define some dummies
+#if !defined(_HAS_BUILTIN_FW)
+static int tof_bin_image = 0;
+static int tof_bin_image_length=0;
+#endif
 //////////////////////////////////////////////////////////////////////////////
 // init_tmf882x()
 //
@@ -39,16 +46,37 @@ bool QwDevTMF882X::init_tmf882x(void){
     tmf882x_init(&_tof, (void*)this);
 
     // open the driver
-    if(tmf882x_open(&_tof)) // error
+    if(tmf882x_open(&_tof)){ // error
+        printf("OPEN FAILED\n");
         return false; 
+    }
 
-    // switch device to application mode. 
-    if(tmf882x_mode_switch(&_tof, TMF882X_MODE_APP))  // failed to enter app mode
-        return false; 
+    if(tof_bin_image && tof_bin_image_length){
 
+        if(tmf882x_mode_switch(&_tof, TMF882X_MODE_BOOTLOADER)) {
+            fprintf(stderr, "%s mode switch to bootloader failed\n", __func__);
+            return false;
+        }
+
+        int rc = tmf882x_fwdl(&_tof, FWDL_TYPE_BIN, tof_bin_image, tof_bin_image_length);
+
+        if(rc){
+            fprintf(stderr, "Error (%d) performing FWDL with built-in firmware\n", rc);
+            return false;
+        }
+
+    }else{
+        // switch device to application mode. 
+        if(tmf882x_mode_switch(&_tof, TMF882X_MODE_APP)){  // failed to enter app mode
+            printf("MODE SWITCH FAILED\n");
+            return false; 
+        }
+    }
     // now verify we are running in app mode
-    if(tmf882x_get_mode(&_tof) != TMF882X_MODE_APP) // failed to open up into application mode....
+    if(tmf882x_get_mode(&_tof) != TMF882X_MODE_APP){ // failed to open up into application mode....
+        printf("NOT IN APP MODE\n");
         return false;
+    }
 
     return true;
 }
@@ -180,6 +208,8 @@ bool QwDevTMF882X::startMeasuring(uint32_t reqMeasurments){
 
     if(!start_measuring(reqMeasurments))
         return false;
+
+    return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -316,18 +346,11 @@ void QwDevTMF882X::printMeasurement(TMF882XMeasurement_t *meas){
 // I2C relays for the underlying SDK
 int32_t QwDevTMF882X::writeRegisterRegion(uint8_t offset, uint8_t *data, uint16_t length){
 
-    if(!_isInit)
-        return -1;
-
     return _i2cBus->writeRegisterRegion(_i2c_address, offset, data, length);
 
 }
     
 int32_t QwDevTMF882X::readRegisterRegion(uint8_t offset, uint8_t* data, uint16_t length){
-
-
-    if(!_isInit)
-        return -1;
 
     return _i2cBus->readRegisterRegion(_i2c_address, offset, data, length);
 
