@@ -53,8 +53,8 @@ public:
     bool getAppVersion(char * pVersion, uint8_t vlen);
     void setMeasurementHandler(TMF882XMeasurementHandler_t handler);
 
-    int startMeasuring(uint32_t reqMeasurements=0);    
-    int startMeasuring(TMF882XMeasurement_t &results);
+    int startMeasuring(uint32_t reqMeasurements = 0, uint32_t timeout = 0);    
+    int startMeasuring(TMF882XMeasurement_t &results, uint32_t timeout = 0);
     void stopMeasuring(void);
     void printMeasurement(TMF882XMeasurement_t * results);
     void printMeasurement(TMF882XMeasurement_t &results){
@@ -87,7 +87,7 @@ private:
     bool _isInit;
 
     bool init_tmf882x(void);    
-    int start_measuring(uint16_t nMeasurements);
+    int start_measuring(uint16_t nMeasurements, uint32_t timeout);
 
     // I2C  things
     QwI2C             * _i2cBus;       // pointer to our i2c bus object

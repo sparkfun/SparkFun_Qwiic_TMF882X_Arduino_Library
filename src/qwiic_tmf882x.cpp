@@ -194,14 +194,14 @@ bool QwDevTMF882X::setCalibration(struct tmf882x_mode_app_calib *tof_calib){
 //////////////////////////////////////////////////////////////////////////////
 // startMeasuring()
 
-int QwDevTMF882X::startMeasuring(TMF882XMeasurement_t &results){
+int QwDevTMF882X::startMeasuring(TMF882XMeasurement_t &results, uint32_t timeout){
 
     if(!_isInit)
         return -1;
 
     // Will start measuring, requesting only 1 measurment.
 
-    if(!start_measuring(1))
+    if(!start_measuring(1, timeout))
         return -1;
 
     if(!_lastMeasurment)
@@ -219,14 +219,14 @@ int QwDevTMF882X::startMeasuring(TMF882XMeasurement_t &results){
 // that was set.
 //
 // If N is 0, this will r
-int QwDevTMF882X::startMeasuring(uint32_t reqMeasurments){
+int QwDevTMF882X::startMeasuring(uint32_t reqMeasurments, uint32_t timeout){
 
     if(!_isInit)
         return -1;
 
     // Start the measurement loop - it returns the number of samples taken
 
-    return start_measuring(reqMeasurments);
+    return start_measuring(reqMeasurments, timeout);
 
 }
 //////////////////////////////////////////////////////////////////////////////
@@ -240,22 +240,27 @@ void QwDevTMF882X::stopMeasuring(void){
 //
 // Take N number of measurements. If N is 0, run forever (until stop is called)
 
-int QwDevTMF882X::start_measuring(uint16_t reqMeasurements){
+int QwDevTMF882X::start_measuring(uint16_t reqMeasurements, uint32_t timeout){
 
     if(!_isInit)
         return -1;
 
     _stopMeasuring = false;
-
     _lastMeasurment = nullptr;
-    _nMeasurements=0; // internal counter
+    _nMeasurements = 0;     // internal counter
 
-    // if you want to measure forever, you need CB
-    if(reqMeasurements == 0 && !_msgHandlerCB)
+    // if you want to measure forever, you need CB function, or a timeout set
+    if(reqMeasurements == 0 && !(_msgHandlerCB || timeout))
         return -1;
 
     if(tmf882x_start(&_tof))
         return -1;
+
+    // Do we have a timeout on this? 
+    uint32_t startTime = 0;
+
+    if(timeout) 
+        startTime= sfe_millis();
 
     // Measurment loop
     do{
@@ -269,6 +274,10 @@ int QwDevTMF882X::start_measuring(uint16_t reqMeasurements){
 
         // reached our limit/goal
         if(reqMeasurements && _nMeasurements == reqMeasurements)
+            break;
+
+        // if we have a timeout, check
+        if(timeout && sfe_millis() - startTime >= timeout)
             break;
 
         // yield 
