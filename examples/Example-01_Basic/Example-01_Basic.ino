@@ -16,7 +16,8 @@ void setup(){
 	Serial.println("");
 
 
-	if(!myTMF882X.begin()){
+	if(!myTMF882X.begin())
+	{
 		Serial.println("Error - The TMF882X failed to initialize - is the board connected?");
 		while(1);
 	}

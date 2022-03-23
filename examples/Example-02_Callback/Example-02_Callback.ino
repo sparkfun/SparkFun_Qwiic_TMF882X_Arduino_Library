@@ -17,9 +17,12 @@ int nSample =0;
 void onMeasurementCallback(TMF882XMeasurement_t *measurement){
 
 	nSample++;
+
 	Serial.print("Sample Number: ");
 	Serial.println(nSample);
+
 	myTMF882X.printMeasurement(measurement);
+	
 	Serial.println();
 }
 
@@ -30,7 +33,8 @@ void setup(){
 	Serial.println("");
 
 
-	if(!myTMF882X.begin()){
+	if(!myTMF882X.begin())
+	{
 		Serial.println("Error - The TMF882X failed to initialize - is the board connected?");
 		while(1);
 	}

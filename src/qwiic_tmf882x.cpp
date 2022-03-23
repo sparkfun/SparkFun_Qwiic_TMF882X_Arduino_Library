@@ -190,7 +190,7 @@ bool QwDevTMF882X::setCalibration(struct tmf882x_mode_app_calib *tof_calib){
 }
 //////////////////////////////////////////////////////////////////////////////
 //  >> TO DO <<
-//    Add timeout para to measuring calls - return after n time
+//
 //////////////////////////////////////////////////////////////////////////////
 // startMeasuring()
 
@@ -301,7 +301,8 @@ int32_t QwDevTMF882X::_sdk_msg_handler(struct tmf882x_msg *msg){
     if(!msg || !_isInit)
         return false;
 
-    if(msg->hdr.msg_id == ID_MEAS_RESULTS){
+    if(msg->hdr.msg_id == ID_MEAS_RESULTS)
+    {
         _nMeasurements++;
         _lastMeasurment = &msg->meas_result_msg;        
 
@@ -321,7 +322,8 @@ void QwDevTMF882X::printMeasurement(TMF882XMeasurement_t *meas){
 
     printf("result_num: %u num_results: %u\n", meas->result_num, meas->num_results);
 
-    for (uint32_t i = 0; i < meas->num_results; ++i) {
+    for (uint32_t i = 0; i < meas->num_results; ++i) 
+    {
 
         printf("conf: %u distance_mm: %u channel: %u sub_capture: %u\n",
                meas->results[i].confidence,

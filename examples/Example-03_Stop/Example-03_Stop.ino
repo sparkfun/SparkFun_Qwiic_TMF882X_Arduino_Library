@@ -24,8 +24,10 @@ void onMeasurementCallback(TMF882XMeasurement_t *measurement){
 
 	// If we are at our limit, stop taking measurments
 
-	if(nSample == NUMBER_OF_SAMPLES_TO_TAKE){
+	if(nSample == NUMBER_OF_SAMPLES_TO_TAKE)
+	{
 		myTMF882X.stopMeasuring();
+	
 		Serial.println();
 		Serial.println("-----------------------------------------------");
 		Serial.println("Measurement Goal Hit - stopping measurements.");
@@ -65,7 +67,7 @@ void loop()
 	Serial.print(NUMBER_OF_SAMPLES_TO_TAKE);
 	Serial.println(" data samples.");
 	Serial.println();
-		
+
 	nSample=0;
 	myTMF882X.startMeasuring();
 	
