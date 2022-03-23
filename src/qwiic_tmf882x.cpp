@@ -194,22 +194,22 @@ bool QwDevTMF882X::setCalibration(struct tmf882x_mode_app_calib *tof_calib){
 //////////////////////////////////////////////////////////////////////////////
 // startMeasuring()
 
-bool QwDevTMF882X::startMeasuring(TMF882XMeasurement_t &results){
+int QwDevTMF882X::startMeasuring(TMF882XMeasurement_t &results){
 
     if(!_isInit)
-        return false;
+        return -1;
 
     // Will start measuring, requesting only 1 measurment.
 
     if(!start_measuring(1))
-        return false;
+        return -1;
 
     if(!_lastMeasurment)
-        return false;
+        return -1;
 
     memcpy(&results, _lastMeasurment, sizeof(TMF882XMeasurement_t));
 
-    return true;
+    return 1;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -219,17 +219,15 @@ bool QwDevTMF882X::startMeasuring(TMF882XMeasurement_t &results){
 // that was set.
 //
 // If N is 0, this will r
-bool QwDevTMF882X::startMeasuring(uint32_t reqMeasurments){
+int QwDevTMF882X::startMeasuring(uint32_t reqMeasurments){
 
     if(!_isInit)
-        return false;
+        return -1;
 
-    // Will start measuring, requesting only 1 measurment.
+    // Start the measurement loop - it returns the number of samples taken
 
-    if(!start_measuring(reqMeasurments))
-        return false;
+    return start_measuring(reqMeasurments);
 
-    return true;
 }
 //////////////////////////////////////////////////////////////////////////////
 // stopMeasuring()
@@ -242,10 +240,10 @@ void QwDevTMF882X::stopMeasuring(void){
 //
 // Take N number of measurements. If N is 0, run forever (until stop is called)
 
-bool QwDevTMF882X::start_measuring(uint8_t reqMeasurements){
+int QwDevTMF882X::start_measuring(uint16_t reqMeasurements){
 
     if(!_isInit)
-        return false;
+        return -1;
 
     _stopMeasuring = false;
 
@@ -254,12 +252,10 @@ bool QwDevTMF882X::start_measuring(uint8_t reqMeasurements){
 
     // if you want to measure forever, you need CB
     if(reqMeasurements == 0 && !_msgHandlerCB)
-        return false;
+        return -1;
 
     if(tmf882x_start(&_tof))
-        return false;
-
-    uint8_t _nTaken = 0;
+        return -1;
 
     // Measurment loop
     do{
@@ -276,13 +272,13 @@ bool QwDevTMF882X::start_measuring(uint8_t reqMeasurements){
             break;
 
         // yield 
-        sfe_usleep(20000); // micro sec poll period (5 millis) TODO: needs better abstraction
+        sfe_msleep(_sampleDelayMS); // milli sec poll period
 
     }while(true);
 
     tmf882x_stop(&_tof);
 
-    return true;
+    return _nMeasurements;
 
 }
 

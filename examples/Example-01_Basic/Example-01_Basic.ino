@@ -11,7 +11,7 @@ static TMF882XMeasurement_t myResults;
 
 void setup(){
 
-
+	delay(500);
 	Serial.begin(115200);
 	Serial.println("");
 
@@ -26,12 +26,12 @@ void loop()
 {
 	delay(2000);
 
-	// get a measurment
-//    if(myTMF882X.getMeasurement(&myResults))
-  //  	myTMF882X.printMeasurement(&myResults);
-
     // get a measurment
     if(myTMF882X.startMeasuring(myResults))
-    	myTMF882X.printMeasurement(myResults);
+    {
+    	// print out results
+    	Serial.println();
+   		myTMF882X.printMeasurement(myResults);
+    }
 
 }

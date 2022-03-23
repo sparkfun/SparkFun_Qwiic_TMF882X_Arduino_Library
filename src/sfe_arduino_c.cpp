@@ -35,9 +35,15 @@ unsigned long sfe_millis(void){
 // Wrapper around Arduino function delay() - keeps Arduino space isolated from AMS code. Used
 // in  platform_shim.h - tof_sleep()
 
-void sfe_usleep(uint32_t usec){
+void sfe_msleep(uint32_t msec){
 
+	delay(msec);
+}
+
+void sfe_usleep(uint32_t usec){
+ 
 	// We're passed in microsecs, but we'll use Arduino::delay, which uses milli-secs, so this 
 	// will lose some fine resolution...which is fine
-	delay(usec/1000);
+	sfe_msleep(usec/1000);
+
 }

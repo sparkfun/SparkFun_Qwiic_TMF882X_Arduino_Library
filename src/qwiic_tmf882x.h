@@ -32,6 +32,8 @@
 // Default I2C address for the device
 #define kDefaultTMF882XAddress 0x41
 
+#define kDefaultSampleDelayMS  500
+
 // define a type for the results -- just alias the underlying measurment struct - easier to type
 typedef struct tmf882x_msg_meas_results TMF882XMeasurement_t;
 
@@ -43,7 +45,7 @@ class QwDevTMF882X
 public:
 
     // Default noop constructor
-    QwDevTMF882X() : _isInit{false}{};
+    QwDevTMF882X() : _isInit{false}, _sampleDelayMS{kDefaultSampleDelayMS}{};
 
     bool init();
     bool isConnected(); //Checks if sensor ack's the I2C request
@@ -51,8 +53,8 @@ public:
     bool getAppVersion(char * pVersion, uint8_t vlen);
     void setMeasurementHandler(TMF882XMeasurementHandler_t handler);
 
-    bool startMeasuring(uint32_t reqMeasurements);    
-    bool startMeasuring(TMF882XMeasurement_t &results);
+    int startMeasuring(uint32_t reqMeasurements=0);    
+    int startMeasuring(TMF882XMeasurement_t &results);
     void stopMeasuring(void);
     void printMeasurement(TMF882XMeasurement_t * results);
     void printMeasurement(TMF882XMeasurement_t &results){
@@ -62,6 +64,13 @@ public:
 
     bool setCalibration(struct tmf882x_mode_app_calib *tof_calib);
 
+    void setSampleDelay(uint16_t delay){
+        if(delay)
+            _sampleDelayMS = delay;
+    };
+    uint16_t getSampleDelay(void){
+        return _sampleDelayMS;
+    }
 
     // Methods that are called from our "shim relay". They are public, but not really
     int32_t _sdk_msg_handler(struct tmf882x_msg *msg);
@@ -78,12 +87,13 @@ private:
     bool _isInit;
 
     bool init_tmf882x(void);    
-    bool start_measuring(uint8_t nMeasurements);
+    int start_measuring(uint16_t nMeasurements);
 
     // I2C  things
     QwI2C             * _i2cBus;       // pointer to our i2c bus object
     uint8_t             _i2c_address;  // address of the device
 
+    uint16_t _sampleDelayMS;
 
     tmf882x_tof _tof;
 

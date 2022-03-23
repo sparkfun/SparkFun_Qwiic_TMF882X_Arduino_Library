@@ -21,6 +21,7 @@ extern "C" {
 // Utility routines needed for the underling sdk
 unsigned long sfe_millis(void);
 void sfe_usleep(uint32_t usec);
+void sfe_msleep(uint32_t msec);
 
 #ifdef __cplusplus
 }
