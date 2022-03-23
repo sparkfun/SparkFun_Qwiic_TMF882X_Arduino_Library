@@ -59,8 +59,8 @@ bool QwDevTMF882X::init_tmf882x(void){
 
     if(tof_bin_image && tof_bin_image_length) {
 
-        printf("Using builtin fw image start addr: 0x%08x size: 0x%08x\n",
-               tof_bin_image_start, tof_bin_image_length);
+       // printf("Using builtin fw image start addr: 0x%08x size: 0x%08x\n",
+        //       tof_bin_image_start, tof_bin_image_length);
 
         // Do a mode switch to the bootloader (bootloader mode necessary for FWDL)
         if (tmf882x_mode_switch(&_tof, TMF882X_MODE_BOOTLOADER)) {

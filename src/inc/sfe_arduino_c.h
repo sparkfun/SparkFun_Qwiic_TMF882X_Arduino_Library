@@ -22,15 +22,6 @@ extern "C" {
 unsigned long sfe_millis(void);
 void sfe_usleep(uint32_t usec);
 
-/*
-int32_t sfe_queue_msg(struct platform_ctx *ctx, struct tmf882x_msg *msg);
-
-// I2C communication API
-
-int sfe_i2c_init(uint8_t addresss, void *wireI2CPort);
-int sfe_write_i2c_block(struct platform_ctx *ctx, uint8_t reg, const uint8_t* data, uint32_t numBytes);
-int sfe_read_i2c_block(struct platform_ctx *ctx, uint8_t reg, uint8_t* data, uint32_t numBytes);
-*/
 #ifdef __cplusplus
 }
 #endif
