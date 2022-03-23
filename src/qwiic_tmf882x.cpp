@@ -24,6 +24,8 @@
 
 #include "qwiic_tmf882x.h"
 #include "mcu_tmf882x_config.h"
+#include "inc/sfe_arduino_c.h"
+#include "tof_factory_cal.h"
 
 #include "inc/tmf882x_host_interface.h"
 
@@ -34,7 +36,7 @@
 #define kTMF882XCalInterations 4000
 //  AMS library things
 //static tmf882x_tof tof={0};
-
+/*
 static platform_ctx ctx = {
     NULL, //char* i2ccdev
     0, // i2c_addr
@@ -44,7 +46,7 @@ static platform_ctx ctx = {
     nullptr, //struct above,
     nullptr
 };
-
+*/
 
 //////////////////////////////////////////////////////////////////////////////
 // init_tmf882x()
@@ -58,7 +60,7 @@ bool Qwiic_TMF882X::init_tmf882x(void){
     int32_t rc = 0;
     char app_ver[32] = {0};
 
-    tmf882x_init(&_tof, &ctx);
+    tmf882x_init(&_tof, this);
 
     // Open the driver
     if (tmf882x_open(&_tof)) {
@@ -309,41 +311,18 @@ void Qwiic_TMF882X::printMeasurement(TMF882XMeasurement_t *meas){
 bool Qwiic_TMF882X::begin(TwoWire &wirePort, uint8_t deviceAddress)
 {
 
-    _i2cPort = &wirePort;
-    //_i2cPort->begin(); //This resets any setClock() the user may have done
 
     _i2cBus.init(wirePort);
     _i2c_address = deviceAddress;
 
-    _deviceAddress = deviceAddress;
-
-    // set address in the TMF882X context 
-    ctx.i2c_addr = deviceAddress;
-
-    ctx.tof = &_tof;
-    ctx._extra = (void*)this;
-    // Call our C level i2c init routine  - this is used to provide an I2C 
-    // interface to the AMS supplied library. 
-
-    if(sfe_i2c_init(deviceAddress, (void*)_i2cPort))
-        return false; 
 
     // init the application mode
     if(!init_tmf882x())
         return false;
-    //if(platform_wrapper_init_device(&ctx, 0, 0))
-      //  return false;
-
-
-    //if(platform_wrapper_cfg_device(&ctx))
-    //    return false;
 
     if(!setFactoryCalibration(&calibration_data))
         return false;
 
-    // TODO - not sure if this needed, but send in our factory calibration
-    //if(platform_wrapper_factory_calibration(&ctx, &calibration_data))
-      //  return false;
 
     _isInit = true;
     return true;
@@ -358,10 +337,7 @@ bool Qwiic_TMF882X::begin(TwoWire &wirePort, uint8_t deviceAddress)
 bool Qwiic_TMF882X::isConnected()
 {
 
-    _i2cPort->beginTransmission((uint8_t)_deviceAddress);
-
-    return _i2cPort->endTransmission() == 0;
-
+    return _i2cBus.ping(_i2c_address);
 }
 
 

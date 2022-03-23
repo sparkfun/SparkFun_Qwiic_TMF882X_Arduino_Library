@@ -77,8 +77,8 @@ private:
     bool init_tmf882x(void);    
     bool start_measuring(uint8_t nMeasurements);
 
-    TwoWire *_i2cPort;
-    uint8_t  _deviceAddress;
+    //TwoWire *_i2cPort;
+   // uint8_t  _deviceAddress;
 
     // I2C  things
     QwI2C               _i2cBus;       // pointer to our i2c bus object

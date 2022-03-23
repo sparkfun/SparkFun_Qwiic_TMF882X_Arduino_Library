@@ -42,7 +42,7 @@ void sfe_usleep(uint32_t usec){
 	delay(usec/1000);
 }
 
-
+#ifdef DEAD_DEAD_DEAD__
 int32_t sfe_queue_msg(struct platform_ctx *ctx, struct tmf882x_msg *msg){
 
 	return ((Qwiic_TMF882X*)ctx->_extra)->_sdk_msg_handler(msg);
@@ -148,3 +148,4 @@ int sfe_read_i2c_block(struct platform_ctx *ctx, uint8_t reg, uint8_t* data, uin
   	return 0;  // Success
   	*/
 }
+#endif
