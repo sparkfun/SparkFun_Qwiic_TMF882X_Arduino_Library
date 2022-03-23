@@ -7,7 +7,7 @@
 #include <time.h>
 
 
-#include "inc/sfe_arduino_c.h"
+#include "sfe_arduino_c.h"
 #include "inc/sfe_shim.h"
 #include "qwiic_tmf882x.h"
 
