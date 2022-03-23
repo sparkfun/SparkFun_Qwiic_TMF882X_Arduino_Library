@@ -87,7 +87,7 @@ static inline int32_t tof_get_register(struct platform_ctx *ctx, uint8_t reg,
 
 static inline int32_t tof_queue_msg(struct platform_ctx *ctx, struct tmf882x_msg *msg)
 {
-    return platform_wrapper_handle_msg(ctx, msg);
+    return sfe_queue_msg(ctx, msg);
 }
 
 static inline void tof_usleep(struct platform_ctx *ctx, uint32_t usec)

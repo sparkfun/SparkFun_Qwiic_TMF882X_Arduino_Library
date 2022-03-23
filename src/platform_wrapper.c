@@ -33,7 +33,7 @@
 #include "inc/platform_wrapper.h"
 #include "inc/tmf882x.h"
 #include "tmf882x_interface.h"
-#include "inc/sfe_arduino_C.h"
+#include "inc/sfe_arduino_c.h"
 
 #define TMF882X_CAL_ITERATIONS        4000
 #define TMF882X_8X8_ITERATIONS        125
@@ -88,6 +88,8 @@ int32_t platform_wrapper_power_on()
 void platform_wrapper_power_off()
 {
 }
+
+
 
 int32_t platform_wrapper_init_device(struct platform_ctx *ctx,
                                 const uint8_t *hex_records,

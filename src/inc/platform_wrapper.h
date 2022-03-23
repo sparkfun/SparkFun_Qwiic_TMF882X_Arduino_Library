@@ -41,11 +41,12 @@ struct platform_ctx {
     uint32_t curr_num_measurements;
     uint32_t mode_8x8;
     struct tmf882x_tof *tof;
+    void * _extra;
 };
 
 extern int32_t platform_wrapper_power_on();
 extern void platform_wrapper_power_off();
-extern int32_t platform_wrapper_init_device(struct platform_ctx *ctx, const uint8_t *hex_records, uint32_t size);
+//extern int32_t platform_wrapper_init_device(struct platform_ctx *ctx, const uint8_t *hex_records, uint32_t size);
 extern int32_t platform_wrapper_factory_calibration(struct platform_ctx *ctx, struct tmf882x_mode_app_calib *calib);
 extern int32_t platform_wrapper_cfg_device(struct platform_ctx *ctx);
 extern void platform_wrapper_start_measurements(struct platform_ctx *ctx, uint32_t num_measurements,
@@ -61,6 +62,7 @@ typedef void (*measurement_handler_t)(struct tmf882x_msg_meas_results *measurmen
 struct tmf882x_msg_meas_results * platform_wrapper_get_last_measurement(void);
 void platform_wrapper_print_measurment(struct platform_ctx *ctx, struct tmf882x_msg_meas_results *measurment);
 void platform_wrapper_set_measurement_handler( measurement_handler_t measurment_handler);
+
 #ifdef __cplusplus
 }
 #endif

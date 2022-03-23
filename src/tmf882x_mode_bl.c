@@ -75,7 +75,6 @@ static int32_t is_bl_cmd_busy(struct tmf882x_mode_bl *bl)
 {
     uint8_t status = BL_STAT_CMD_BUSY;
     if (!verify_mode(&bl->mode)) return -1;
-        printf("KDB getting status\n");
     tof_get_register(priv(bl), BL_REG_CMD_STATUS, &status);
     return BL_IS_CMD_BUSY(status);
 }
@@ -152,14 +151,12 @@ int32_t tmf882x_mode_bl_read_status(struct tmf882x_mode_bl *bl,
 int32_t tmf882x_mode_bl_send_rcv_cmd(struct tmf882x_mode_bl *bl)
 {
     int32_t error = -1;
-    printf("KDB 000\n");    
     uint8_t *wbuf = get_bl_cmd_buf(bl);
     uint8_t wsize = BL_CALC_CMD_SIZE(wbuf[1]);
     if (!verify_mode(&bl->mode)) return -1;
-    printf("KDB 11\n");    
     if (is_bl_cmd_busy(bl))
         return error;
-    printf("KDB 2222\n");
+
     error = tof_i2c_write(priv(bl), BL_REG_CMD_STATUS, wbuf, wsize);
     if (error)
         return error;
@@ -322,14 +319,12 @@ int32_t tmf882x_mode_bl_upload_init(struct tmf882x_mode_bl *bl,
 {
     struct tmf882x_mode_bl_upload_init_cmd *cmd = &(bl->bl_command.upload_init_cmd);
     if (!verify_mode(&bl->mode)) return -1;
-
     cmd->command = BL_CMD_UPLOAD_INIT;
     cmd->size = 1;
     cmd->seed = salt;
     cmd->chksum = tmf882x_calc_chksum(get_bl_cmd_buf(bl),
             BL_CALC_CHKSUM_SIZE(cmd->size));
 
-    printf("KDB 333\n");
     return tmf882x_mode_bl_send_rcv_cmd(bl);
 }
 

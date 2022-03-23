@@ -27,6 +27,10 @@ void loop()
 	delay(2000);
 
 	// get a measurment
+//    if(myTMF882X.getMeasurement(&myResults))
+  //  	myTMF882X.printMeasurement(&myResults);
+
+    // get a measurment
     if(myTMF882X.startMeasuring(myResults))
     	myTMF882X.printMeasurement(myResults);
 

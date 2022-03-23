@@ -166,15 +166,7 @@ struct mode_vtable {
  * @var tmf882x_info_record::record::patch_ver
  *      This member is the patch version of the current mode
  */
-// KDB @ SFE  - This was 
-//    struct decl_record{
-//  Which actually defined a var called record -- in every compilation
-//  unit that included this header. SOOOO if this was included more that once,
-//  you'd get symbol conflicts at link.
-//
-//  Added typedef ... solves issue = guess this was the goal
-//  
-typedef struct decl_record{
+struct decl_record{
 		uint8_t app_id;
 		uint8_t min_ver;
 		uint8_t build_ver;
@@ -183,13 +175,13 @@ typedef struct decl_record{
 		uint8_t reserved_5;
 		uint8_t reserved_6;
 		uint8_t reserved_7;
-}record;
+};
 
 
 struct tmf882x_info_record {
 	union {
 		struct decl_record record;
-		uint8_t data[sizeof(record)];
+		uint8_t data[sizeof(struct decl_record)];
 	};
 };
 
