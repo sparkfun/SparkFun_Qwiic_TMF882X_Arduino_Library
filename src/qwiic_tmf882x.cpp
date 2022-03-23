@@ -29,9 +29,6 @@
 
 #include "inc/tmf882x_host_interface.h"
 
-// Arduino things
-#include <Arduino.h>
-
 
 #define kTMF882XCalInterations 4000
 
@@ -191,6 +188,9 @@ bool QwDevTMF882X::setCalibration(struct tmf882x_mode_app_calib *tof_calib){
     return true;
 
 }
+//////////////////////////////////////////////////////////////////////////////
+//  >> TO DO <<
+//    Add timeout para to measuring calls - return after n time
 //////////////////////////////////////////////////////////////////////////////
 // startMeasuring()
 
