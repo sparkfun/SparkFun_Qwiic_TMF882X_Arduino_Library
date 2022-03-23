@@ -37,18 +37,18 @@ typedef struct tmf882x_msg_meas_results TMF882XMeasurement_t;
 
 typedef void (*TMF882XMeasurementHandler_t)(TMF882XMeasurement_t *measurment);
 
-class Qwiic_TMF882X
+class QwDevTMF882X
 {
 
 public:
 
     // Default noop constructor
-    Qwiic_TMF882X() : _isInit{false}{};
+    QwDevTMF882X() : _isInit{false}{};
 
-    bool begin(TwoWire &wirePort = Wire, uint8_t deviceAddress = kDefaultTMF882XAddress);
+    bool init();
     bool isConnected(); //Checks if sensor ack's the I2C request
 
-
+    bool getAppVersion(char * pVersion, uint8_t vlen);
     void setMeasurementHandler(TMF882XMeasurementHandler_t handler);
 
     bool startMeasuring(uint32_t reqMeasurements);    
@@ -70,6 +70,9 @@ public:
     int32_t writeRegisterRegion(uint8_t offset, uint8_t *data, uint16_t length);
     int32_t readRegisterRegion(uint8_t reg, uint8_t* data, uint16_t numBytes);    
 
+    // method to set the communication bus this object should use
+    void set_comm_bus(QwI2C &theBus, uint8_t id_bus);
+
 private:
 
     bool _isInit;
@@ -77,11 +80,8 @@ private:
     bool init_tmf882x(void);    
     bool start_measuring(uint8_t nMeasurements);
 
-    //TwoWire *_i2cPort;
-   // uint8_t  _deviceAddress;
-
     // I2C  things
-    QwI2C               _i2cBus;       // pointer to our i2c bus object
+    QwI2C             * _i2cBus;       // pointer to our i2c bus object
     uint8_t             _i2c_address;  // address of the device
 
 

@@ -45,7 +45,7 @@ void sfe_usleep(uint32_t usec){
 #ifdef DEAD_DEAD_DEAD__
 int32_t sfe_queue_msg(struct platform_ctx *ctx, struct tmf882x_msg *msg){
 
-	return ((Qwiic_TMF882X*)ctx->_extra)->_sdk_msg_handler(msg);
+	return ((QwDevTMF882X*)ctx->_extra)->_sdk_msg_handler(msg);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +90,7 @@ int sfe_i2c_init(uint8_t addresss, void *wireI2CPort){
 int sfe_write_i2c_block(struct platform_ctx *ctx, uint8_t reg, const uint8_t* data, uint32_t numBytes)
 {
 
-	return ((Qwiic_TMF882X*)ctx->_extra)->writeRegisterRegion(reg, (uint8_t*)data, numBytes);
+	return ((QwDevTMF882X*)ctx->_extra)->writeRegisterRegion(reg, (uint8_t*)data, numBytes);
 /*
 	i2cPort->beginTransmission(tmf_address); 
 	i2cPort->write(reg); 
@@ -110,7 +110,7 @@ int sfe_write_i2c_block(struct platform_ctx *ctx, uint8_t reg, const uint8_t* da
 int sfe_read_i2c_block(struct platform_ctx *ctx, uint8_t reg, uint8_t* data, uint32_t numBytes)
 {
 
-	return ((Qwiic_TMF882X*)ctx->_extra)->readRegisterRegion(reg, data, numBytes);
+	return ((QwDevTMF882X*)ctx->_extra)->readRegisterRegion(reg, data, numBytes);
 	/*
  	uint8_t nChunk; 
   	uint8_t nReturned; 

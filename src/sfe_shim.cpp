@@ -14,12 +14,12 @@
 
 int32_t tof_i2c_read(void * pTarget, uint8_t reg, uint8_t *buf, int32_t len){
 
-    return ((Qwiic_TMF882X*)pTarget)->readRegisterRegion(reg, buf, len);
+    return ((QwDevTMF882X*)pTarget)->readRegisterRegion(reg, buf, len);
 }
 
 int32_t tof_i2c_write(void *pTarget, uint8_t reg, const uint8_t *buf, int32_t len){
 
-    return ((Qwiic_TMF882X*)pTarget)->writeRegisterRegion(reg, (uint8_t*)buf, len);    
+    return ((QwDevTMF882X*)pTarget)->writeRegisterRegion(reg, (uint8_t*)buf, len);    
 }
 
 int32_t tof_set_register(void *pTarget, uint8_t reg, uint8_t val){
@@ -35,7 +35,7 @@ int32_t tof_get_register(void * pTarget, uint8_t reg, uint8_t *val){
 
 int32_t tof_queue_msg(void *pTarget, struct tmf882x_msg *msg)
 {
-    return ((Qwiic_TMF882X*)pTarget)->_sdk_msg_handler(msg);
+    return ((QwDevTMF882X*)pTarget)->_sdk_msg_handler(msg);
 }
 
 void tof_usleep(void *pTarget, uint32_t usec)

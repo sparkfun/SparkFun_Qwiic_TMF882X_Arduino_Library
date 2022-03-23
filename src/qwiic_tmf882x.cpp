@@ -34,19 +34,7 @@
 
 
 #define kTMF882XCalInterations 4000
-//  AMS library things
-//static tmf882x_tof tof={0};
-/*
-static platform_ctx ctx = {
-    NULL, //char* i2ccdev
-    0, // i2c_addr
-    0, //debug
-    0, //curr_num_measurements
-    0, //mode_8x8
-    nullptr, //struct above,
-    nullptr
-};
-*/
+
 
 //////////////////////////////////////////////////////////////////////////////
 // init_tmf882x()
@@ -55,7 +43,7 @@ static platform_ctx ctx = {
 //
 // returns false if the init failes.
 
-bool Qwiic_TMF882X::init_tmf882x(void){
+bool QwDevTMF882X::init_tmf882x(void){
 
     int32_t rc = 0;
     char app_ver[32] = {0};
@@ -107,15 +95,12 @@ bool Qwiic_TMF882X::init_tmf882x(void){
         return false;
     }
 
-    if (tmf882x_get_firmware_ver(&_tof, app_ver, sizeof(app_ver)))
-        printf("Firmware Application mode version: %s\n", app_ver);
-
     return true;
     
 }
 
-
-bool Qwiic_TMF882X::setFactoryCalibration(struct tmf882x_mode_app_calib *tof_calib){
+//////////////////////////////////////////////////////////////////////////////
+bool QwDevTMF882X::setFactoryCalibration(struct tmf882x_mode_app_calib *tof_calib){
 
 
     //if(!_isInit)
@@ -144,10 +129,53 @@ bool Qwiic_TMF882X::setFactoryCalibration(struct tmf882x_mode_app_calib *tof_cal
     return true;
 
 }
+//////////////////////////////////////////////////////////////////////////////
+// init()
+//
+// init the system
+//
+// Return Value: false on error, true on success
+//
+
+bool QwDevTMF882X::init(void)
+{
+
+    if(_isInit)
+        return true;
+
+    //  do we have a bus yet? is the device connected?
+    if(!_i2cBus || !_i2c_address || !_i2cBus->ping(_i2c_address))
+        return false;
+
+    // init the application mode
+    if(!init_tmf882x())
+        return false;
+
+    // TODO - do this here? Leave to user
+    if(!setFactoryCalibration(&calibration_data))
+        return false;
+
+
+    _isInit = true;
+
+    return true;
+}
+
+bool QwDevTMF882X::getAppVersion(char * pVersion, uint8_t vlen){
+
+    // verify we are in app mode
+    if(tmf882x_get_mode(&_tof) != TMF882X_MODE_APP) // failed to open up into application mode....
+        return false;
+
+    if(!tmf882x_get_firmware_ver(&_tof, pVersion, vlen))
+        return false;
+
+    return true;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 
-bool Qwiic_TMF882X::setCalibration(struct tmf882x_mode_app_calib *tof_calib){
+bool QwDevTMF882X::setCalibration(struct tmf882x_mode_app_calib *tof_calib){
 
 
     if(!_isInit)
@@ -166,7 +194,7 @@ bool Qwiic_TMF882X::setCalibration(struct tmf882x_mode_app_calib *tof_calib){
 //////////////////////////////////////////////////////////////////////////////
 // startMeasuring()
 
-bool Qwiic_TMF882X::startMeasuring(TMF882XMeasurement_t &results){
+bool QwDevTMF882X::startMeasuring(TMF882XMeasurement_t &results){
 
     if(!_isInit)
         return false;
@@ -191,7 +219,7 @@ bool Qwiic_TMF882X::startMeasuring(TMF882XMeasurement_t &results){
 // that was set.
 //
 // If N is 0, this will r
-bool Qwiic_TMF882X::startMeasuring(uint32_t reqMeasurments){
+bool QwDevTMF882X::startMeasuring(uint32_t reqMeasurments){
 
     if(!_isInit)
         return false;
@@ -206,7 +234,7 @@ bool Qwiic_TMF882X::startMeasuring(uint32_t reqMeasurments){
 //////////////////////////////////////////////////////////////////////////////
 // stopMeasuring()
 
-void Qwiic_TMF882X::stopMeasuring(void){
+void QwDevTMF882X::stopMeasuring(void){
     _stopMeasuring=true;
 }    
 //////////////////////////////////////////////////////////////////////////////
@@ -214,7 +242,7 @@ void Qwiic_TMF882X::stopMeasuring(void){
 //
 // Take N number of measurements. If N is 0, run forever (until stop is called)
 
-bool Qwiic_TMF882X::start_measuring(uint8_t reqMeasurements){
+bool QwDevTMF882X::start_measuring(uint8_t reqMeasurements){
 
     if(!_isInit)
         return false;
@@ -263,7 +291,7 @@ bool Qwiic_TMF882X::start_measuring(uint8_t reqMeasurements){
 //
 // "Internal" method used to process messages from the SDK
 
-int32_t Qwiic_TMF882X::_sdk_msg_handler(struct tmf882x_msg *msg){
+int32_t QwDevTMF882X::_sdk_msg_handler(struct tmf882x_msg *msg){
 
     if(!msg || !_isInit)
         return false;
@@ -281,7 +309,7 @@ int32_t Qwiic_TMF882X::_sdk_msg_handler(struct tmf882x_msg *msg){
 //////////////////////////////////////////////////////////////////////////////
 // printMeasurement()
 
-void Qwiic_TMF882X::printMeasurement(TMF882XMeasurement_t *meas){
+void QwDevTMF882X::printMeasurement(TMF882XMeasurement_t *meas){
 
     if(!meas)
         return;
@@ -300,33 +328,7 @@ void Qwiic_TMF882X::printMeasurement(TMF882XMeasurement_t *meas){
            meas->photon_count, meas->ref_photon_count, meas->ambient_light);
 
 }
-//////////////////////////////////////////////////////////////////////////////
-// begin()
-//
-// Initializes the I2C bus, and the underlying sensor library. 
-//
-// Return Value: false on error, true on success
-//
 
-bool Qwiic_TMF882X::begin(TwoWire &wirePort, uint8_t deviceAddress)
-{
-
-
-    _i2cBus.init(wirePort);
-    _i2c_address = deviceAddress;
-
-
-    // init the application mode
-    if(!init_tmf882x())
-        return false;
-
-    if(!setFactoryCalibration(&calibration_data))
-        return false;
-
-
-    _isInit = true;
-    return true;
-}
 //////////////////////////////////////////////////////////////////////////////
 // isConnected()
 //
@@ -334,10 +336,10 @@ bool Qwiic_TMF882X::begin(TwoWire &wirePort, uint8_t deviceAddress)
 //
 // Return Value: false on not connected, true if it is connected 
 
-bool Qwiic_TMF882X::isConnected()
+bool QwDevTMF882X::isConnected()
 {
 
-    return _i2cBus.ping(_i2c_address);
+    return _i2cBus->ping(_i2c_address);
 }
 
 
@@ -346,22 +348,34 @@ bool Qwiic_TMF882X::isConnected()
 //
 // Set a callback function that is called when a measurement is detected.
 
-void Qwiic_TMF882X::setMeasurementHandler(TMF882XMeasurementHandler_t handler){
+void QwDevTMF882X::setMeasurementHandler(TMF882XMeasurementHandler_t handler){
 
     if(handler)
         _msgHandlerCB = handler;
 
 }
+////////////////////////////////////////////////////////////////////////////////////
+// set_comm_bus()
+//
+// Method to set the bus object that is used to communicate with the device
+//
+// TODO -  In the *future*, generalize to match SDK
+
+void QwDevTMF882X::set_comm_bus(QwI2C &theBus, uint8_t id_bus){
+
+    _i2cBus = &theBus;
+    _i2c_address = id_bus;
+}
 //////////////////////////////////////////////////////////////////////////////
 // I2C relays for the underlying SDK
-int32_t Qwiic_TMF882X::writeRegisterRegion(uint8_t offset, uint8_t *data, uint16_t length){
+int32_t QwDevTMF882X::writeRegisterRegion(uint8_t offset, uint8_t *data, uint16_t length){
 
-    return _i2cBus.writeRegisterRegion(_i2c_address, offset, data, length);
+    return _i2cBus->writeRegisterRegion(_i2c_address, offset, data, length);
 
 }
     
-int32_t Qwiic_TMF882X::readRegisterRegion(uint8_t offset, uint8_t* data, uint16_t length){
+int32_t QwDevTMF882X::readRegisterRegion(uint8_t offset, uint8_t* data, uint16_t length){
 
-    return _i2cBus.readRegisterRegion(_i2c_address, offset, data, length);
+    return _i2cBus->readRegisterRegion(_i2c_address, offset, data, length);
 
 }
