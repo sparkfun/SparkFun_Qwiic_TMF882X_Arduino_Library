@@ -310,7 +310,10 @@ bool Qwiic_TMF882X::begin(TwoWire &wirePort, uint8_t deviceAddress)
 {
 
     _i2cPort = &wirePort;
-    _i2cPort->begin(); //This resets any setClock() the user may have done
+    //_i2cPort->begin(); //This resets any setClock() the user may have done
+
+    _i2cBus.init(wirePort);
+    _i2c_address = deviceAddress;
 
     _deviceAddress = deviceAddress;
 
@@ -360,35 +363,7 @@ bool Qwiic_TMF882X::isConnected()
     return _i2cPort->endTransmission() == 0;
 
 }
-//////////////////////////////////////////////////////////////////////////////
-// getMeasurement()
 
-bool Qwiic_TMF882X::getMeasurement(TMF882XMeasurement_t *results){
-
-    platform_wrapper_start_measurements(&ctx, 1, NULL);
-
-    TMF882XMeasurement_t *lastSample = platform_wrapper_get_last_measurement();
-
-    if(!lastSample)
-        return false;
-
-    if(results)
-        memcpy(results, lastSample, sizeof(TMF882XMeasurement_t));
-
-    return true;
-}
-//////////////////////////////////////////////////////////////////////////////
-// setMeasurementHandler()
-//
-// Take N number of measurements. The user should get the results via a callback
-// that was set.
-void Qwiic_TMF882X::takeMeasurements(int nMeasurements){
-
-    if(nMeasurements < 1)
-        return;
-
-    platform_wrapper_start_measurements(&ctx, nMeasurements, NULL);
-}
 
 //////////////////////////////////////////////////////////////////////////////
 // setMeasurementHandler()
@@ -397,5 +372,20 @@ void Qwiic_TMF882X::takeMeasurements(int nMeasurements){
 
 void Qwiic_TMF882X::setMeasurementHandler(TMF882XMeasurementHandler_t handler){
 
-    platform_wrapper_set_measurement_handler(handler);
+    if(handler)
+        _msgHandlerCB = handler;
+
+}
+//////////////////////////////////////////////////////////////////////////////
+// I2C relays for the underlying SDK
+int32_t Qwiic_TMF882X::writeRegisterRegion(uint8_t offset, uint8_t *data, uint16_t length){
+
+    return _i2cBus.writeRegisterRegion(_i2c_address, offset, data, length);
+
+}
+    
+int32_t Qwiic_TMF882X::readRegisterRegion(uint8_t offset, uint8_t* data, uint16_t length){
+
+    return _i2cBus.readRegisterRegion(_i2c_address, offset, data, length);
+
 }

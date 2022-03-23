@@ -143,6 +143,13 @@ bool QwI2C::writeRegisterByte(uint8_t i2c_address, uint8_t offset, uint8_t dataT
 
 int QwI2C::writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *data, uint16_t length){
 
+    // For now, using this.. The below chunk logic is failing ... 
+    _i2cPort->beginTransmission(i2c_address); 
+    _i2cPort->write(offset); 
+    _i2cPort->write(data, (int)length); 
+
+    return _i2cPort->endTransmission() ? -1 : 0;  // -1 = error, 0 = success
+    /*
     uint16_t nSent;
     uint16_t nRemaining=length;
     uint16_t nToWrite;
@@ -174,6 +181,7 @@ int QwI2C::writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *dat
     }
     printf("Success I2c write \n");
     return 0;
+    */
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -211,17 +219,13 @@ int QwI2C::readRegisterRegion(uint8_t addr, uint8_t reg, uint8_t* data, uint16_t
         // send stop as "true" to release the i2c bus
         nReturned = _i2cPort->requestFrom((int)addr, (int)nChunk, (int)(nChunk == numBytes)); 
 
-        printf("Read Reg Region returned: %d\n",nReturned );
         // No data returned, no dice        
         if(nReturned == 0 )
             return -1; // error 
 
         // Copy the retrieved data chunk to the current index in the data segment
         for(i = 0; i < nReturned; i++){ 
-            uint8_t dd =_i2cPort->read();
-            printf("DATA: %d\n", dd);
-            *data++ = dd;
-//            *data++ = _i2cPort->read();
+            *data++ = _i2cPort->read();
         }
         // Decrement the amount of data recieved from the overall data request amount 
         numBytes = numBytes - nReturned; 

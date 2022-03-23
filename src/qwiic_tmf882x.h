@@ -24,6 +24,8 @@
 #include "inc/tmf882x.h"
 #include "tmf882x_interface.h"
 
+#include "qwiic_i2c.h"
+
 // Arduino things - this needs to change once moved to framework
 #include <Wire.h>
 
@@ -48,8 +50,6 @@ public:
 
 
     void setMeasurementHandler(TMF882XMeasurementHandler_t handler);
-    void takeMeasurements(int nMeasurements);
-    bool getMeasurement(TMF882XMeasurement_t * results);
 
     bool startMeasuring(uint32_t reqMeasurements);    
     bool startMeasuring(TMF882XMeasurement_t &results);
@@ -65,6 +65,11 @@ public:
 
     // Methods that are called from our "shim relay". They are public, but not really
     int32_t _sdk_msg_handler(struct tmf882x_msg *msg);
+
+    // access to the underlying i2c calls - used by the underlying SDK
+    int32_t writeRegisterRegion(uint8_t offset, uint8_t *data, uint16_t length);
+    int32_t readRegisterRegion(uint8_t reg, uint8_t* data, uint16_t numBytes);    
+
 private:
 
     bool _isInit;
@@ -74,6 +79,10 @@ private:
 
     TwoWire *_i2cPort;
     uint8_t  _deviceAddress;
+
+    // I2C  things
+    QwI2C               _i2cBus;       // pointer to our i2c bus object
+    uint8_t             _i2c_address;  // address of the device
 
 
     tmf882x_tof _tof;

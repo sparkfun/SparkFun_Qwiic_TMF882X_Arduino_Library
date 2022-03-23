@@ -64,13 +64,15 @@ extern "C" {
 static inline int32_t tof_i2c_read(struct platform_ctx *ctx, uint8_t reg,
                                    uint8_t *buf, int32_t len)
 {
-    return platform_wrapper_read_i2c_block(ctx, reg, buf, len);
+    return sfe_read_i2c_block(ctx, reg, buf, len);
+   // return platform_wrapper_read_i2c_block(ctx, reg, buf, len);
 }
 
 static inline int32_t tof_i2c_write(struct platform_ctx *ctx, uint8_t reg,
                                     const uint8_t *buf, int32_t len)
 {
-    return platform_wrapper_write_i2c_block(ctx, reg, buf, len);
+     return sfe_write_i2c_block(ctx, reg, buf, len);
+    //return platform_wrapper_write_i2c_block(ctx, reg, buf, len);
 }
 
 static inline int32_t tof_set_register(struct platform_ctx *ctx, uint8_t reg,

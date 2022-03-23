@@ -87,15 +87,17 @@ int sfe_i2c_init(uint8_t addresss, void *wireI2CPort){
 //
 // Writes a block of data to the i2c device
 //
-int sfe_write_i2c_block(uint8_t addr, uint8_t reg, const uint8_t* data, uint32_t numBytes)
+int sfe_write_i2c_block(struct platform_ctx *ctx, uint8_t reg, const uint8_t* data, uint32_t numBytes)
 {
 
+	return ((Qwiic_TMF882X*)ctx->_extra)->writeRegisterRegion(reg, (uint8_t*)data, numBytes);
+/*
 	i2cPort->beginTransmission(tmf_address); 
 	i2cPort->write(reg); 
 	i2cPort->write(data, (int)numBytes); 
 
 	return i2cPort->endTransmission() ? -1 : 0;  // -1 = error, 0 = success
-
+*/
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // sfe_read_i2c_block()
@@ -105,8 +107,11 @@ int sfe_write_i2c_block(uint8_t addr, uint8_t reg, const uint8_t* data, uint32_t
 // For large buffers, the data is chuncked over KMaxI2CBufferLength at a time
 //
 //
-int sfe_read_i2c_block(uint8_t addr, uint8_t reg, uint8_t* data, uint32_t numBytes)
+int sfe_read_i2c_block(struct platform_ctx *ctx, uint8_t reg, uint8_t* data, uint32_t numBytes)
 {
+
+	return ((Qwiic_TMF882X*)ctx->_extra)->readRegisterRegion(reg, data, numBytes);
+	/*
  	uint8_t nChunk; 
   	uint8_t nReturned; 
 
@@ -141,4 +146,5 @@ int sfe_read_i2c_block(uint8_t addr, uint8_t reg, uint8_t* data, uint32_t numByt
 		numBytes = numBytes - nReturned; 
   	}
   	return 0;  // Success
+  	*/
 }
