@@ -16,7 +16,7 @@ extern "C" {
 
 #define tof_err(p, fmt, ...) \
 ({ \
-    fprintf(stderr, fmt "\n", ##__VA_ARGS__); \
+    if(0)fprintf(stderr, fmt "\n", ##__VA_ARGS__); \
 })
 
 #define tof_info(p, fmt, ...) \

@@ -49,26 +49,21 @@ bool QwDevTMF882X::init_tmf882x(void){
 
     // Open the driver
     if (tmf882x_open(&_tof)) {
-        fprintf(stderr, "%s Error opening driver\n", __func__);
+        //Serial.println("Error opening tfm882x");
         return false;
     }
 
-
     if(tof_bin_image && tof_bin_image_length) {
-
-       // printf("Using builtin fw image start addr: 0x%08x size: 0x%08x\n",
-        //       tof_bin_image_start, tof_bin_image_length);
 
         // Do a mode switch to the bootloader (bootloader mode necessary for FWDL)
         if (tmf882x_mode_switch(&_tof, TMF882X_MODE_BOOTLOADER)) {
-            fprintf(stderr, "%s mode switch failed\n", __func__);
-            tmf882x_dump_i2c_regs(tmf882x_mode_hndl(&_tof));
+            //Serial.println("Error mode switch to bootloader");
             return false;
         }
 
         rc = tmf882x_fwdl(&_tof, FWDL_TYPE_BIN, tof_bin_image, tof_bin_image_length);
         if (rc) {
-            fprintf(stderr, "Error (%d) performing FWDL with built-in firmware\n", rc);
+            //Serial.println("Error uploading firmware");
             return false;
         }
 
@@ -79,16 +74,15 @@ bool QwDevTMF882X::init_tmf882x(void){
         // Mode switch while in bootloader mode tries to load the requested
         //  mode from ROM/Flash/etc since FWDL failed / is not available
         if (tmf882x_mode_switch(&_tof, TMF882X_MODE_APP)) {
-            fprintf(stderr, "%s ROM switch to APP mode failed\n", __func__);
+            //Serial.println("Switch to App Mode Failed");
             tmf882x_dump_i2c_regs(tmf882x_mode_hndl(&_tof));
             return false;
         }
 
     }
-
     // Make sure we are running application mode
     if  (tmf882x_get_mode(&_tof) != TMF882X_MODE_APP) {
-        fprintf(stderr, "%s failed to open APP mode\n", __func__);
+        //Serial.println("Failed to enter app mode");
         return false;
     }
 
@@ -98,10 +92,6 @@ bool QwDevTMF882X::init_tmf882x(void){
 
 //////////////////////////////////////////////////////////////////////////////
 bool QwDevTMF882X::setFactoryCalibration(struct tmf882x_mode_app_calib *tof_calib){
-
-
-    //if(!_isInit)
-      //  return false; 
 
     struct tmf882x_mode_app_config tof_cfg;
 
@@ -151,7 +141,6 @@ bool QwDevTMF882X::init(void)
     // TODO - do this here? Leave to user
     if(!setFactoryCalibration(&calibration_data))
         return false;
-
 
     _isInit = true;
 
