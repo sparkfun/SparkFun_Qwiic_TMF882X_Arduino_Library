@@ -51,7 +51,33 @@ struct tmf882x_mode_bl;
 #define BL_CMD_SIZE                1
 #define BL_DATA_LEN_SIZE           1
 #define BL_CHKSUM_SIZE             1
-#define BL_NUM_DATA                128
+
+
+/**
+ * SparkFun Changes/Additions March 2022
+ * 
+ * For MCU's that don't support an I2C transfer buffer > 128,
+ * the BL_NUM_DATA value must be reduced below the default of
+ * 128. This system uses this value to chunk over firmware udpates,
+ * which include a checksum.
+ * 
+ * So for  the ESP32 and the nrf52840, this size is reduced
+ */ 
+     
+
+#ifdef ESP32
+#define BL_NUM_DATA                120      
+
+// The nrf52840 - this #define is from the Arduino biuld setup
+#elif NRF52840_XXAA
+#define BL_NUM_DATA                30 
+
+// Default
+#else
+#define BL_NUM_DATA                128    
+
+#endif
+
 #define BL_MAX_DATA_SZ             (BL_NUM_DATA*sizeof(uint8_t))
 
 #define BL_MSG_HEADER_SIZE          (BL_CMD_SIZE + \

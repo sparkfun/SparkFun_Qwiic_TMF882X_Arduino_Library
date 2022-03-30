@@ -68,7 +68,7 @@
 
 // What we use for transfer chunk size
 
-const static uint16_t kChunkSize = kMaxTransferBuffer - 1;
+const static uint16_t kChunkSize = kMaxTransferBuffer - 2;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // Constructor
@@ -136,49 +136,35 @@ bool QwI2C::writeRegisterByte(uint8_t i2c_address, uint8_t offset, uint8_t dataT
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // writeRegisterRegion()
 //
-// Write a block of data to a device. This routine will chunk over the data if needed
+// Write a block of data to a device. 
 
 int QwI2C::writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *data, uint16_t length){
 
-    // For now, using this.. The below chunk logic is failing ... 
+    // Note:
+    //      Because of how the TMF882X I2C works, you can't chunk over data - it must be
+    //      sent in one transaction.
+    //
+    //      From an I2C standpoint, You can continue a write to the device over multiple
+    //      transactions, just omitting the register (offset) after the first write transaction.
+    //
+    //      However, the data chunks for some elements of this (namely firmware uploads) have
+    //      a checksum added to the data block being sent. This checksum is being validated
+    //      by the device after each write transaction. If you chunk this across multi 
+    //      I2C transactions, it appears the checksum validation on the device fails, and
+    //      the sensor/device won't enter "app mode" because upload failed.
+    //
+    //      To work around this, we reduce the chunk size for firware upload in the file
+    //      "inc/tmf882x_mode_bl.h" - the #define BL_NUM_DATA is adjusted based on the platform
+    //      being used (what is it's I2C buffer size).
+
+    // Just do a simple write transaction.
+
     _i2cPort->beginTransmission(i2c_address); 
     _i2cPort->write(offset); 
     _i2cPort->write(data, (int)length); 
 
     return _i2cPort->endTransmission() ? -1 : 0;  // -1 = error, 0 = success
-    /*
-    uint16_t nSent;
-    uint16_t nRemaining=length;
-    uint16_t nToWrite;
-
-    printf("ENTER - WRITE I2C\n");
-    if(!_i2cPort){
-        printf("NO I2C port\n");
-        return -1;
-    }
-
-    printf("Writing %d bytes\n", nRemaining);
     
-    while(nRemaining > 0){
-
-        _i2cPort->beginTransmission(i2c_address);
-        _i2cPort->write(offset);
-
-        nToWrite = (nRemaining > kChunkSize ? kChunkSize : nRemaining);
-        nSent = _i2cPort->write(data, nToWrite);
-
-        nRemaining -= nToWrite;        // Note - use nToWrite, not nSent, or lock on esp32
-        data += nSent; // move up to remaining data in buffer
-
-        // only release bus if we've sent all data
-        if( _i2cPort->endTransmission( nRemaining <= 0 ) ){
-            printf("No Ack Ack on Write\n");
-            return -1; // the client didn't ACK
-        }
-    }
-    printf("Success I2c write \n");
-    return 0;
-    */
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,35 +183,47 @@ int QwI2C::readRegisterRegion(uint8_t addr, uint8_t reg, uint8_t* data, uint16_t
     if(!_i2cPort)
         return -1;
 
-    _i2cPort->beginTransmission(addr);
-    _i2cPort->write(reg); 
-    
-    if(_i2cPort->endTransmission(false) != 0)
-        return -1; // error with the end transmission
-
     // Chunk in the data from the bus. This allows efficient data transfer if 
     // the number of bytes requested is greater than kMaxI2CBufferLenth
+
+    // Note, this device handles *chunking* differently than others. Each chunk
+    // is a transaction (stop conndition sent), but after the first read,
+    // the next chunk is a standard I2C transaction, but you don't send the register
+    // address
+  
+    int i; // counter in loop
+    bool bFirstInter = true; // Flag for first iteration - used to send register
+
     while(numBytes > 0){
-        
-        int i;
+
+        _i2cPort->beginTransmission(addr);
+
+        if(bFirstInter){
+            _i2cPort->write(reg); 
+             bFirstInter = false;
+        }
+    
+        if(_i2cPort->endTransmission(false) != 0)
+            return -1; // error with the end transmission
 
         // We're chunking in data - keeping the max chunk to kMaxI2CBufferLength
         nChunk =  numBytes > kChunkSize ? kChunkSize : numBytes;
 
-        // Grab the chunk data - note, if reading last data chunk (nChunk == numBytes),
-        // send stop as "true" to release the i2c bus
-        nReturned = _i2cPort->requestFrom((int)addr, (int)nChunk, (int)(nChunk == numBytes)); 
+        // For this device, we always send the stop condition - or it won't chunk data.
+        nReturned = _i2cPort->requestFrom((int)addr, (int)nChunk, (int)true);
 
         // No data returned, no dice        
         if(nReturned == 0 )
             return -1; // error 
 
         // Copy the retrieved data chunk to the current index in the data segment
-        for(i = 0; i < nReturned; i++){ 
+        for(i = 0; i < nReturned; i++)
             *data++ = _i2cPort->read();
-        }
+        
         // Decrement the amount of data recieved from the overall data request amount 
         numBytes = numBytes - nReturned; 
-    }
+
+    } // end while
+
     return 0;  // Success
 }
