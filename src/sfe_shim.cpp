@@ -12,6 +12,41 @@
 #include "qwiic_tmf882x.h"
 
 
+void tof_info(void *pTarget, const char *fmt, ...)
+{
+
+    if(!fmt || !(((QwDevTMF882X*)pTarget)->getMessageLevel() & TMF882X_MSG_INFO))
+        return;
+
+    va_list ap;
+    va_start(ap, fmt);
+    sfe_output(fmt, ap);
+    va_end(ap);
+}
+void tof_dbg(void *pTarget, const char *fmt, ...)
+{
+    if(!fmt || !(((QwDevTMF882X*)pTarget)->getMessageLevel() & TMF882X_MSG_DEBUG))
+        return;
+
+    va_list ap;
+    va_start(ap, fmt);
+    sfe_output(fmt, ap);
+    va_end(ap);
+
+}
+
+void tof_err(void *pTarget, const char *fmt, ...)
+{
+    if(!fmt || !(((QwDevTMF882X*)pTarget)->getMessageLevel() & TMF882X_MSG_ERROR))
+        return;
+
+    va_list ap;
+    va_start(ap, fmt);
+    sfe_output(fmt, ap);
+    va_end(ap);
+
+}
+
 int32_t tof_i2c_read(void * pTarget, uint8_t reg, uint8_t *buf, int32_t len){
 
     return ((QwDevTMF882X*)pTarget)->readRegisterRegion(reg, buf, len);
@@ -50,3 +85,4 @@ void tof_get_timespec(struct timespec *ts)
     ts->tv_nsec = 0;
 
 }
+

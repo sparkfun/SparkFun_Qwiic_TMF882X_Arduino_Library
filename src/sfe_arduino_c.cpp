@@ -9,6 +9,12 @@
 #include "sfe_arduino_c.h"
 #include "qwiic_tmf882x.h"
 
+#ifdef SAMD21_SERIES
+#define SERIALOUT SerialUSB
+#else
+#define SERIALOUT Serial
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // sfe_arduino_c.cpp
 //
@@ -44,6 +50,21 @@ void sfe_usleep(uint32_t usec){
  
 	// We're passed in microsecs, but we'll use Arduino::delay, which uses milli-secs, so this 
 	// will lose some fine resolution...which is fine
-	sfe_msleep(usec/1000);
+	int tick = usec/1000;
 
+	sfe_msleep( tick < 3 ? 3 : tick);
+
+}
+
+#define kOutputBuffer 100
+
+void sfe_output(const char *fmt, va_list args){
+
+	char szBuffer[kOutputBuffer];
+    if(!fmt)
+        return;
+
+    vsnprintf(szBuffer, kOutputBuffer, fmt, args);
+
+	SERIALOUT.println(szBuffer);
 }

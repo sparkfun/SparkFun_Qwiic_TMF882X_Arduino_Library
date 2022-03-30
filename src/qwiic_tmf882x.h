@@ -34,6 +34,14 @@
 
 #define kDefaultSampleDelayMS  500
 
+// Flags for enable/disable output messages from the underlying SDK
+
+#define TMF882X_MSG_INFO    0x01
+#define TMF882X_MSG_DEBUG   0x02
+#define TMF882X_MSG_ERROR   0x04
+#define TMF882X_MSG_ALL     0x07
+#define TMF882X_MSG_NONE    0x00
+
 // define a type for the results -- just alias the underlying measurment struct - easier to type
 typedef struct tmf882x_msg_meas_results TMF882XMeasurement_t;
 
@@ -45,7 +53,11 @@ class QwDevTMF882X
 public:
 
     // Default noop constructor
-    QwDevTMF882X() : _isInit{false}, _sampleDelayMS{kDefaultSampleDelayMS}{};
+    QwDevTMF882X() : _isInit{false}, 
+                     _sampleDelayMS{kDefaultSampleDelayMS},
+                     _outputSettings{TMF882X_MSG_NONE},
+                     _debug{false}
+                     {};
 
     bool init();
     bool isConnected(); //Checks if sensor ack's the I2C request
@@ -56,10 +68,7 @@ public:
     int startMeasuring(uint32_t reqMeasurements = 0, uint32_t timeout = 0);    
     int startMeasuring(TMF882XMeasurement_t &results, uint32_t timeout = 0);
     void stopMeasuring(void);
-    void printMeasurement(TMF882XMeasurement_t * results);
-    void printMeasurement(TMF882XMeasurement_t &results){
-        printMeasurement(&results);
-    }  
+
     bool setFactoryCalibration(struct tmf882x_mode_app_calib *tof_calib);
 
     bool setCalibration(struct tmf882x_mode_app_calib *tof_calib);
@@ -81,6 +90,25 @@ public:
 
     // method to set the communication bus this object should use
     void set_comm_bus(QwI2C &theBus, uint8_t id_bus);
+
+    void setDebug(bool bEnable){
+        _debug = true;
+        if(_debug)
+            _outputSettings |= TMF882X_MSG_DEBUG;
+        else
+            _outputSettings &= ~TMF882X_MSG_DEBUG;
+    }
+
+    bool getDebug(void){
+        return _debug;
+    }
+
+    void setMessageLevel(uint8_t msg){
+        _outputSettings = msg;
+    }
+    uint8_t getMessageLevel(void){
+        return _outputSettings;
+    }
 
 private:
 
@@ -104,5 +132,9 @@ private:
     bool _stopMeasuring;
 
     TMF882XMeasurementHandler_t _msgHandlerCB;
+
+    // for managing message output levels 
+    uint8_t _outputSettings; 
+    bool _debug;
 
 };

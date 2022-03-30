@@ -12,7 +12,8 @@
 #define _SFE_ARDUINO_C_H_
 
 
-#define kDefaultTMFAddress 0x41
+#include <stdarg.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,6 +23,7 @@ extern "C" {
 unsigned long sfe_millis(void);
 void sfe_usleep(uint32_t usec);
 void sfe_msleep(uint32_t msec);
+void sfe_output(const char *fmt, va_list args);
 
 #ifdef __cplusplus
 }

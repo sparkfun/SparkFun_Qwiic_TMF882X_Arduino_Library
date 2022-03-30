@@ -43,9 +43,12 @@
 bool QwDevTMF882X::init_tmf882x(void){
 
     int32_t rc = 0;
-    char app_ver[32] = {0};
 
     tmf882x_init(&_tof, this);
+
+    // was debug mode set
+    if(_debug)
+        tmf882x_set_debug(&_tof, true);
 
     // Open the driver
     if (tmf882x_open(&_tof)) {
@@ -300,29 +303,6 @@ int32_t QwDevTMF882X::_sdk_msg_handler(struct tmf882x_msg *msg){
     }
 
     return 0;
-}
-//////////////////////////////////////////////////////////////////////////////
-// printMeasurement()
-
-void QwDevTMF882X::printMeasurement(TMF882XMeasurement_t *meas){
-
-    if(!meas)
-        return;
-
-    printf("result_num: %u num_results: %u\n", meas->result_num, meas->num_results);
-
-    for (uint32_t i = 0; i < meas->num_results; ++i) 
-    {
-
-        printf("conf: %u distance_mm: %u channel: %u sub_capture: %u\n",
-               meas->results[i].confidence,
-               meas->results[i].distance_mm,
-               meas->results[i].channel,
-               meas->results[i].sub_capture);
-    }
-    printf("photon: %u ref_photon: %u ALS: %u\n",
-           meas->photon_count, meas->ref_photon_count, meas->ambient_light);
-
 }
 
 //////////////////////////////////////////////////////////////////////////////

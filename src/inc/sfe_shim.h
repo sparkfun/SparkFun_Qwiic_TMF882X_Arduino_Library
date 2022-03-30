@@ -5,29 +5,34 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdarg.h>
 #include <time.h>
 
 #include "tmf882x.h"
+
+// The AVR system/tool environment for Arduino doesn't include a timespec declaration, but
+// the SDK needs one. It's a simple struct, so declare it here.
+//
+// This gets it to compile, but if you're looking to run this on an uno, this 
+// library, with the SDK and embedded firmware it contains won't fit
+
+#if defined(__AVR__)
+struct timespec {
+    time_t  tv_sec;     /* seconds */
+    long    tv_nsec;    /* and nanoseconds */
+};
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-#define tof_err(p, fmt, ...) \
-({ \
-    if(0)fprintf(stderr, fmt "\n", ##__VA_ARGS__); \
-})
+void tof_dbg(void *pTarget, const char *fmt, ...);
 
-#define tof_info(p, fmt, ...) \
-({ \
-    if(0)printf(fmt "\n", ##__VA_ARGS__); \
-})
+void tof_info(void *pTarget, const char *fmt, ...);
 
-#define tof_dbg(p, fmt, ...) \
-({ \
-    if(0)printf(fmt "\n", ##__VA_ARGS__); \
-})
+void tof_err(void *pTarget, const char *fmt, ...);
 
 int32_t tof_i2c_read(void *pTarget, uint8_t reg, uint8_t *buf, int32_t len);
 
