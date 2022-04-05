@@ -40,9 +40,7 @@
 
 bool QwDevTMF882X::initializeTMF882x(void)
 {
-
-    int32_t rc = 0;
-
+    // init the underlying SDK
     tmf882x_init(&m_TOF, this);
 
     // was debug mode set
@@ -51,6 +49,7 @@ bool QwDevTMF882X::initializeTMF882x(void)
 
     // Open the driver
     if (tmf882x_open(&m_TOF)) {
+
         tof_err((void*)this, "ERROR - Unable to open the TMF882X");
         return false;
     }
@@ -61,7 +60,6 @@ bool QwDevTMF882X::initializeTMF882x(void)
         // Fallback: 
         //    Firmware upload failed. See if the device can move to app
         //    mode using the onboard image. 
-
         if (tmf882x_mode_switch(&m_TOF, TMF882X_MODE_APP))
             return false;
     }
