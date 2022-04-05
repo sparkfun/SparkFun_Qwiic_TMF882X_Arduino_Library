@@ -56,7 +56,9 @@ public:
         , m_sampleDelayMS { kDefaultSampleDelayMS }
         , m_outputSettings { TMF882X_MSG_NONE }
         , m_debug { false }
-        , m_messageHandlerCB{ nullptr } {};
+        , m_messageHandlerCB { nullptr }
+        , m_i2cBus { nullptr }
+        , m_i2cAddress { 0 } {};
 
     bool init();
     bool isConnected(); // Checks if sensor ack's the I2C request
@@ -64,7 +66,7 @@ public:
     bool applicationVersion(char* pVersion, uint8_t vlen);
     void setMeasurementHandler(TMF882XMeasurementHandler_t handler);
 
-    bool loadFirmware(const unsigned char *firmwareBinImage, unsigned long length);
+    bool loadFirmware(const unsigned char* firmwareBinImage, unsigned long length);
 
     int startMeasuring(uint32_t reqMeasurements = 0, uint32_t timeout = 0);
     int startMeasuring(TMF882XMeasurement_t& results, uint32_t timeout = 0);
@@ -118,7 +120,6 @@ public:
     }
 
 private:
-
     bool initializeTMF882x(void);
     int measurementLoop(uint16_t nMeasurements, uint32_t timeout);
 
