@@ -1,26 +1,23 @@
 // qwiic_i2c.cpp
-// 
+//
 // This is a library written for SparkFun Qwiic OLED boards that use the SSD1306.
 //
 // SparkFun sells these at its website: www.sparkfun.com
 //
 // Do you like this library? Help support SparkFun. Buy a board!
 //
-//   Micro OLED             https://www.sparkfun.com/products/14532
-//   Transparent OLED       https://www.sparkfun.com/products/15173
-//   "Narrow" OLED          https://www.sparkfun.com/products/17153
-// 
-// 
+//   <<TODO>>             https://www.sparkfun.com/products/14532
+//
+//
 // Written by Kirk Benell @ SparkFun Electronics, March 2022
 //
-// This library configures and draws graphics to OLED boards that use the 
-// SSD1306 display hardware. The library only supports I2C.
-// 
+// This library configures <<TODO>>
+//
 // Repository:
-//     https://github.com/sparkfun/SparkFun_Qwiic_OLED_Arduino_Library
+//     https://github.com/sparkfun/<<TODO>>
 //
 // Documentation:
-//     https://sparkfun.github.io/SparkFun_Qwiic_OLED_Arduino_Library/
+//     https://sparkfun.github.io/<<TOOD>>
 //
 //
 // SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
@@ -41,14 +38,12 @@
 //    NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 //    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 //    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-//    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
-
+//    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // Class provide an abstract interface to the I2C device
 
-#include <Arduino.h>
 #include "qwiic_i2c.h"
-
+#include <Arduino.h>
 
 // What is the max buffer size for this platform.
 
@@ -61,8 +56,8 @@
 #elif defined(BUFFER_LENGTH)
 #define kMaxTransferBuffer BUFFER_LENGTH
 
-#else  // just the standard Arduino value
-#define kMaxTransferBuffer 32   
+#else // just the standard Arduino value
+#define kMaxTransferBuffer 32
 
 #endif
 
@@ -73,20 +68,24 @@ const static uint16_t kChunkSize = kMaxTransferBuffer - 2;
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // Constructor
 
-QwI2C::QwI2C(void): _i2cPort{nullptr}{}
+QwI2C::QwI2C(void)
+    : m_i2cPort { nullptr }
+{
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // init()
 //
 // Methods to init/setup this device. The caller can provide a Wire Port, or this class
 // will use the default
 
-bool QwI2C::init(TwoWire &wirePort){
+bool QwI2C::init(TwoWire& wirePort)
+{
 
     // if we don't have a wire port already
-    if(!_i2cPort){
-    	_i2cPort = &wirePort;
+    if (!m_i2cPort) {
+        m_i2cPort = &wirePort;
 
-    	_i2cPort->begin();
+        m_i2cPort->begin();
     }
 
     return true;
@@ -94,27 +93,28 @@ bool QwI2C::init(TwoWire &wirePort){
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //
 
-bool QwI2C::init(void){
+bool QwI2C::init(void)
+{
 
     // do we already have a wire port?
-    if(!_i2cPort)
-    	return init(Wire); // no wire, send in Wire
+    if (!m_i2cPort)
+        return init(Wire); // no wire, send in Wire
 
     return true;
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // ping()
-// 
+//
 // Is a device connected?
-bool QwI2C::ping(uint8_t i2c_address){
+bool QwI2C::ping(uint8_t i2c_address)
+{
 
-    if(!_i2cPort)
+    if (!m_i2cPort)
         return false;
 
-	_i2cPort->beginTransmission(i2c_address);
-	return _i2cPort->endTransmission() == 0;	
+    m_i2cPort->beginTransmission(i2c_address);
+    return m_i2cPort->endTransmission() == 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,23 +122,24 @@ bool QwI2C::ping(uint8_t i2c_address){
 //
 // Write a byte to a register
 
-bool QwI2C::writeRegisterByte(uint8_t i2c_address, uint8_t offset, uint8_t dataToWrite){
+bool QwI2C::writeRegisterByte(uint8_t i2c_address, uint8_t offset, uint8_t dataToWrite)
+{
 
-    if(!_i2cPort)
+    if (!m_i2cPort)
         return false;
 
-	_i2cPort->beginTransmission(i2c_address);
-	_i2cPort->write(offset);
-	_i2cPort->write(dataToWrite);
-	return _i2cPort->endTransmission() == 0;	
-
+    m_i2cPort->beginTransmission(i2c_address);
+    m_i2cPort->write(offset);
+    m_i2cPort->write(dataToWrite);
+    return m_i2cPort->endTransmission() == 0;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // writeRegisterRegion()
 //
-// Write a block of data to a device. 
+// Write a block of data to a device.
 
-int QwI2C::writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *data, uint16_t length){
+int QwI2C::writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t* data, uint16_t length)
+{
 
     // Note:
     //      Because of how the TMF882X I2C works, you can't chunk over data - it must be
@@ -149,22 +150,21 @@ int QwI2C::writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *dat
     //
     //      However, the data chunks for some elements of this (namely firmware uploads) have
     //      a checksum added to the data block being sent. This checksum is being validated
-    //      by the device after each write transaction. If you chunk this across multi 
+    //      by the device after each write transaction. If you chunk this across multi
     //      I2C transactions, it appears the checksum validation on the device fails, and
     //      the sensor/device won't enter "app mode" because upload failed.
     //
-    //      To work around this, we reduce the chunk size for firware upload in the file
+    //      To work around this, we reduce the chunk size for firmware upload in the file
     //      "inc/tmf882x_mode_bl.h" - the #define BL_NUM_DATA is adjusted based on the platform
     //      being used (what is it's I2C buffer size).
 
     // Just do a simple write transaction.
 
-    _i2cPort->beginTransmission(i2c_address); 
-    _i2cPort->write(offset); 
-    _i2cPort->write(data, (int)length); 
+    m_i2cPort->beginTransmission(i2c_address);
+    m_i2cPort->write(offset);
+    m_i2cPort->write(data, (int)length);
 
-    return _i2cPort->endTransmission() ? -1 : 0;  // -1 = error, 0 = success
-    
+    return m_i2cPort->endTransmission() ? -1 : 0; // -1 = error, 0 = success
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -177,53 +177,53 @@ int QwI2C::writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *dat
 //
 int QwI2C::readRegisterRegion(uint8_t addr, uint8_t reg, uint8_t* data, uint16_t numBytes)
 {
-    uint8_t nChunk; 
-    uint8_t nReturned; 
+    uint8_t nChunk;
+    uint8_t nReturned;
 
-    if(!_i2cPort)
+    if (!m_i2cPort)
         return -1;
 
-    // Chunk in the data from the bus. This allows efficient data transfer if 
+    // Chunk in the data from the bus. This allows efficient data transfer if
     // the number of bytes requested is greater than kMaxI2CBufferLenth
 
     // Note, this device handles *chunking* differently than others. Each chunk
     // is a transaction (stop conndition sent), but after the first read,
     // the next chunk is a standard I2C transaction, but you don't send the register
     // address
-  
+
     int i; // counter in loop
     bool bFirstInter = true; // Flag for first iteration - used to send register
 
-    while(numBytes > 0){
+    while (numBytes > 0) {
 
-        _i2cPort->beginTransmission(addr);
+        m_i2cPort->beginTransmission(addr);
 
-        if(bFirstInter){
-            _i2cPort->write(reg); 
-             bFirstInter = false;
+        if (bFirstInter) {
+            m_i2cPort->write(reg);
+            bFirstInter = false;
         }
-    
-        if(_i2cPort->endTransmission(false) != 0)
+
+        if (m_i2cPort->endTransmission(false) != 0)
             return -1; // error with the end transmission
 
         // We're chunking in data - keeping the max chunk to kMaxI2CBufferLength
-        nChunk =  numBytes > kChunkSize ? kChunkSize : numBytes;
+        nChunk = numBytes > kChunkSize ? kChunkSize : numBytes;
 
         // For this device, we always send the stop condition - or it won't chunk data.
-        nReturned = _i2cPort->requestFrom((int)addr, (int)nChunk, (int)true);
+        nReturned = m_i2cPort->requestFrom((int)addr, (int)nChunk, (int)true);
 
-        // No data returned, no dice        
-        if(nReturned == 0 )
-            return -1; // error 
+        // No data returned, no dice
+        if (nReturned == 0)
+            return -1; // error
 
         // Copy the retrieved data chunk to the current index in the data segment
-        for(i = 0; i < nReturned; i++)
-            *data++ = _i2cPort->read();
-        
-        // Decrement the amount of data recieved from the overall data request amount 
-        numBytes = numBytes - nReturned; 
+        for (i = 0; i < nReturned; i++)
+            *data++ = m_i2cPort->read();
+
+        // Decrement the amount of data recieved from the overall data request amount
+        numBytes = numBytes - nReturned;
 
     } // end while
 
-    return 0;  // Success
+    return 0; // Success
 }

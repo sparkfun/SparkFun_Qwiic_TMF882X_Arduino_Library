@@ -1,5 +1,5 @@
 // qwiic_i2c.h
-// 
+//
 // This is a library written for SparkFun Qwiic OLED boards that use the SSD1306.
 //
 // SparkFun sells these at its website: www.sparkfun.com
@@ -9,13 +9,13 @@
 //   Micro OLED             https://www.sparkfun.com/products/14532
 //   Transparent OLED       https://www.sparkfun.com/products/15173
 //   "Narrow" OLED          https://www.sparkfun.com/products/17153
-// 
-// 
+//
+//
 // Written by Kirk Benell @ SparkFun Electronics, March 2022
 //
-// This library configures and draws graphics to OLED boards that use the 
+// This library configures and draws graphics to OLED boards that use the
 // SSD1306 display hardware. The library only supports I2C.
-// 
+//
 // Repository:
 //     https://github.com/sparkfun/SparkFun_Qwiic_OLED_Arduino_Library
 //
@@ -45,10 +45,7 @@
 
 // Header for I2C driver object
 
-
-#pragma once 
-
-
+#pragma once
 
 // Simple object to encapsulate basic I2C operations.
 //
@@ -58,30 +55,24 @@
 
 #include <Wire.h>
 
-
-
 class QwI2C {
 
-
-public: 
-
-    QwI2C(void);  
+public:
+    QwI2C(void);
 
     bool init(void);
-    bool init(TwoWire &wirePort);
+    bool init(TwoWire& wirePort);
 
     // see if a device exists
     bool ping(uint8_t address);
 
-
     bool writeRegisterByte(uint8_t address, uint8_t offset, uint8_t data);
 
-    // Write a block of bytes to the device -- 
-    int writeRegisterRegion(uint8_t address, uint8_t offset, uint8_t *data, uint16_t length); 
+    // Write a block of bytes to the device --
+    int writeRegisterRegion(uint8_t address, uint8_t offset, uint8_t* data, uint16_t length);
 
     int readRegisterRegion(uint8_t addr, uint8_t reg, uint8_t* data, uint16_t numBytes);
+
 private:
-
-    TwoWire  *_i2cPort;
-
+    TwoWire* m_i2cPort;
 };

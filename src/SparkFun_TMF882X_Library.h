@@ -18,9 +18,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#pragma once 
+#pragma once
 
-// This is really just a think wrapper class that provides an Arduino interface to
+// This is really just a thin wrapper class that provides an Arduino interface to
 // the underlying C++/C implementation
 
 // Include our implementation class
@@ -29,28 +29,22 @@
 // Arduino things
 #include <Wire.h>
 
-
-
-class SparkFun_TMF882X : public QwDevTMF882X
-{
+class SparkFun_TMF882X : public QwDevTMF882X {
 
 public:
-
     // Default noop constructor
-    SparkFun_TMF882X(){};
+    SparkFun_TMF882X() {};
 
-    bool begin(TwoWire &wirePort = Wire, uint8_t deviceAddress = kDefaultTMF882XAddress){
+    bool begin(TwoWire& wirePort = Wire, uint8_t deviceAddress = kDefaultTMF882XAddress)
+    {
+        // Setup  I2C object and pass into the superclass
+        m_i2cBus.init(wirePort);
+        setCommBus(m_i2cBus, deviceAddress);
 
-
-        _i2cBus.init(wirePort);
-
-        set_comm_bus(_i2cBus, deviceAddress);
-
+        // Initialize the system - return results
         return this->QwDevTMF882X::init();
     };
-    
+
 private:
-
-    QwI2C _i2cBus;
-
+    QwI2C m_i2cBus;
 };
