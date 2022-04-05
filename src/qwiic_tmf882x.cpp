@@ -36,7 +36,7 @@
 //
 // Called to initialize the TMF device.
 //
-// returns false if the init failes.
+// returns false if the init fails.
 
 bool QwDevTMF882X::initializeTMF882x(void)
 {
@@ -199,7 +199,7 @@ int QwDevTMF882X::startMeasuring(TMF882XMeasurement_t& results, uint32_t timeout
     if (!m_isInitialized)
         return -1;
 
-    // Will start measuring, requesting only 1 measurment.
+    // Will start measuring, requesting only 1 measurement.
 
     if (!measurementLoop(1, timeout))
         return -1;
@@ -249,7 +249,7 @@ int QwDevTMF882X::measurementLoop(uint16_t reqMeasurements, uint32_t timeout)
     if (!m_isInitialized)
         return -1;
 
-    // Setup for the measurment internval
+    // Setup for the measurement internval
     m_stopMeasuring = false;
     m_lastMeasurement = nullptr;
     m_nMeasurements = 0; // internal counter
@@ -335,10 +335,10 @@ bool QwDevTMF882X::isConnected()
 
 void QwDevTMF882X::setMeasurementHandler(TMF882XMeasurementHandler_t handler)
 {
-
     if (handler)
         m_messageHandlerCB = handler;
 }
+
 ////////////////////////////////////////////////////////////////////////////////////
 // setCommBus()
 //
@@ -351,16 +351,15 @@ void QwDevTMF882X::setCommBus(QwI2C& theBus, uint8_t id_bus)
     m_i2cBus = &theBus;
     m_i2cAddress = id_bus;
 }
+
 //////////////////////////////////////////////////////////////////////////////
 // I2C relays for the underlying SDK
 int32_t QwDevTMF882X::writeRegisterRegion(uint8_t offset, uint8_t* data, uint16_t length)
 {
-
     return m_i2cBus->writeRegisterRegion(m_i2cAddress, offset, data, length);
 }
 
 int32_t QwDevTMF882X::readRegisterRegion(uint8_t offset, uint8_t* data, uint16_t length)
 {
-
     return m_i2cBus->readRegisterRegion(m_i2cAddress, offset, data, length);
 }

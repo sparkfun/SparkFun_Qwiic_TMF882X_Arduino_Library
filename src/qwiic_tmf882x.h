@@ -42,10 +42,10 @@
 #define TMF882X_MSG_ALL 0x07
 #define TMF882X_MSG_NONE 0x00
 
-// define a type for the results -- just alias the underlying measurment struct - easier to type
+// define a type for the results -- just alias the underlying measurement struct - easier to type
 typedef struct tmf882x_msg_meas_results TMF882XMeasurement_t;
 
-typedef void (*TMF882XMeasurementHandler_t)(TMF882XMeasurement_t* measurment);
+typedef void (*TMF882XMeasurementHandler_t)(TMF882XMeasurement_t*);
 
 class QwDevTMF882X {
 
@@ -65,7 +65,7 @@ public:
     void setMeasurementHandler(TMF882XMeasurementHandler_t handler);
 
     bool loadFirmware(const unsigned char *firmwareBinImage, unsigned long length);
-    
+
     int startMeasuring(uint32_t reqMeasurements = 0, uint32_t timeout = 0);
     int startMeasuring(TMF882XMeasurement_t& results, uint32_t timeout = 0);
     void stopMeasuring(void);
