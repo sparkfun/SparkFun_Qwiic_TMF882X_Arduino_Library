@@ -9,12 +9,11 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-// Use a #define to manage the special Serial output symbols on the SAMD21
-#ifdef SAMD21_SERIES
-#define SERIALOUT SerialUSB
-#else
-#define SERIALOUT Serial
-#endif
+
+// Stash for our output device -- for messages...etc.
+//
+// Use a baseclass of Serial - Stream - do store the device.
+static Stream * s_outputDevice = nullptr;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // sfe_arduino_c.cpp
@@ -56,15 +55,24 @@ void sfe_usleep(uint32_t usec)
     sfe_msleep(tick < 3 ? 3 : tick);
 }
 
+
+void sfe_set_output_device (void * theDevice)
+{
+	if(!theDevice)
+		return;
+
+	s_outputDevice = (Stream*)theDevice;
+
+}
 #define kOutputBufferSize 100
 
 void sfe_output(const char* fmt, va_list args)
 {
-    char szBuffer[kOutputBufferSize];
-    if (!fmt)
+    if (!fmt || !s_outputDevice)
         return;
 
+    char szBuffer[kOutputBufferSize];
     vsnprintf(szBuffer, kOutputBufferSize, fmt, args);
 
-    SERIALOUT.println(szBuffer);
+    s_outputDevice->println(szBuffer);
 }

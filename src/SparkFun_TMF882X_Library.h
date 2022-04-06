@@ -25,6 +25,7 @@
 
 // Include our implementation class
 #include "qwiic_tmf882x.h"
+#include "sfe_arduino_c.h"
 
 // Arduino things
 #include <Wire.h>
@@ -44,6 +45,11 @@ public:
         // Initialize the system - return results
         return this->QwDevTMF882X::init();
     };
+
+    void setOutputDevice(Stream& theStream)
+    {
+        sfe_set_output_device((void*)&theStream);
+    }
 
 private:
     QwI2C m_i2cBus;

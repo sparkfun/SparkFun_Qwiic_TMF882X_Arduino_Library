@@ -8,8 +8,8 @@
 // all function signatures are C, and annotated as such ("extern C") in this header file.
 //
 
-#ifndef _SFE_ARDUINO_C_H_
-#define _SFE_ARDUINO_C_H_
+#pragma once
+
 
 #include <stdarg.h>
 
@@ -22,9 +22,9 @@ unsigned long sfe_millis(void);
 void sfe_usleep(uint32_t usec);
 void sfe_msleep(uint32_t msec);
 void sfe_output(const char* fmt, va_list args);
+void sfe_set_output_device(void*);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
