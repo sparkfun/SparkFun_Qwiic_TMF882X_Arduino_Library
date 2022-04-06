@@ -104,20 +104,20 @@ bool QwDevTMF882X::loadFirmware(const unsigned char *firmwareBinImage, unsigned 
 bool QwDevTMF882X::setFactoryCalibration(struct tmf882x_mode_app_calib* tof_calib)
 {
 
-    struct tmf882x_mode_app_config tof_cfg;
+    struct tmf882x_mode_app_config tofConfig;
 
     int32_t error;
 
     if (!tof_calib)
         return false;
 
-    if (tmf882x_ioctl(&m_TOF, IOCAPP_GET_CFG, NULL, &tof_cfg))
+    if (tmf882x_ioctl(&m_TOF, IOCAPP_GET_CFG, NULL, &tofConfig))
         return false;
 
     // Change the iterations for Factory Calibration
-    tof_cfg.kilo_iterations = kTMF882XCalInterations;
+    tofConfig.kilo_iterations = kTMF882XCalInterations;
 
-    if (tmf882x_ioctl(&m_TOF, IOCAPP_SET_CFG, &tof_cfg, NULL))
+    if (tmf882x_ioctl(&m_TOF, IOCAPP_SET_CFG, &tofConfig, NULL))
         return false;
 
     if (tmf882x_ioctl(&m_TOF, IOCAPP_DO_FACCAL, NULL, tof_calib))
@@ -338,6 +338,41 @@ void QwDevTMF882X::setMeasurementHandler(TMF882XMeasurementHandler_t handler)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
+// setTMF882XConfig()
+//
+// Sets the passed in configuration struct values in the device.
+//
+// Returns true on success, false on failure
+bool QwDevTMF882X::getTMF882XConfig(struct tmf882x_mode_app_config& tofConfig)
+{
+    if (!m_isInitialized)
+        return false;
+
+    // Get the config struct from the underlying SDK
+    if (tmf882x_ioctl(&m_TOF, IOCAPP_GET_CFG, NULL, &tofConfig))
+        return false;
+
+    return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+// setTMF882XConfig()
+//
+// Sets the passed in configuration struct values in the device.
+//
+// Returns true on success, false on failure
+
+bool QwDevTMF882X::setTMF882XConfig(struct tmf882x_mode_app_config& tofConfig)
+{
+    if (!m_isInitialized)
+        return false;
+
+    // Set the config in the dvice
+    if (tmf882x_ioctl(&m_TOF, IOCAPP_SET_CFG, &tofConfig, NULL))
+        return false;
+    return true;
+}
+////////////////////////////////////////////////////////////////////////////////////
 // setCommBus()
 //
 // Method to set the bus object that is used to communicate with the device
@@ -351,7 +386,10 @@ void QwDevTMF882X::setCommBus(QwI2C& theBus, uint8_t id_bus)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// I2C relays for the underlying SDK
+// 
+// I2C relay methods used to support the "shim" architecture of the AMS TMF882X 
+// C SDK. 
+//
 int32_t QwDevTMF882X::writeRegisterRegion(uint8_t offset, uint8_t* data, uint16_t length)
 {
     return m_i2cBus->writeRegisterRegion(m_i2cAddress, offset, data, length);

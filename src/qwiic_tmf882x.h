@@ -26,9 +26,6 @@
 
 #include "qwiic_i2c.h"
 
-// Arduino things - this needs to change once moved to framework
-#include <Wire.h>
-
 // Default I2C address for the device
 #define kDefaultTMF882XAddress 0x41
 
@@ -68,24 +65,59 @@ public:
 
     bool loadFirmware(const unsigned char* firmwareBinImage, unsigned long length);
 
+    //////////////////////////////////////////////////////////////////////////////////    
+    // 
     int startMeasuring(uint32_t reqMeasurements = 0, uint32_t timeout = 0);
     int startMeasuring(TMF882XMeasurement_t& results, uint32_t timeout = 0);
+
+    //////////////////////////////////////////////////////////////////////////////////    
+    // 
     void stopMeasuring(void);
 
+    //////////////////////////////////////////////////////////////////////////////////    
+    // 
     bool setFactoryCalibration(struct tmf882x_mode_app_calib* tof_calib);
+
+    //////////////////////////////////////////////////////////////////////////////////    
+    // 
 
     bool setCalibration(struct tmf882x_mode_app_calib* tof_calib);
 
+
+    //////////////////////////////////////////////////////////////////////////////////    
+    // setSampleDelay()
+    //
+    // Set the delay used in the libraries sample loop used when processing
+    // samples/reading from the device.
+    //
+    // The value is in milli-seconds
     void setSampleDelay(uint16_t delay)
     {
         if (delay)
             m_sampleDelayMS = delay;
     };
+
+    //////////////////////////////////////////////////////////////////////////////////    
+    // sampleDelay()
+    //
+    // The current value of the library processing loop delay. The value is in
+    //  milliseconds.
+
     uint16_t sampleDelay(void)
     {
         return m_sampleDelayMS;
     }
 
+    //////////////////////////////////////////////////////////////////////////////////    
+    // TMF882X Configuration 
+    //
+    // Methods to access and set the underlying TMF882X configuration structure
+
+    bool getTMF882XConfig(struct tmf882x_mode_app_config&);
+
+    bool setTMF882XConfig(struct tmf882x_mode_app_config&);
+
+    //////////////////////////////////////////////////////////////////////////////////
     // Methods that are called from our "shim relay". They are public, but not really
     int32_t sdkMessageHandler(struct tmf882x_msg* msg);
 
@@ -108,6 +140,14 @@ public:
     bool debug(void)
     {
         return m_debug;
+    }
+
+    void setInfoMessages(bool bEnable)
+    {
+        if (bEnable)
+            m_outputSettings |= TMF882X_MSG_INFO;
+        else
+            m_outputSettings &= ~TMF882X_MSG_INFO;
     }
 
     void setMessageLevel(uint8_t msg)
