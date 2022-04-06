@@ -55,11 +55,11 @@ bool QwDevTMF882X::initializeTMF882x(void)
     }
 
     // Load the firmware image that is part of the TMF882X SDK
-    if (!loadFirmware(tof_bin_image, tof_bin_image_length)){
+    if (!loadFirmware(tof_bin_image, tof_bin_image_length)) {
 
-        // Fallback: 
+        // Fallback:
         //    Firmware upload failed. See if the device can move to app
-        //    mode using the onboard image. 
+        //    mode using the onboard image.
         if (tmf882x_mode_switch(&m_TOF, TMF882X_MODE_APP))
             return false;
     }
@@ -67,7 +67,7 @@ bool QwDevTMF882X::initializeTMF882x(void)
     // Make sure we are running application mode
     if (tmf882x_get_mode(&m_TOF) != TMF882X_MODE_APP) {
 
-        tof_err((void*)this, "ERROR - The TMF882X failed to enter APP mode.");        
+        tof_err((void*)this, "ERROR - The TMF882X failed to enter APP mode.");
         return false;
     }
 
@@ -77,10 +77,10 @@ bool QwDevTMF882X::initializeTMF882x(void)
 //////////////////////////////////////////////////////////////////////////////
 // loadFirmware()
 //
-bool QwDevTMF882X::loadFirmware(const unsigned char *firmwareBinImage, unsigned long length) 
+bool QwDevTMF882X::loadFirmware(const unsigned char* firmwareBinImage, unsigned long length)
 {
 
-    if(!firmwareBinImage || !length)
+    if (!firmwareBinImage || !length)
         return false;
 
     // Do a mode switch to the bootloader (bootloader mode necessary for FWDL)
@@ -89,13 +89,12 @@ bool QwDevTMF882X::loadFirmware(const unsigned char *firmwareBinImage, unsigned 
         return false;
     }
 
-    if ( tmf882x_fwdl(&m_TOF, FWDL_TYPE_BIN, firmwareBinImage, length) ) {
-        tof_err((void*)this, "ERROR - Upload of firmware image failed");        
+    if (tmf882x_fwdl(&m_TOF, FWDL_TYPE_BIN, firmwareBinImage, length)) {
+        tof_err((void*)this, "ERROR - Upload of firmware image failed");
         return false;
     }
 
     return true;
-
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -202,7 +201,7 @@ int QwDevTMF882X::startMeasuring(TMF882XMeasurement_t& results, uint32_t timeout
     if (!measurementLoop(1, timeout))
         return -1;
 
-    if (!m_lastMeasurement){
+    if (!m_lastMeasurement) {
         memset(&results, 0, sizeof(TMF882XMeasurement_t));
         return -1;
     }
@@ -386,9 +385,9 @@ void QwDevTMF882X::setCommBus(QwI2C& theBus, uint8_t id_bus)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// 
-// I2C relay methods used to support the "shim" architecture of the AMS TMF882X 
-// C SDK. 
+//
+// I2C relay methods used to support the "shim" architecture of the AMS TMF882X
+// C SDK.
 //
 int32_t QwDevTMF882X::writeRegisterRegion(uint8_t offset, uint8_t* data, uint16_t length)
 {

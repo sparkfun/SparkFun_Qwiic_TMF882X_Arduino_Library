@@ -9,11 +9,10 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-
 // Stash for our output device -- for messages...etc.
 //
 // Use a baseclass of Serial - Stream - do store the device.
-static Stream * s_outputDevice = nullptr;
+static Stream* s_outputDevice = nullptr;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // sfe_arduino_c.cpp
@@ -55,14 +54,12 @@ void sfe_usleep(uint32_t usec)
     sfe_msleep(tick < 3 ? 3 : tick);
 }
 
-
-void sfe_set_output_device (void * theDevice)
+void sfe_set_output_device(void* theDevice)
 {
-	if(!theDevice)
-		return;
+    if (!theDevice)
+        return;
 
-	s_outputDevice = (Stream*)theDevice;
-
+    s_outputDevice = (Stream*)theDevice;
 }
 #define kOutputBufferSize 100
 
