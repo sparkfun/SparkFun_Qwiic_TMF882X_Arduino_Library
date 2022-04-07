@@ -266,7 +266,7 @@ int QwDevTMF882X::measurementLoop(uint16_t reqMeasurements, uint32_t timeout)
     m_nMeasurements = 0; // internal counter
 
     // if you want to measure forever, you need CB function, or a timeout set
-    if (reqMeasurements == 0 && !(m_messageHandlerCB || timeout))
+    if (reqMeasurements == 0 && !(m_measurementHandlerCB || timeout))
         return -1;
 
     if (tmf882x_start(&m_TOF))
@@ -316,12 +316,25 @@ int32_t QwDevTMF882X::sdkMessageHandler(struct tmf882x_msg* msg)
     if (!msg || !m_isInitialized)
         return false;
 
-    if (msg->hdr.msg_id == ID_MEAS_RESULTS) {
+    switch (msg->hdr.msg_id){
+
+    case ID_MEAS_RESULTS:
         m_nMeasurements++;
         m_lastMeasurement = &msg->meas_result_msg;
 
-        if (m_messageHandlerCB)
-            m_messageHandlerCB(m_lastMeasurement);
+        if (m_measurementHandlerCB)
+            m_measurementHandlerCB(m_lastMeasurement);
+        break;
+
+    case ID_HISTOGRAM:
+
+        if (m_histogramHandlerCB)
+            m_histogramHandlerCB(&msg->hist_msg);
+        break;    
+
+    default:
+        break;
+
     }
 
     return 0;
@@ -347,9 +360,19 @@ bool QwDevTMF882X::isConnected()
 void QwDevTMF882X::setMeasurementHandler(TMF882XMeasurementHandler_t handler)
 {
     if (handler)
-        m_messageHandlerCB = handler;
+        m_measurementHandlerCB = handler;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// setHistogramHandler()
+//
+// Set a callback function that is called when a histogram is detected.
+
+void QwDevTMF882X::setHistogramHandler(TMF882XHistogramHandler_t handler)
+{
+    if (handler)
+        m_histogramHandlerCB = handler;
+}
 ////////////////////////////////////////////////////////////////////////////////////
 // getTMF882XConfig()
 //

@@ -42,7 +42,12 @@
 // define a type for the results -- just alias the underlying measurement struct - easier to type
 typedef struct tmf882x_msg_meas_results TMF882XMeasurement_t;
 
-typedef void (*TMF882XMeasurementHandler_t)(TMF882XMeasurement_t*);
+// Measurement Handler Type
+typedef void (*TMF882XMeasurementHandler_t)(struct tmf882x_msg_meas_results*);
+
+// Histogram Handler type
+typedef void (*TMF882XHistogramHandler_t)(struct tmf882x_msg_histogram*);
+
 
 class QwDevTMF882X {
 
@@ -53,7 +58,8 @@ public:
         , m_sampleDelayMS { kDefaultSampleDelayMS }
         , m_outputSettings { TMF882X_MSG_NONE }
         , m_debug { false }
-        , m_messageHandlerCB { nullptr }
+        , m_measurementHandlerCB { nullptr }
+        , m_histogramHandlerCB { nullptr }        
         , m_i2cBus { nullptr }
         , m_i2cAddress { 0 } {};
 
@@ -67,6 +73,7 @@ public:
     bool loadFirmware(const unsigned char* firmwareBinImage, unsigned long length);
 
     void setMeasurementHandler(TMF882XMeasurementHandler_t handler);
+    void setHistogramHandler(TMF882XHistogramHandler_t handler);    
 
     //////////////////////////////////////////////////////////////////////////////////
     //
@@ -197,8 +204,11 @@ private:
     // Flag to indicate to the system to stop measurements
     bool m_stopMeasuring;
 
-    // Callback function pointer
-    TMF882XMeasurementHandler_t m_messageHandlerCB;
+    // Callbacks
+    //
+    // Callback function pointer - measurement
+    TMF882XMeasurementHandler_t m_measurementHandlerCB;
+    TMF882XHistogramHandler_t m_histogramHandlerCB;    
 
     // for managing message output levels
     uint8_t m_outputSettings;
