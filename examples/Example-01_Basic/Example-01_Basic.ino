@@ -25,7 +25,14 @@ void setup(){
 	}else
 		Serial.println("TMF882X started.");
 
+	// Get the unique identifier from our connected device.
+	struct tmf882x_mode_app_dev_UID devUID;
 
+	if (myTMF882X.getDeviceUniqueID(devUID)){
+		Serial.print("Connected Device Unique ID: ");
+		Serial.println(devUID.uid);
+	}
+	Serial.println();
 }
 
 void loop()
