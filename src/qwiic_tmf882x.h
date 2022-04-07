@@ -61,9 +61,12 @@ public:
     bool isConnected(); // Checks if sensor ack's the I2C request
 
     bool applicationVersion(char* pVersion, uint8_t vlen);
-    void setMeasurementHandler(TMF882XMeasurementHandler_t handler);
+
+    bool getDeviceUniqueID(struct tmf882x_mode_app_dev_UID&);
 
     bool loadFirmware(const unsigned char* firmwareBinImage, unsigned long length);
+
+    void setMeasurementHandler(TMF882XMeasurementHandler_t handler);
 
     //////////////////////////////////////////////////////////////////////////////////
     //
@@ -76,12 +79,14 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////
     //
-    bool setFactoryCalibration(struct tmf882x_mode_app_calib* tof_calib);
+    bool factoryCalibration(struct tmf882x_mode_app_calib& tof_calib);
 
     //////////////////////////////////////////////////////////////////////////////////
     //
 
-    bool setCalibration(struct tmf882x_mode_app_calib* tof_calib);
+    bool setCalibration(struct tmf882x_mode_app_calib& tof_calib);
+
+    bool getCalibration(struct tmf882x_mode_app_calib& tof_calib);    
 
     //////////////////////////////////////////////////////////////////////////////////
     // setSampleDelay()
@@ -115,6 +120,14 @@ public:
     bool getTMF882XConfig(struct tmf882x_mode_app_config&);
 
     bool setTMF882XConfig(struct tmf882x_mode_app_config&);
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // TMF882X SPAD methods - used to get and set SPAD config values
+    //
+
+    bool getSPADConfig(struct tmf882x_mode_app_spad_config&);
+
+    bool setSPADConfig(struct tmf882x_mode_app_spad_config&);    
 
     //////////////////////////////////////////////////////////////////////////////////
     // Methods that are called from our "shim relay". They are public, but not really

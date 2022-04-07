@@ -29,8 +29,6 @@
 
 #include "inc/tmf882x_host_interface.h"
 
-#define kTMF882XCalInterations 4000
-
 //////////////////////////////////////////////////////////////////////////////
 // initializeTMF882x()
 //
@@ -97,33 +95,7 @@ bool QwDevTMF882X::loadFirmware(const unsigned char* firmwareBinImage, unsigned 
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// setFactoryCalibration()
 
-bool QwDevTMF882X::setFactoryCalibration(struct tmf882x_mode_app_calib* tof_calib)
-{
-
-    struct tmf882x_mode_app_config tofConfig;
-
-    int32_t error;
-
-    if (!tof_calib)
-        return false;
-
-    if (tmf882x_ioctl(&m_TOF, IOCAPP_GET_CFG, NULL, &tofConfig))
-        return false;
-
-    // Change the iterations for Factory Calibration
-    tofConfig.kilo_iterations = kTMF882XCalInterations;
-
-    if (tmf882x_ioctl(&m_TOF, IOCAPP_SET_CFG, &tofConfig, NULL))
-        return false;
-
-    if (tmf882x_ioctl(&m_TOF, IOCAPP_DO_FACCAL, NULL, tof_calib))
-        return false;
-
-    return true;
-}
 //////////////////////////////////////////////////////////////////////////////
 // init()
 //
@@ -146,15 +118,14 @@ bool QwDevTMF882X::init(void)
     if (!initializeTMF882x())
         return false;
 
-    // TODO - do this here? Leave to user
-    if (!setFactoryCalibration(&calibration_data))
-        return false;
+    // Set Calibration data? TODO 
 
     m_isInitialized = true;
 
     return true;
 }
-
+//////////////////////////////////////////////////////////////////////////////
+//
 bool QwDevTMF882X::applicationVersion(char* pVersion, uint8_t vlen)
 {
 
@@ -169,23 +140,66 @@ bool QwDevTMF882X::applicationVersion(char* pVersion, uint8_t vlen)
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// getDeviceUniqueID()
+//
+// Return the devices unique ID
 
-bool QwDevTMF882X::setCalibration(struct tmf882x_mode_app_calib* tof_calib)
+bool QwDevTMF882X::getDeviceUniqueID(struct tmf882x_mode_app_dev_UID& devUID)
 {
 
     if (!m_isInitialized)
         return false;
 
-    if (!tof_calib || !tof_calib->calib_len)
+    // Get the UID from the device
+    if (tmf882x_ioctl(&m_TOF, IOCAPP_DEV_UID, NULL, &devUID))
         return false;
 
-    if (tmf882x_ioctl(&m_TOF, IOCAPP_SET_CALIB, tof_calib, NULL))
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+bool QwDevTMF882X::setCalibration(struct tmf882x_mode_app_calib& tofCalib)
+{
+
+    if (!m_isInitialized)
+        return false;
+
+    if (!tofCalib.calib_len)
+        return false;
+
+    if (tmf882x_ioctl(&m_TOF, IOCAPP_SET_CALIB, &tofCalib, NULL))
+        return false;
+
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+bool QwDevTMF882X::getCalibration(struct tmf882x_mode_app_calib& tofCalib)
+{
+
+    if (!m_isInitialized)
+        return false;
+
+    if (tmf882x_ioctl(&m_TOF, IOCAPP_GET_CALIB, NULL, &tofCalib))
         return false;
 
     return true;
 }
 //////////////////////////////////////////////////////////////////////////////
-//  >> TO DO <<
+// factoryCalibration()
+
+bool QwDevTMF882X::factoryCalibration(struct tmf882x_mode_app_calib& tofCalib)
+{
+
+    // Perform the factory calibration -- this returns the calibration data
+    if (tmf882x_ioctl(&m_TOF, IOCAPP_DO_FACCAL, NULL, &tofCalib))
+        return false;
+
+    return true;
+}
+//////////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////////
 // startMeasuring()
@@ -337,11 +351,13 @@ void QwDevTMF882X::setMeasurementHandler(TMF882XMeasurementHandler_t handler)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-// setTMF882XConfig()
+// getTMF882XConfig()
 //
-// Sets the passed in configuration struct values in the device.
+// Fills in the passed in config struct with the configuration of the connected 
+// TMF882X device
 //
 // Returns true on success, false on failure
+
 bool QwDevTMF882X::getTMF882XConfig(struct tmf882x_mode_app_config& tofConfig)
 {
     if (!m_isInitialized)
@@ -362,7 +378,7 @@ bool QwDevTMF882X::getTMF882XConfig(struct tmf882x_mode_app_config& tofConfig)
 // Returns true on success, false on failure
 
 bool QwDevTMF882X::setTMF882XConfig(struct tmf882x_mode_app_config& tofConfig)
-{
+{ 
     if (!m_isInitialized)
         return false;
 
@@ -371,6 +387,45 @@ bool QwDevTMF882X::setTMF882XConfig(struct tmf882x_mode_app_config& tofConfig)
         return false;
     return true;
 }
+////////////////////////////////////////////////////////////////////////////////////
+// getSPADConfig()
+//
+// Fills in the passed in SPAD config struct with the SPAD configuration of 
+// the connected TMF882X device
+//
+// Returns true on success, false on failure
+
+bool QwDevTMF882X::getSPADConfig(struct tmf882x_mode_app_spad_config& spadConfig)
+{
+    if (!m_isInitialized)
+        return false;
+
+    // Get the config struct from the underlying SDK
+    if (tmf882x_ioctl(&m_TOF, IOCAPP_GET_SPADCFG, NULL, &spadConfig))
+        return false;
+
+    return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+// setSPADConfig()
+//
+// Sets the passed in SPAD configuration struct values in the device.
+//
+// Returns true on success, false on failure
+
+bool QwDevTMF882X::setSPADConfig(struct tmf882x_mode_app_spad_config& spadConfig)
+{
+    if (!m_isInitialized)
+        return false;
+
+    // Set the config in the dvice
+    if (tmf882x_ioctl(&m_TOF, IOCAPP_SET_SPADCFG, &spadConfig, NULL))
+        return false;
+
+    return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 // setCommBus()
 //
