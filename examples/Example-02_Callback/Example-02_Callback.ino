@@ -14,7 +14,7 @@ SparkFun_TMF882X  myTMF882X;
 int nSample =0;
 // Define our measurement callback function
 
-void onMeasurementCallback(TMF882XMeasurement_t *myResults){
+void onMeasurementCallback(struct tmf882x_msg_meas_results *myResults){
 
 	nSample++;
 

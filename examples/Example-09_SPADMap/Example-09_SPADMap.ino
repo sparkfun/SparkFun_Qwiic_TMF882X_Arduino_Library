@@ -6,7 +6,7 @@ TODO - Fix Header
 
 
 
-static TMF882XMeasurement_t myResults;
+static struct tmf882x_msg_meas_results myResults;
 
 // Include header, which defines a static SPAD map for this demo.
 #include "Example-09_SPADMap.h"

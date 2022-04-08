@@ -11,7 +11,7 @@ SparkFun_TMF882X  myTMF882X;
 static struct tmf882x_mode_app_config tofConfig = { 0 };
 
 
-static TMF882XMeasurement_t myResults;
+static struct tmf882x_msg_meas_results myResults;
 
 void setup(){
 

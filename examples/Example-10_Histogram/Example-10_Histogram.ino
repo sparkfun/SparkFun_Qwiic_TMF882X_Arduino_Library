@@ -59,7 +59,7 @@ void setup(){
 	if(!myTMF882X.begin())
 	{
 		Serial.println("Error - The TMF882X failed to initialize - is the board connected?");
-		while(1);
+		while(1){}
 	}
 
 	// set our call back function that handles histograms

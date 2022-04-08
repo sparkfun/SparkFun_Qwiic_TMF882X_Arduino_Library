@@ -13,7 +13,7 @@ SparkFun_TMF882X  myTMF882X;
 
 // Define our measurement callback function
 
-void onMeasurementCallback(TMF882XMeasurement_t *myResults){
+void onMeasurementCallback(struct tmf882x_msg_meas_results *myResults){
 
     // print out results
     Serial.println("Measurement:");
