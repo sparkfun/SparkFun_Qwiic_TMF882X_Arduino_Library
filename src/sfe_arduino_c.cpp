@@ -61,6 +61,7 @@ void sfe_set_output_device(void* theDevice)
 
     s_outputDevice = (Stream*)theDevice;
 }
+
 #define kOutputBufferSize 100
 
 void sfe_output(const char* fmt, va_list args)

@@ -46,14 +46,16 @@ bool QwDevTMF882X::initializeTMF882x(void)
         tmf882x_set_debug(&m_TOF, true);
 
     // Open the driver
-    if (tmf882x_open(&m_TOF)) {
+    if (tmf882x_open(&m_TOF))
+    {
 
-        tof_err((void*)this, "ERROR - Unable to open the TMF882X");
+        tof_err((void *)this, "ERROR - Unable to open the TMF882X");
         return false;
     }
 
     // Load the firmware image that is part of the TMF882X SDK
-    if (!loadFirmware(tof_bin_image, tof_bin_image_length)) {
+    if (!loadFirmware(tof_bin_image, tof_bin_image_length))
+    {
 
         // Fallback:
         //    Firmware upload failed. See if the device can move to app
@@ -63,9 +65,10 @@ bool QwDevTMF882X::initializeTMF882x(void)
     }
 
     // Make sure we are running application mode
-    if (tmf882x_get_mode(&m_TOF) != TMF882X_MODE_APP) {
+    if (tmf882x_get_mode(&m_TOF) != TMF882X_MODE_APP)
+    {
 
-        tof_err((void*)this, "ERROR - The TMF882X failed to enter APP mode.");
+        tof_err((void *)this, "ERROR - The TMF882X failed to enter APP mode.");
         return false;
     }
 
@@ -75,26 +78,27 @@ bool QwDevTMF882X::initializeTMF882x(void)
 //////////////////////////////////////////////////////////////////////////////
 // loadFirmware()
 //
-bool QwDevTMF882X::loadFirmware(const unsigned char* firmwareBinImage, unsigned long length)
+bool QwDevTMF882X::loadFirmware(const unsigned char *firmwareBinImage, unsigned long length)
 {
 
     if (!firmwareBinImage || !length)
         return false;
 
     // Do a mode switch to the bootloader (bootloader mode necessary for FWDL)
-    if (tmf882x_mode_switch(&m_TOF, TMF882X_MODE_BOOTLOADER)) {
-        tof_err((void*)this, "ERROR - Switch to TMF882X Switch to Bootloader failed");
+    if (tmf882x_mode_switch(&m_TOF, TMF882X_MODE_BOOTLOADER))
+    {
+        tof_err((void *)this, "ERROR - Switch to TMF882X Switch to Bootloader failed");
         return false;
     }
 
-    if (tmf882x_fwdl(&m_TOF, FWDL_TYPE_BIN, firmwareBinImage, length)) {
-        tof_err((void*)this, "ERROR - Upload of firmware image failed");
+    if (tmf882x_fwdl(&m_TOF, FWDL_TYPE_BIN, firmwareBinImage, length))
+    {
+        tof_err((void *)this, "ERROR - Upload of firmware image failed");
         return false;
     }
 
     return true;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////
 // init()
@@ -118,7 +122,7 @@ bool QwDevTMF882X::init(void)
     if (!initializeTMF882x())
         return false;
 
-    // Set Calibration data? TODO 
+    // Set Calibration data? TODO
 
     m_isInitialized = true;
 
@@ -126,7 +130,7 @@ bool QwDevTMF882X::init(void)
 }
 //////////////////////////////////////////////////////////////////////////////
 //
-bool QwDevTMF882X::applicationVersion(char* pVersion, uint8_t vlen)
+bool QwDevTMF882X::applicationVersion(char *pVersion, uint8_t vlen)
 {
 
     // verify we are in app mode
@@ -144,7 +148,7 @@ bool QwDevTMF882X::applicationVersion(char* pVersion, uint8_t vlen)
 //
 // Return the devices unique ID
 
-bool QwDevTMF882X::getDeviceUniqueID(struct tmf882x_mode_app_dev_UID& devUID)
+bool QwDevTMF882X::getDeviceUniqueID(struct tmf882x_mode_app_dev_UID &devUID)
 {
 
     if (!m_isInitialized)
@@ -159,7 +163,7 @@ bool QwDevTMF882X::getDeviceUniqueID(struct tmf882x_mode_app_dev_UID& devUID)
 
 //////////////////////////////////////////////////////////////////////////////
 
-bool QwDevTMF882X::setCalibration(struct tmf882x_mode_app_calib& tofCalib)
+bool QwDevTMF882X::setCalibration(struct tmf882x_mode_app_calib &tofCalib)
 {
 
     if (!m_isInitialized)
@@ -176,7 +180,7 @@ bool QwDevTMF882X::setCalibration(struct tmf882x_mode_app_calib& tofCalib)
 
 //////////////////////////////////////////////////////////////////////////////
 
-bool QwDevTMF882X::getCalibration(struct tmf882x_mode_app_calib& tofCalib)
+bool QwDevTMF882X::getCalibration(struct tmf882x_mode_app_calib &tofCalib)
 {
 
     if (!m_isInitialized)
@@ -190,7 +194,7 @@ bool QwDevTMF882X::getCalibration(struct tmf882x_mode_app_calib& tofCalib)
 //////////////////////////////////////////////////////////////////////////////
 // factoryCalibration()
 
-bool QwDevTMF882X::factoryCalibration(struct tmf882x_mode_app_calib& tofCalib)
+bool QwDevTMF882X::factoryCalibration(struct tmf882x_mode_app_calib &tofCalib)
 {
 
     // Perform the factory calibration -- this returns the calibration data
@@ -204,7 +208,7 @@ bool QwDevTMF882X::factoryCalibration(struct tmf882x_mode_app_calib& tofCalib)
 //////////////////////////////////////////////////////////////////////////////
 // startMeasuring()
 
-int QwDevTMF882X::startMeasuring(TMF882XMeasurement_t& results, uint32_t timeout)
+int QwDevTMF882X::startMeasuring(struct tmf882x_msg_meas_results &results, uint32_t timeout)
 {
 
     if (!m_isInitialized)
@@ -215,12 +219,13 @@ int QwDevTMF882X::startMeasuring(TMF882XMeasurement_t& results, uint32_t timeout
     if (!measurementLoop(1, timeout))
         return -1;
 
-    if (!m_lastMeasurement) {
-        memset(&results, 0, sizeof(TMF882XMeasurement_t));
+    if (!m_lastMeasurement)
+    {
+        memset(&results, 0, sizeof(tmf882x_msg_meas_results));
         return -1;
     }
 
-    memcpy(&results, m_lastMeasurement, sizeof(TMF882XMeasurement_t));
+    memcpy(&results, m_lastMeasurement, sizeof(tmf882x_msg_meas_results));
 
     return 1;
 }
@@ -279,9 +284,10 @@ int QwDevTMF882X::measurementLoop(uint16_t reqMeasurements, uint32_t timeout)
         startTime = sfe_millis();
 
     // Measurment loop
-    do {
+    do
+    {
 
-        // collecton/process pump for SDK
+        // data collection/process pump for SDK
         if (tmf882x_process_irq(&m_TOF)) // something went wrong
             break;
 
@@ -311,14 +317,16 @@ int QwDevTMF882X::measurementLoop(uint16_t reqMeasurements, uint32_t timeout)
 //
 // "Internal" method used to process messages from the SDK
 
-int32_t QwDevTMF882X::sdkMessageHandler(struct tmf882x_msg* msg)
+int32_t QwDevTMF882X::sdkMessageHandler(struct tmf882x_msg *msg)
 {
     if (!msg || !m_isInitialized)
         return false;
 
-    switch (msg->hdr.msg_id){
+    switch (msg->hdr.msg_id)
+    {
 
     case ID_MEAS_RESULTS:
+
         m_nMeasurements++;
         m_lastMeasurement = &msg->meas_result_msg;
 
@@ -330,11 +338,10 @@ int32_t QwDevTMF882X::sdkMessageHandler(struct tmf882x_msg* msg)
 
         if (m_histogramHandlerCB)
             m_histogramHandlerCB(&msg->hist_msg);
-        break;    
+        break;
 
     default:
         break;
-
     }
 
     return 0;
@@ -376,12 +383,12 @@ void QwDevTMF882X::setHistogramHandler(TMF882XHistogramHandler_t handler)
 ////////////////////////////////////////////////////////////////////////////////////
 // getTMF882XConfig()
 //
-// Fills in the passed in config struct with the configuration of the connected 
+// Fills in the passed in config struct with the configuration of the connected
 // TMF882X device
 //
 // Returns true on success, false on failure
 
-bool QwDevTMF882X::getTMF882XConfig(struct tmf882x_mode_app_config& tofConfig)
+bool QwDevTMF882X::getTMF882XConfig(struct tmf882x_mode_app_config &tofConfig)
 {
     if (!m_isInitialized)
         return false;
@@ -400,8 +407,8 @@ bool QwDevTMF882X::getTMF882XConfig(struct tmf882x_mode_app_config& tofConfig)
 //
 // Returns true on success, false on failure
 
-bool QwDevTMF882X::setTMF882XConfig(struct tmf882x_mode_app_config& tofConfig)
-{ 
+bool QwDevTMF882X::setTMF882XConfig(struct tmf882x_mode_app_config &tofConfig)
+{
     if (!m_isInitialized)
         return false;
 
@@ -413,12 +420,12 @@ bool QwDevTMF882X::setTMF882XConfig(struct tmf882x_mode_app_config& tofConfig)
 ////////////////////////////////////////////////////////////////////////////////////
 // getSPADConfig()
 //
-// Fills in the passed in SPAD config struct with the SPAD configuration of 
+// Fills in the passed in SPAD config struct with the SPAD configuration of
 // the connected TMF882X device
 //
 // Returns true on success, false on failure
 
-bool QwDevTMF882X::getSPADConfig(struct tmf882x_mode_app_spad_config& spadConfig)
+bool QwDevTMF882X::getSPADConfig(struct tmf882x_mode_app_spad_config &spadConfig)
 {
     if (!m_isInitialized)
         return false;
@@ -437,7 +444,7 @@ bool QwDevTMF882X::getSPADConfig(struct tmf882x_mode_app_spad_config& spadConfig
 //
 // Returns true on success, false on failure
 
-bool QwDevTMF882X::setSPADConfig(struct tmf882x_mode_app_spad_config& spadConfig)
+bool QwDevTMF882X::setSPADConfig(struct tmf882x_mode_app_spad_config &spadConfig)
 {
     if (!m_isInitialized)
         return false;
@@ -456,7 +463,7 @@ bool QwDevTMF882X::setSPADConfig(struct tmf882x_mode_app_spad_config& spadConfig
 //
 // TODO -  In the *future*, generalize to match SDK
 
-void QwDevTMF882X::setCommBus(QwI2C& theBus, uint8_t id_bus)
+void QwDevTMF882X::setCommBus(QwI2C &theBus, uint8_t id_bus)
 {
     m_i2cBus = &theBus;
     m_i2cAddress = id_bus;
@@ -467,12 +474,12 @@ void QwDevTMF882X::setCommBus(QwI2C& theBus, uint8_t id_bus)
 // I2C relay methods used to support the "shim" architecture of the AMS TMF882X
 // C SDK.
 //
-int32_t QwDevTMF882X::writeRegisterRegion(uint8_t offset, uint8_t* data, uint16_t length)
+int32_t QwDevTMF882X::writeRegisterRegion(uint8_t offset, uint8_t *data, uint16_t length)
 {
     return m_i2cBus->writeRegisterRegion(m_i2cAddress, offset, data, length);
 }
 
-int32_t QwDevTMF882X::readRegisterRegion(uint8_t offset, uint8_t* data, uint16_t length)
+int32_t QwDevTMF882X::readRegisterRegion(uint8_t offset, uint8_t *data, uint16_t length)
 {
     return m_i2cBus->readRegisterRegion(m_i2cAddress, offset, data, length);
 }
