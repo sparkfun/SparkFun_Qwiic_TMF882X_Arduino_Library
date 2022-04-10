@@ -3,10 +3,10 @@ SparkFun TMF882X dToF Arduino Library
 
 <table class="table table-hover table-striped table-bordered">
   <tr align="center">
-   <td><a href="https://www.sparkfun.com/products/19036"><img src="" alt="Qwiic dToF Imager TMF8820"></a></td>
-   <td><a href="https://www.sparkfun.com/products/19036"><img src="" alt="Qwiic Mini dToF Imager TMF8820"></a></td>
-   <td><a href="https://www.sparkfun.com/products/19037"><img src="" alt="Qwiic dToF Imager TMF8821"></a></td>
-   <td><a href="https://www.sparkfun.com/products/19037"><img src="" alt="Qwiic Mini dToF Imager TMF8821"></a></td>
+   <td><a href="https://www.sparkfun.com/products/19036"><img src="https://cdn.sparkfun.com/assets/parts/1/8/6/4/0/19036-SparkFun_Qwiic_dToF_Imager_-_TMF8820-01.jpg" alt="Qwiic dToF Imager <br />TMF8820"></a></td>
+   <td><a href="https://www.sparkfun.com/products/19036"><img src="https://cdn.sparkfun.com/assets/parts/1/8/8/4/4/19218-SparkFun_Qwiic_Mini_dToF_Imager_-_TMF8820-01.jpg" alt="Qwiic Mini dToF Imager <br />TMF8820"></a></td>
+   <td><a href="https://www.sparkfun.com/products/19037"><img src="https://cdn.sparkfun.com/assets/parts/1/8/6/4/1/19037-SparkFun_Qwiic_dToF_Imager_-_TMF8821-01.jpg" alt="Qwiic dToF Imager <br />TMF8821"></a></td>
+   <td><a href="https://www.sparkfun.com/products/19037"><img src="https://cdn.sparkfun.com/assets/parts/1/9/0/9/8/19451-SparkFun_Qwiic_Mini_dToF_Imager_-_TMF8821-01.jpg" alt="Qwiic Mini dToF Imager <br />TMF8821"></a></td>
   </tr>
   <tr align="center">
    <td><i>Qwiic dToF Imager TMF8820 <br />[ <a href="https://www.sparkfun.com/products/19036">SEN-19036</a> ]</i></td>
