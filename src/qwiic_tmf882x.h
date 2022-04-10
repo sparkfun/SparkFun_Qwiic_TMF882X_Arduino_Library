@@ -39,11 +39,40 @@
 #define TMF882X_MSG_ALL 0x07
 #define TMF882X_MSG_NONE 0x00
 
+//////////////////////////////////////////////////////////////////////////////
+// Messaage Callback Types
+//
+// The underlying SDK passes information back to the callee using a callback
+// message handler pattern. There are four types of messages:
+// 
+//  - Measurement results
+//  - Device statistics
+//  - Histogram results
+//  - Error messages
+// 
+// This library has methods that allow the user to set callback functions for 
+// each of the above message types, as well as a general message handler.
+//
+// The spcific message callbacks are helpful/easier to understand. The general
+// callback handler function requires the user to impelment logic to determine
+// the message type and take actions. 
+//
+// For each of the callbacks functions, we define a type
+//  
 // Measurement Handler Type
-typedef void (*TMF882XMeasurementHandler_t)(struct tmf882x_msg_meas_results *);
+typedef void (*TMF882XMeasurementHandler)(struct tmf882x_msg_meas_results *);
 
 // Histogram Handler type
-typedef void (*TMF882XHistogramHandler_t)(struct tmf882x_msg_histogram *);
+typedef void (*TMF882XHistogramHandler)(struct tmf882x_msg_histogram *);
+
+// Stats handler
+typedef void (*TMF882XStatsHandler)(struct tmf882x_msg_meas_stats *);
+
+// Error handler
+typedef void (*TMF882XErrorHandler)(struct tmf882x_msg_error *);
+
+// General Message Handler
+typedef void (*TMF882XMessageHandler)(struct tmf882x_msg *);
 
 class QwDevTMF882X
 {
@@ -51,21 +80,25 @@ class QwDevTMF882X
   public:
     // Default noop constructor
     QwDevTMF882X()
-        : m_isInitialized{false}, m_sampleDelayMS{kDefaultSampleDelayMS},
-          m_outputSettings{TMF882X_MSG_NONE}, m_debug{false}, m_measurementHandlerCB{nullptr},
-          m_histogramHandlerCB{nullptr}, m_i2cBus{nullptr}, m_i2cAddress{0} {};
+        : _isInitialized{false}, _sampleDelayMS{kDefaultSampleDelayMS},
+          _outputSettings{TMF882X_MSG_NONE}, _debug{false}, _measurementHandlerCB{nullptr},
+          _histogramHandlerCB{nullptr}, _statsHandlerCB{nullptr}, _errorHandlerCB{nullptr},
+          _messageHandlerCB{nullptr}, _i2cBus{nullptr}, _i2cAddress{0} {};
 
     bool init();
     bool isConnected(); // Checks if sensor ack's the I2C request
 
-    bool applicationVersion(char *pVersion, uint8_t vlen);
+    bool getApplicationVersion(char *pVersion, uint8_t vlen);
 
     bool getDeviceUniqueID(struct tmf882x_mode_app_dev_UID &);
 
     bool loadFirmware(const unsigned char *firmwareBinImage, unsigned long length);
 
-    void setMeasurementHandler(TMF882XMeasurementHandler_t handler);
-    void setHistogramHandler(TMF882XHistogramHandler_t handler);
+    void setMeasurementHandler(TMF882XMeasurementHandler handler);
+    void setHistogramHandler(TMF882XHistogramHandler handler);
+    void setStatsHandler(TMF882XStatsHandler handler);
+    void setErrorHandler(TMF882XErrorHandler handler);
+    void setMessageHandler(TMF882XMessageHandler handler);            
 
     //////////////////////////////////////////////////////////////////////////////////
     //
@@ -97,7 +130,7 @@ class QwDevTMF882X
     void setSampleDelay(uint16_t delay)
     {
         if (delay)
-            m_sampleDelayMS = delay;
+            _sampleDelayMS = delay;
     };
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -106,9 +139,9 @@ class QwDevTMF882X
     // The current value of the library processing loop delay. The value is in
     //  milliseconds.
 
-    uint16_t sampleDelay(void)
+    uint16_t getSampleDelay(void)
     {
-        return m_sampleDelayMS;
+        return _sampleDelayMS;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -141,33 +174,35 @@ class QwDevTMF882X
 
     void setDebug(bool bEnable)
     {
-        m_debug = true;
-        if (m_debug)
-            m_outputSettings |= TMF882X_MSG_DEBUG;
+        _debug = bEnable;
+        
+        if (_debug)
+            _outputSettings |= TMF882X_MSG_DEBUG;
         else
-            m_outputSettings &= ~TMF882X_MSG_DEBUG;
+            _outputSettings &= ~TMF882X_MSG_DEBUG;
     }
 
-    bool debug(void)
+    bool getDebug(void)
     {
-        return m_debug;
+        return _debug;
     }
 
     void setInfoMessages(bool bEnable)
     {
         if (bEnable)
-            m_outputSettings |= TMF882X_MSG_INFO;
+            _outputSettings |= TMF882X_MSG_INFO;
         else
-            m_outputSettings &= ~TMF882X_MSG_INFO;
+            _outputSettings &= ~TMF882X_MSG_INFO;
     }
 
     void setMessageLevel(uint8_t msg)
     {
-        m_outputSettings = msg;
+        _outputSettings = msg;
     }
-    uint8_t messageLevel(void)
+
+    uint8_t getMessageLevel(void)
     {
-        return m_outputSettings;
+        return _outputSettings;
     }
 
   private:
@@ -175,34 +210,37 @@ class QwDevTMF882X
     int measurementLoop(uint16_t nMeasurements, uint32_t timeout);
 
     // Library initialized flag
-    bool m_isInitialized;
+    bool _isInitialized;
 
     // I2C  things
-    QwI2C *m_i2cBus;      // pointer to our i2c bus object
-    uint8_t m_i2cAddress; // address of the device
+    QwI2C * _i2cBus;      // pointer to our i2c bus object
+    uint8_t _i2cAddress; // address of the device
 
     // Delay for the read sample loop
-    uint16_t m_sampleDelayMS;
+    uint16_t _sampleDelayMS;
 
     // Structure/state for the underlying TOF SDK
-    tmf882x_tof m_TOF;
+    tmf882x_tof _TOF;
 
     // for processing messages from SDK
-    uint16_t m_nMeasurements;
+    uint16_t _nMeasurements;
 
     // Cache of our last measurement taking
-    struct tmf882x_msg_meas_results *m_lastMeasurement;
+    struct tmf882x_msg_meas_results *_lastMeasurement;
 
     // Flag to indicate to the system to stop measurements
-    bool m_stopMeasuring;
+    bool _stopMeasuring;
 
     // Callbacks
     //
     // Callback function pointer - measurement
-    TMF882XMeasurementHandler_t m_measurementHandlerCB;
-    TMF882XHistogramHandler_t m_histogramHandlerCB;
+    TMF882XMeasurementHandler _measurementHandlerCB;
+    TMF882XHistogramHandler _histogramHandlerCB;
+    TMF882XStatsHandler _statsHandlerCB;    
+    TMF882XErrorHandler _errorHandlerCB;
+    TMF882XMessageHandler _messageHandlerCB;
 
     // for managing message output levels
-    uint8_t m_outputSettings;
-    bool m_debug;
+    uint8_t _outputSettings;
+    bool _debug;
 };

@@ -12,7 +12,7 @@
 
 void tof_info(void* pTarget, const char* fmt, ...)
 {
-    if (!fmt || !(((QwDevTMF882X*)pTarget)->messageLevel() & TMF882X_MSG_INFO))
+    if (!fmt || !(((QwDevTMF882X*)pTarget)->getMessageLevel() & TMF882X_MSG_INFO))
         return;
 
     va_list ap;
@@ -23,7 +23,7 @@ void tof_info(void* pTarget, const char* fmt, ...)
 
 void tof_dbg(void* pTarget, const char* fmt, ...)
 {
-    if (!fmt || !(((QwDevTMF882X*)pTarget)->messageLevel() & TMF882X_MSG_DEBUG))
+    if (!fmt || !(((QwDevTMF882X*)pTarget)->getMessageLevel() & TMF882X_MSG_DEBUG))
         return;
 
     va_list ap;
@@ -34,7 +34,7 @@ void tof_dbg(void* pTarget, const char* fmt, ...)
 
 void tof_err(void* pTarget, const char* fmt, ...)
 {
-    if (!fmt || !(((QwDevTMF882X*)pTarget)->messageLevel() & TMF882X_MSG_ERROR))
+    if (!fmt || !(((QwDevTMF882X*)pTarget)->getMessageLevel() & TMF882X_MSG_ERROR))
         return;
 
     va_list ap;
