@@ -1,21 +1,49 @@
-//////////////////////////////////////////////////////////////////////////////
+
+// qwiic_tmf882x.cpp
 //
-//  This is a library written for the SparkFun AMS TMF882X ToF breakout/qwiic board
+// This is a library written for SparkFun Qwiic TMF882X boards
 //
-//  SparkFun sells these at its website: www.sparkfun.com
-//  Do you like this library? Help support SparkFun. Buy a board!
+// SparkFun sells these bpards at its website: www.sparkfun.com
 //
-//  https://www.sparkfun.com/products/<TODO>
+// Do you like this library? Help support SparkFun. Buy a board!
 //
-//  Written by <TODO>
+// <<TODO>> Insert board links
 //
 //
-//  https://github.com/sparkfun/<TODO>
+// Written by Kirk Benell @ SparkFun Electronics, April 2022
 //
-//  License
-//     <TODO>
+// This library provides an abstract interface to the underlying TMF882X
+// SDK that is provided by AMS.
 //
-//////////////////////////////////////////////////////////////////////////////
+// Repository:
+//     >>TODO  Link
+//
+// Documentation:
+//     >>TODO  Link
+//
+// SparkFun code, firmware, and software is released under the MIT
+// License(http://opensource.org/licenses/MIT).
+//
+// SPDX-License-Identifier: MIT
+//
+//    The MIT License (MIT)
+//
+//    Copyright (c) 2022 SparkFun Electronics
+//    Permission is hereby granted, free of charge, to any person obtaining a
+//    copy of this software and associated documentation files (the "Software"),
+//    to deal in the Software without restriction, including without limitation
+//    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+//    and/or sell copies of the Software, and to permit persons to whom the
+//    Software is furnished to do so, subject to the following conditions: The
+//    above copyright notice and this permission notice shall be included in all
+//    copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED
+//    "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+//    NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+//    PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+//    HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+//    ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+//    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 
 #include <stdint.h>
 #include <stdio.h>
@@ -48,7 +76,6 @@ bool QwDevTMF882X::initializeTMF882x(void)
     // Open the driver
     if (tmf882x_open(&_TOF))
     {
-
         tof_err((void *)this, "ERROR - Unable to open the TMF882X");
         return false;
     }
@@ -56,7 +83,6 @@ bool QwDevTMF882X::initializeTMF882x(void)
     // Load the firmware image that is part of the TMF882X SDK
     if (!loadFirmware(tof_bin_image, tof_bin_image_length))
     {
-
         // Fallback:
         //    Firmware upload failed. See if the device can move to app
         //    mode using the onboard image.
@@ -67,7 +93,6 @@ bool QwDevTMF882X::initializeTMF882x(void)
     // Make sure we are running application mode
     if (tmf882x_get_mode(&_TOF) != TMF882X_MODE_APP)
     {
-
         tof_err((void *)this, "ERROR - The TMF882X failed to enter APP mode.");
         return false;
     }
@@ -77,6 +102,8 @@ bool QwDevTMF882X::initializeTMF882x(void)
 
 //////////////////////////////////////////////////////////////////////////////
 // loadFirmware()
+//
+// Loads the provided firmware array into the connected device. 
 //
 bool QwDevTMF882X::loadFirmware(const unsigned char *firmwareBinImage, unsigned long length)
 {
@@ -128,6 +155,20 @@ bool QwDevTMF882X::init(void)
 
     return true;
 }
+
+//////////////////////////////////////////////////////////////////////////////
+// isConnected()
+//
+// Is the device connected to the i2c bus
+//
+// Return Value: false on not connected, true if it is connected
+
+bool QwDevTMF882X::isConnected()
+{
+    return (_i2cBus && _i2cAddress ? _i2cBus->ping(_i2cAddress) : false);
+}
+
+
 //////////////////////////////////////////////////////////////////////////////
 //
 bool QwDevTMF882X::getApplicationVersion(char *pVersion, uint8_t vlen)
@@ -271,7 +312,8 @@ int QwDevTMF882X::measurementLoop(uint16_t reqMeasurements, uint32_t timeout)
     _nMeasurements = 0; // internal counter
 
     // if you want to measure forever, you need CB function, or a timeout set
-    if (reqMeasurements == 0 && !(_measurementHandlerCB || timeout))
+    if (reqMeasurements == 0 && 
+            !(_measurementHandlerCB || _histogramHandlerCB || _messageHandlerCB || timeout) )
         return -1;
 
     if (tmf882x_start(&_TOF))
@@ -364,17 +406,6 @@ int32_t QwDevTMF882X::sdkMessageHandler(struct tmf882x_msg *msg)
     return 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// isConnected()
-//
-// Is the device connected to the i2c bus
-//
-// Return Value: false on not connected, true if it is connected
-
-bool QwDevTMF882X::isConnected()
-{
-    return (_i2cBus && _i2cAddress ? _i2cBus->ping(_i2cAddress) : false);
-}
 
 //////////////////////////////////////////////////////////////////////////////
 // setMeasurementHandler()
