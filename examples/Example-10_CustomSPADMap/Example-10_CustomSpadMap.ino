@@ -9,7 +9,7 @@ TODO - Fix Header
 static struct tmf882x_msg_meas_results myResults;
 
 // Include header, which defines a static SPAD map for this demo.
-#include "Example-09_SPADMap.h"
+#include "Example-10_CustomSPADMap.h"
 
 SparkFun_TMF882X  myTMF882X;
 
