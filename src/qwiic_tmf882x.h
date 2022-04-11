@@ -127,6 +127,35 @@ class QwDevTMF882X
     bool isConnected(); // Checks if sensor ack's the I2C request
 
     ///////////////////////////////////////////////////////////////////////
+    // setI2CAddress()
+    //
+    // Set/Change the address of the connected device. 
+    //
+    // Called after the device has been initialized. 
+    //
+    //  Parameter   Description
+    //  ---------   -----------------------------
+    //  address     The new address for the device
+    //  retval      true on success, false on failure
+
+    bool setI2CAddress(uint8_t address);
+
+    ///////////////////////////////////////////////////////////////////////
+    // getI2CAddress()
+    //
+    // Returns the i2c address for the connected device 
+    //
+    // Called after the device has been initialized. 
+    //
+    //  Parameter   Description
+    //  ---------   -----------------------------
+    //  retval      The device i2c address. 0 if the device isn't conntected
+
+    uint8_t getI2CAddress(void)
+    {
+        return _i2cAddress;
+    }
+    ///////////////////////////////////////////////////////////////////////
     // getApplicationVersion()
     //
     // Returns the version of the "Application" software running on the 
@@ -458,7 +487,7 @@ class QwDevTMF882X
     {
         return _TOF;
     }
-    
+
     //////////////////////////////////////////////////////////////////////////////////
     // setDebug()
     //

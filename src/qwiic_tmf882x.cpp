@@ -168,7 +168,48 @@ bool QwDevTMF882X::isConnected()
     return (_i2cBus && _i2cAddress ? _i2cBus->ping(_i2cAddress) : false);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// setI2CAddress()
+//
+// Change the address of the connected device.
+//
 
+bool QwDevTMF882X::setI2CAddress(uint8_t address)
+{
+    // Initialized? Is the address legal?
+    if (!_isInitialized || address < 0x08 || address > 0x77)
+        false; 
+
+    // is the address the same as already set?
+    if (address == _i2cAddress)
+        return true;
+
+    // Okay, go time -- get the config
+    struct tmf882x_mode_app_config tofConfig;
+
+    // Get the config struct from the underlying SDK
+    if (tmf882x_ioctl(&_TOF, IOCAPP_GET_CFG, NULL, &tofConfig))
+        return false;
+
+    // change the address in the config
+    tofConfig.i2c_slave_addr = address;
+
+    // set it.
+    if (tmf882x_ioctl(&_TOF, IOCAPP_SET_CFG, &tofConfig, NULL))
+        return false;
+
+    // Now tell the device to switch to the address in the config page.
+    uint8_t cmdCode = TMF8X2X_COM_CMD_STAT__cmd_stat__CMD_I2C_SLAVE_ADDRESS;
+    if ( _i2cBus->writeRegisterRegion(_i2cAddress, TMF8X2X_COM_CMD_STAT, &cmdCode, sizeof(uint8_t)) )
+        return false;
+
+    // Potential TODO - check status register... .. need to test. 
+
+    // If we are here, the address should of been changed 
+    _i2cAddress = address;
+    return true;
+
+}
 //////////////////////////////////////////////////////////////////////////////
 //
 bool QwDevTMF882X::getApplicationVersion(char *pVersion, uint8_t vlen)
@@ -546,10 +587,10 @@ bool QwDevTMF882X::setSPADConfig(struct tmf882x_mode_app_spad_config &spadConfig
 //
 // TODO -  In the *future*, generalize to match SDK
 
-void QwDevTMF882X::setCommBus(QwI2C &theBus, uint8_t id_bus)
+void QwDevTMF882X::setCommBus(QwI2C &theBus, uint8_t idBus)
 {
-    _i2cBus = &theBus;
-    _i2cAddress = id_bus;
+    _i2cBus = &theBus; 
+    _i2cAddress = idBus;
 }
 
 //////////////////////////////////////////////////////////////////////////////
