@@ -52,7 +52,7 @@
 
 // Include our implementation class
 #include "qwiic_tmf882x.h"
-#include "sfe_arduino_c.h"
+#include "sfe_arduino.h"
 
 // Arduino things
 #include <Wire.h>

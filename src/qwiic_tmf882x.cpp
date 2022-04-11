@@ -52,7 +52,7 @@
 
 #include "mcu_tmf882x_config.h"
 #include "qwiic_tmf882x.h"
-#include "sfe_arduino_c.h"
+#include "sfe_arduino.h"
 #include "tof_factory_cal.h"
 
 #include "inc/tmf882x_host_interface.h"

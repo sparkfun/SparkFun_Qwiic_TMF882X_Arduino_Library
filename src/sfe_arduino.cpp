@@ -58,7 +58,7 @@
 #include <string.h>
 
 #include "qwiic_tmf882x.h"
-#include "sfe_arduino_c.h"
+#include "sfe_arduino.h"
 #include <Arduino.h>
 #include <Wire.h>
 
