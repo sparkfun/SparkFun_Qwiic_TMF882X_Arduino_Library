@@ -1,4 +1,27 @@
+/*
 
+  Example-10_CustomSPADMap.ino
+
+  This example shows how to create a custom SPAD Map and enable it on the 
+  connected TMF882X device. 
+
+  Supported Boards:
+  
+   SparkFun Qwiic dToF Imager - TMF8820        https://www.sparkfun.com/products/19036
+   SparkFun Qwiic Mini dToF Imager - TMF8820   https://www.sparkfun.com/products/19218
+   SparkFun Qwiic Mini dToF Imager - TMF8821   https://www.sparkfun.com/products/19451
+   SparkFun Qwiic dToF Imager - TMF8821        https://www.sparkfun.com/products/19037
+   
+  Written by Kirk Benell @ SparkFun Electronics, April 2022
+
+  Repository:
+     https://github.com/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library
+
+  Documentation:
+     https://sparkfun.github.io/SparkFun_Qwiic_OLED_Arduino_Library/
+
+  SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
+*/
 #pragma once
 
 // Define a custom SPAD map (from the AMS TMF882x SDK Examples)

@@ -1,15 +1,41 @@
 /*
-TODO - Fix Header
+
+  Example-09_SPADMap.ino
+
+  The Optical performance of the TMF882X is controled by a SPAD (Single Photon
+  Avalanche Photodiode) Map. 
+
+  SPAD Maps are set using a SPAD Map ID, which are detailed in the TMF882X datasheet.
+
+  This example shows how to determine the current SPAD Map on the device and change 
+  it to a desired map.
+
+  Supported Boards:
+
+   SparkFun Qwiic dToF Imager - TMF8820        https://www.sparkfun.com/products/19036
+   SparkFun Qwiic Mini dToF Imager - TMF8820   https://www.sparkfun.com/products/19218
+   SparkFun Qwiic Mini dToF Imager - TMF8821   https://www.sparkfun.com/products/19451
+   SparkFun Qwiic dToF Imager - TMF8821        https://www.sparkfun.com/products/19037
+   
+  Written by Kirk Benell @ SparkFun Electronics, April 2022
+
+  Repository:
+     https://github.com/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library
+
+  Documentation:
+     https://sparkfun.github.io/SparkFun_Qwiic_OLED_Arduino_Library/
+
+  SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
 */
 
-#include <SparkFun_TMF882X_Library.h>
-
-
+#include <SparkFun_TMF882X_Library.h>    //http://librarymanager/All#SparkFun_Qwiic_TMPF882X
 
 static struct tmf882x_msg_meas_results myResults;
 
 
 SparkFun_TMF882X  myTMF882X;
+
+// What SPAD map to change to
 
 #define NEW_SPAD_MAP 2
 
@@ -60,7 +86,7 @@ void setup(){
 	Serial.print("The new SPAD Map ID: ");
 	Serial.println(spadMap);
 
-	// First set some config parameters to support the spad map
+	// Now set some config parameters to support the spad map
 	struct tmf882x_mode_app_config tofConfig;
 	if (!myTMF882X.getTMF882XConfig(tofConfig)) {
 		Serial.println("Error - unable to get device configuration.");

@@ -1,13 +1,41 @@
 /*
-TODO - Fix Header
 
+  Example-04_Timeout.ino
 
+  The TMF882X Arduino library uses the TMF882X Software Development Kit (SDK) from
+  AMS to interface with the sensor. This SDK returns results by calling a provided
+  function and passing in a message structure.
+
+  This example shows how to create and regsiter a callback function to recieve results
+  from the library. 
+
+  The library will continue to take measurments until the specified timeout value is 
+  reached.
+
+  Supported Boards:
+  
+   SparkFun Qwiic dToF Imager - TMF8820        https://www.sparkfun.com/products/19036
+   SparkFun Qwiic Mini dToF Imager - TMF8820   https://www.sparkfun.com/products/19218
+   SparkFun Qwiic Mini dToF Imager - TMF8821   https://www.sparkfun.com/products/19451
+   SparkFun Qwiic dToF Imager - TMF8821        https://www.sparkfun.com/products/19037
+   
+  Written by Kirk Benell @ SparkFun Electronics, April 2022
+
+  Repository:
+     https://github.com/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library
+
+  Documentation:
+     https://sparkfun.github.io/SparkFun_Qwiic_OLED_Arduino_Library/
+
+  SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
 */
-// Example 04 - end using a timeout
 
-#include "SparkFun_TMF882X_Library.h"
+
+#include "SparkFun_TMF882X_Library.h"    //http://librarymanager/All#SparkFun_Qwiic_TMPF882X
 
 SparkFun_TMF882X  myTMF882X;
+
+// How long to take samples 
 
 #define SAMPLE_TIMEOUT_MS  3000
 
@@ -54,9 +82,6 @@ void setup(){
 void loop()
 {
 	delay(2000);
-
-	// get a measurment
-	// Have the sensor take 4 measurements, the results are sent to the above callback
 
 	Serial.println("---------------------------------------------------------");	
 	Serial.print("Taking Samples over a period of: "); 
