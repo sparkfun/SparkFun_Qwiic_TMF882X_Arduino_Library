@@ -434,8 +434,31 @@ class QwDevTMF882X
     //  ---------    -----------------------------
     //  tofSpad      The config values for the on device SPAD settings
     //  retval       True on success, false on error    
+
     bool setSPADConfig(struct tmf882x_mode_app_spad_config &tofSpad);
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // getTMF882XContext()
+    //
+    // Returns the context structure used by this library when accessing the 
+    // underlying TMF882X SDK. 
+    //
+    // With this structure,  users of this library can make direct calls to 
+    // the interface functions of the TMF882X SDK.
+    //
+    // Note: 
+    //  Calling the TMF882X SDK functions directly could impact the operation of
+    //  this library. Use this option with caution.
+    //
+    //  Parameter    Description
+    //  ---------    -----------------------------
+    //  retval       The TMF882X Context used by this library.
+
+    tmf882x_tof& getTMF882XContext(void)
+    {
+        return _TOF;
+    }
+    
     //////////////////////////////////////////////////////////////////////////////////
     // setDebug()
     //
