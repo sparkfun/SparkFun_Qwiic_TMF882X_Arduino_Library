@@ -1,5 +1,5 @@
 
-#include "tmf882x_mode_app_ioctl.h"
+#include "inc/tmf882x_mode_app_ioctl.h"
 
 #ifndef TOF_FACTORY_CAL_H_
 #define TOF_FACTORY_CAL_H_
