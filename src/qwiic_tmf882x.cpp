@@ -44,7 +44,6 @@
 //    ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 //    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -103,7 +102,7 @@ bool QwDevTMF882X::initializeTMF882x(void)
 //////////////////////////////////////////////////////////////////////////////
 // loadFirmware()
 //
-// Loads the provided firmware array into the connected device. 
+// Loads the provided firmware array into the connected device.
 //
 bool QwDevTMF882X::loadFirmware(const unsigned char *firmwareBinImage, unsigned long length)
 {
@@ -178,7 +177,7 @@ bool QwDevTMF882X::setI2CAddress(uint8_t address)
 {
     // Initialized? Is the address legal?
     if (!_isInitialized || address < 0x08 || address > 0x77)
-        false; 
+        false;
 
     // is the address the same as already set?
     if (address == _i2cAddress)
@@ -200,15 +199,14 @@ bool QwDevTMF882X::setI2CAddress(uint8_t address)
 
     // Now tell the device to switch to the address in the config page.
     uint8_t cmdCode = TMF8X2X_COM_CMD_STAT__cmd_stat__CMD_I2C_SLAVE_ADDRESS;
-    if ( _i2cBus->writeRegisterRegion(_i2cAddress, TMF8X2X_COM_CMD_STAT, &cmdCode, sizeof(uint8_t)) )
+    if (_i2cBus->writeRegisterRegion(_i2cAddress, TMF8X2X_COM_CMD_STAT, &cmdCode, sizeof(uint8_t)))
         return false;
 
-    // Potential TODO - check status register... .. need to test. 
+    // Potential TODO - check status register... .. need to test.
 
-    // If we are here, the address should of been changed 
+    // If we are here, the address should of been changed
     _i2cAddress = address;
     return true;
-
 }
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -353,8 +351,7 @@ int QwDevTMF882X::measurementLoop(uint16_t reqMeasurements, uint32_t timeout)
     _nMeasurements = 0; // internal counter
 
     // if you want to measure forever, you need CB function, or a timeout set
-    if (reqMeasurements == 0 && 
-            !(_measurementHandlerCB || _histogramHandlerCB || _messageHandlerCB || timeout) )
+    if (reqMeasurements == 0 && !(_measurementHandlerCB || _histogramHandlerCB || _messageHandlerCB || timeout))
         return -1;
 
     if (tmf882x_start(&_TOF))
@@ -406,7 +403,7 @@ int32_t QwDevTMF882X::sdkMessageHandler(struct tmf882x_msg *msg)
         return false;
 
     // Do we have a general handler set
-    if(_messageHandlerCB)
+    if (_messageHandlerCB)
         _messageHandlerCB(msg);
 
     // Check the message type - call type handler methods if we have one
@@ -433,12 +430,12 @@ int32_t QwDevTMF882X::sdkMessageHandler(struct tmf882x_msg *msg)
         if (_statsHandlerCB)
             _statsHandlerCB(&msg->meas_stat_msg);
         break;
-    
+
     case ID_ERROR:
 
         if (_errorHandlerCB)
             _errorHandlerCB(&msg->err_msg);
-        break;    
+        break;
 
     default:
         break;
@@ -446,7 +443,6 @@ int32_t QwDevTMF882X::sdkMessageHandler(struct tmf882x_msg *msg)
 
     return 0;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////
 // setMeasurementHandler()
@@ -541,6 +537,47 @@ bool QwDevTMF882X::setTMF882XConfig(struct tmf882x_mode_app_config &tofConfig)
         return false;
     return true;
 }
+
+////////////////////////////////////////////////////////////////////////////////////
+// getCurrentSPADMap()
+//
+// Returns the ID of the current SPAD in use on the device
+//
+// Returns 0 on error, > 0 is a valid SPAD map ID.
+//
+// See the datasheet for SPAD map ID values
+
+uint8_t QwDevTMF882X::getCurrentSPADMap(void)
+{
+    struct tmf882x_mode_app_config tofConfig;
+
+    if (!getTMF882XConfig(tofConfig))
+        return 0;
+
+    return tofConfig.spad_map_id;
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+// setCurrentSPADMap()
+//
+// Change the current SPAD Map used by the device.
+//
+// Returns true on success, false on error
+//
+// See the datasheet for SPAD map ID values
+
+bool QwDevTMF882X::setCurrentSPADMap(uint8_t idSPAD)
+{
+    struct tmf882x_mode_app_config tofConfig;
+
+    if (!getTMF882XConfig(tofConfig))
+        return false;
+
+    tofConfig.spad_map_id = idSPAD;
+
+    return setTMF882XConfig(tofConfig);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 // getSPADConfig()
 //
@@ -589,7 +626,7 @@ bool QwDevTMF882X::setSPADConfig(struct tmf882x_mode_app_spad_config &spadConfig
 
 void QwDevTMF882X::setCommBus(QwI2C &theBus, uint8_t idBus)
 {
-    _i2cBus = &theBus; 
+    _i2cBus = &theBus;
     _i2cAddress = idBus;
 }
 
