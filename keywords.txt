@@ -1,0 +1,73 @@
+#######################################
+# Syntax Coloring Map Qwiic TMF882X Library
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+SparkFun_TMF882X	KEYWORD1
+TMF882XMeasurementHandler	KEYWORD1
+TMF882XHistogramHandler	KEYWORD1
+TMF882XStatsHandler	KEYWORD1
+TMF882XErrorHandler	KEYWORD1
+TMF882XMessageHandler	KEYWORD1
+tmf882x_msg_meas_results	KEYWORD1
+tmf882x_msg_histogram	KEYWORD1
+tmf882x_msg_meas_stats	KEYWORD1
+tmf882x_msg_error	KEYWORD1
+tmf882x_msg	KEYWORD1
+tmf882x_mode_app_config	KEYWORD1
+tmf882x_mode_app_spad_config	KEYWORD1
+
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+setOutputDevice	KEYWORD2
+isConnected	KEYWORD2
+setI2CAddress	KEYWORD2
+getI2CAddress	KEYWORD2
+getApplicationVersion	KEYWORD2
+getDeviceUniqueID	KEYWORD2
+loadFirmware	KEYWORD2
+setMeasurementHandler	KEYWORD2
+setHistogramHandler	KEYWORD2
+setStatsHandler	KEYWORD2
+setErrorHandler	KEYWORD2
+setMessageHandler	KEYWORD2
+startMeasuring	KEYWORD2
+stopMeasuring	KEYWORD2
+factoryCalibration	KEYWORD2
+setCalibration	KEYWORD2
+getCalibration	KEYWORD2
+setSampleDelay	KEYWORD2
+getSampleDelay	KEYWORD2
+getTMF882XConfig	KEYWORD2
+setTMF882XConfig	KEYWORD2
+getCurrentSPADMap	KEYWORD2
+setCurrentSPADMap	KEYWORD2
+getSPADConfig	KEYWORD2
+setSPADConfig	KEYWORD2
+getTMF882XContext	KEYWORD2
+setDebug	KEYWORD2
+getDebug	KEYWORD2
+setInfoMessages	KEYWORD2
+setMessageLevel	KEYWORD2
+getMessageLevel	KEYWORD2
+
+
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+TMF882X_MSG_INFO	LITERAL1
+TMF882X_MSG_DEBUG	LITERAL1
+TMF882X_MSG_ERROR	LITERAL1
+TMF882X_MSG_ALL	LITERAL1
+TMF882X_MSG_NONE	LITERAL1
+
