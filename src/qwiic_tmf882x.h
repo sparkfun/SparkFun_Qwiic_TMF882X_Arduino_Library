@@ -700,7 +700,7 @@ class QwDevTMF882X
 
     // Callbacks
     //
-    // Callback function pointer - measurement
+    // Callback function pointers
     TMF882XMeasurementHandler _measurementHandlerCB;
     TMF882XHistogramHandler _histogramHandlerCB;
     TMF882XStatsHandler _statsHandlerCB;

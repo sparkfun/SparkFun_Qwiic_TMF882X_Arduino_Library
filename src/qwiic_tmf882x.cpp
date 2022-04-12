@@ -127,6 +127,7 @@ bool QwDevTMF882X::loadFirmware(const unsigned char *firmwareBinImage, unsigned 
         return false;
     }
 
+    // Load the fireware.
     if (tmf882x_fwdl(&_TOF, FWDL_TYPE_BIN, firmwareBinImage, length))
     {
         tof_err((void *)this, "ERROR - Upload of firmware image failed");
@@ -147,7 +148,7 @@ bool QwDevTMF882X::loadFirmware(const unsigned char *firmwareBinImage, unsigned 
 bool QwDevTMF882X::init(void)
 {
 
-    if (_isInitialized)
+    if (_isInitialized)  // already init'd
         return true;
 
     //  do we have a bus yet? is the device connected?
@@ -241,6 +242,9 @@ bool QwDevTMF882X::setI2CAddress(uint8_t address)
 
 bool QwDevTMF882X::getApplicationVersion(char *pVersion, uint8_t vlen)
 {
+
+    if (!_isInitialized)
+        return false;
 
     // verify we are in app mode
     if (tmf882x_get_mode(&_TOF) != TMF882X_MODE_APP) // failed to open up into application mode....
@@ -385,6 +389,7 @@ int QwDevTMF882X::startMeasuring(struct tmf882x_msg_meas_results &results, uint3
         return -1;
     }
 
+    // copy over results to output struct
     memcpy(&results, _lastMeasurement, sizeof(tmf882x_msg_meas_results));
 
     return 1;
@@ -434,7 +439,6 @@ int QwDevTMF882X::startMeasuring(uint32_t reqMeasurements, uint32_t timeout)
 //
 // Called to stop the device measuring loop. Normally called in a message
 // handler function.
-//
 //
 //  Parameter         Description
 //  ---------         -----------------------------
@@ -495,7 +499,6 @@ int QwDevTMF882X::measurementLoop(uint16_t reqMeasurements, uint32_t timeout)
     // Measurment loop
     do
     {
-
         // data collection/process pump for SDK
         if (tmf882x_process_irq(&_TOF)) // something went wrong
             break;
@@ -730,7 +733,6 @@ bool QwDevTMF882X::setTMF882XConfig(struct tmf882x_mode_app_config &tofConfig)
 
 uint8_t QwDevTMF882X::getCurrentSPADMap(void)
 {
-
     if (!_isInitialized)
         return 0;
 
@@ -758,7 +760,8 @@ bool QwDevTMF882X::setCurrentSPADMap(uint8_t idSPAD)
 {
     if (!_isInitialized)
         return false;
-        
+
+    // set map using the device config
     struct tmf882x_mode_app_config tofConfig;
 
     if (!getTMF882XConfig(tofConfig))
