@@ -577,7 +577,7 @@ class QwDevTMF882X
     //
     // Used to set the message level of the system.
     //
-    // The value passed in shoudl be one, or a combination of the following
+    // The value passed in should be one, or a combination of the following
     // flags.
     //
     //    TMF882X_MSG_INFO      - Output Info messages
