@@ -77,8 +77,13 @@ public:
     //  wirePort    optional. The Wire port. If not provided, the default port is used
     //  address     optional. I2C Address. If not provided, the default address is used.
     //  retval      true on success, false on startup failure
+    //
+    // Two versions  - the methods is overridden
+    //
+    // Version 1:
+    // User passes in an aready setup wirePort
 
-    bool begin(TwoWire& wirePort = Wire, uint8_t deviceAddress = kDefaultTMF882XAddress)
+    bool begin(TwoWire& wirePort, uint8_t deviceAddress = kDefaultTMF882XAddress)
     {
         // Setup  I2C object and pass into the superclass
         _i2cBus.init(wirePort);
@@ -88,6 +93,18 @@ public:
         return this->QwDevTMF882X::init();
     };
 
+    ///////////////////////////////////////////////////////////////////////
+    // begin()
+    //
+    // Version 2:
+    //
+    // User doesn't provide a wireport
+    bool begin(uint8_t deviceAddress = kDefaultTMF882XAddress){
+
+        _i2cBus.init();
+        setCommunicationBus(_i2cBus, deviceAddress);
+        return this->QwDevTMF882X::init();        
+    }
     ///////////////////////////////////////////////////////////////////////
     // setOutputDevice()
     //
