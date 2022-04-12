@@ -236,7 +236,7 @@ bool QwDevTMF882X::setI2CAddress(uint8_t address)
 //
 //  Parameter   Description
 //  ---------   -----------------------------
-//  pVersion    Pointer to a character array to recieve the version data
+//  pVersion    Pointer to a character array to receive the version data
 //  vlen        Length of the array pointed to be pVersion
 //  retval      true on success, false on failure
 
