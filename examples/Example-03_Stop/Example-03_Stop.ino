@@ -41,78 +41,82 @@ int nSample =0;
 // Define our measurement callback function. The Library calls this when a 
 // measurment is taken.
 
-void onMeasurementCallback(struct tmf882x_msg_meas_results *myResults){
+void onMeasurementCallback(struct tmf882x_msg_meas_results *myResults)
+{
 
-	nSample++;
-	Serial.print("Sample Number: ");
-	Serial.println(nSample);
+    nSample++;
+    Serial.print("Sample Number: ");
+    Serial.println(nSample);
 
-	// print out results
+    // print out results
     Serial.println("Measurement:");
     Serial.print("Result Number: "); Serial.print(myResults->result_num);
-    Serial.print(" Number of Results: "); Serial.println(myResults->num_results);    	
+    Serial.print(" Number of Results: "); Serial.println(myResults->num_results);       
 
-	for(uint32_t i = 0; i < myResults->num_results; ++i) {
-	    Serial.print("    conf: "); Serial.print(myResults->results[i].confidence);
-	    Serial.print(" distance mm: "); Serial.print(myResults->results[i].distance_mm);
-	    Serial.print(" channel: "); Serial.print(myResults->results[i].channel);
-	    Serial.print(" sub_capture: "); Serial.println(myResults->results[i].sub_capture);	
+    for(uint32_t i = 0; i < myResults->num_results; ++i) 
+    {
+        Serial.print("    conf: "); Serial.print(myResults->results[i].confidence);
+        Serial.print(" distance mm: "); Serial.print(myResults->results[i].distance_mm);
+        Serial.print(" channel: "); Serial.print(myResults->results[i].channel);
+        Serial.print(" sub_capture: "); Serial.println(myResults->results[i].sub_capture);  
 
-	}
-	Serial.print(" photon: "); Serial.print(myResults->photon_count);	
-	Serial.print(" ref photon: "); Serial.print(myResults->ref_photon_count);
-	Serial.print(" ALS: "); Serial.println(myResults->ambient_light); Serial.println();
+    }
+    Serial.print(" photon: "); Serial.print(myResults->photon_count);   
+    Serial.print(" ref photon: "); Serial.print(myResults->ref_photon_count);
+    Serial.print(" ALS: "); Serial.println(myResults->ambient_light); Serial.println();
 
-	// If we are at our limit, stop taking measurments
+    // If we are at our limit, stop taking measurments
 
-	if(nSample == NUMBER_OF_SAMPLES_TO_TAKE)
-	{
-		myTMF882X.stopMeasuring();
-	
-		Serial.println();
-		Serial.println("-----------------------------------------------");
-		Serial.println("Measurement Goal Hit - stopping measurements.");
-		Serial.println("-----------------------------------------------");
-		Serial.println();		
-	}
+    if(nSample == NUMBER_OF_SAMPLES_TO_TAKE)
+    {
+        myTMF882X.stopMeasuring();
+    
+        Serial.println();
+        Serial.println("-----------------------------------------------");
+        Serial.println("Measurement Goal Hit - stopping measurements.");
+        Serial.println("-----------------------------------------------");
+        Serial.println();       
+    }
 }
 
-void setup(){
+void setup()
+{
 
-	delay(500);
-	Serial.begin(115200);
-	Serial.println("");
+    delay(500);
+    Serial.begin(115200);
+    Serial.println("");
 
 
-	if(!myTMF882X.begin()){
-		Serial.println("Error - The TMF882X failed to initialize - is the board connected?");
-		while(1);
-	}
+    if(!myTMF882X.begin())
+    {
+        Serial.println("Error - The TMF882X failed to initialize - is the board connected?");
+        while(1);
+    }
 
-	// set our call back function
-	myTMF882X.setMeasurementHandler(onMeasurementCallback);
+    // set our call back function
+    myTMF882X.setMeasurementHandler(onMeasurementCallback);
 
-	// Set our delay between samples  - 1 second - note it's in ms
-	myTMF882X.setSampleDelay(1000);
+    // Set our delay between samples  - 1 second - note it's in ms
+    myTMF882X.setSampleDelay(1000);
 }
 
 void loop()
 {
-	delay(2000);
+    delay(2000);
 
-	Serial.println("---------------------------------------------------------");	
-	Serial.print("Taking "); 
-	Serial.print(NUMBER_OF_SAMPLES_TO_TAKE);
-	Serial.println(" data samples.");
-	Serial.println();
+    Serial.println("---------------------------------------------------------");    
+    Serial.print("Taking "); 
+    Serial.print(NUMBER_OF_SAMPLES_TO_TAKE);
+    Serial.println(" data samples.");
+    Serial.println();
 
-	nSample=0;
+    nSample=0;
 
-	// Start taking samples. Note - no stop condition is specified. This is handled
-	// in the measurement callback function above.
+    // Start taking samples. Note - no stop condition is specified. This is handled
+    // in the measurement callback function above.
 
-	myTMF882X.startMeasuring();
-	
-	Serial.println("---------------------------------------------------------\n\n");	
+    myTMF882X.startMeasuring();
+    
+    Serial.println("---------------------------------------------------------\n\n");    
 
 }
