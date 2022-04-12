@@ -82,7 +82,7 @@ public:
     {
         // Setup  I2C object and pass into the superclass
         _i2cBus.init(wirePort);
-        setCommBus(_i2cBus, deviceAddress);
+        setCommunicationBus(_i2cBus, deviceAddress);
 
         // Initialize the system - return results
         return this->QwDevTMF882X::init();

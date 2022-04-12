@@ -1,4 +1,3 @@
-
 // qwiic_tmf882x.cpp
 //
 // This is a library written for SparkFun Qwiic TMF882X boards
@@ -52,14 +51,13 @@
 #include "mcu_tmf882x_config.h"
 #include "qwiic_tmf882x.h"
 #include "sfe_arduino.h"
-#include "tof_factory_cal.h"
 
 #include "inc/tmf882x_host_interface.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // initializeTMF882x()
 //
-// Called to initialize the TMF device.
+// Private/internal method that is called to initialize the TMF device.
 //
 // returns false if the init fails.
 
@@ -79,7 +77,8 @@ bool QwDevTMF882X::initializeTMF882x(void)
         return false;
     }
 
-    // Load the firmware image that is part of the TMF882X SDK
+    // Load the firmware image that is part of the TMF882X SDK. Without
+    // firware, the device won't work
     if (!loadFirmware(tof_bin_image, tof_bin_image_length))
     {
         // Fallback:
@@ -99,11 +98,22 @@ bool QwDevTMF882X::initializeTMF882x(void)
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 // loadFirmware()
 //
-// Loads the provided firmware array into the connected device.
+// To operate the TMF882X device, runtime firmware must be loaded.
 //
+// This library loads a default firmware version on library initialization.
+//
+// This method allows the library user to set the firmware version on the
+// device if a newer version is available from AMS
+//
+//  Parameter         Description
+//  ---------         -----------------------------
+//  firmwareBinImage  Array that contains the firmware binary image
+//  length            The length of the firmware array
+//  retval            true on success, false on failure
+
 bool QwDevTMF882X::loadFirmware(const unsigned char *firmwareBinImage, unsigned long length)
 {
 
@@ -148,30 +158,37 @@ bool QwDevTMF882X::init(void)
     if (!initializeTMF882x())
         return false;
 
-    // Set Calibration data? TODO
-
     _isInitialized = true;
 
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 // isConnected()
 //
-// Is the device connected to the i2c bus
+// Called to determine if a TMF882X device, at the provided i2c address
+// is connected.
 //
-// Return Value: false on not connected, true if it is connected
+//  Parameter   Description
+//  ---------   -----------------------------
+//  retval      true if device is connected, false if not connected
 
 bool QwDevTMF882X::isConnected()
 {
     return (_i2cBus && _i2cAddress ? _i2cBus->ping(_i2cAddress) : false);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 // setI2CAddress()
 //
-// Change the address of the connected device.
+// Set/Change the address of the connected device.
 //
+// Called after the device has been initialized.
+//
+//  Parameter   Description
+//  ---------   -----------------------------
+//  address     The new address for the device
+//  retval      true on success, false on failure
 
 bool QwDevTMF882X::setI2CAddress(uint8_t address)
 {
@@ -208,8 +225,20 @@ bool QwDevTMF882X::setI2CAddress(uint8_t address)
     _i2cAddress = address;
     return true;
 }
-//////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////
+// getApplicationVersion()
 //
+// Returns the version of the "Application" software running on the
+// connected TMF882X device. See the TMF882X data sheet for more
+// information regarding application software
+//
+//  Parameter   Description
+//  ---------   -----------------------------
+//  pVersion    Pointer to a character array to recieve the version data
+//  vlen        Length of the array pointed to be pVersion
+//  retval      true on success, false on failure
+
 bool QwDevTMF882X::getApplicationVersion(char *pVersion, uint8_t vlen)
 {
 
@@ -223,10 +252,18 @@ bool QwDevTMF882X::getApplicationVersion(char *pVersion, uint8_t vlen)
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 // getDeviceUniqueID()
 //
-// Return the devices unique ID
+// Returns the unique ID of the connected TMF882X.
+//
+// Note:  Uses a ID structure as defined by the AMS TMF882X SDK to
+//        store the ID value
+//
+//  Parameter   Description
+//  ---------   -----------------------------
+//  uid         The TMF882X UID structure to store the ID into.
+//  retval      true on success, false on failure
 
 bool QwDevTMF882X::getDeviceUniqueID(struct tmf882x_mode_app_dev_UID &devUID)
 {
@@ -241,7 +278,15 @@ bool QwDevTMF882X::getDeviceUniqueID(struct tmf882x_mode_app_dev_UID &devUID)
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+// setCalibration()
+//
+// Used to set the calibration data on the connected TMF882X device
+//
+//  Parameter    Description
+//  ---------    -----------------------------
+//  tofCalib     The calibration data to set
+//  retval       True on success, false on error
 
 bool QwDevTMF882X::setCalibration(struct tmf882x_mode_app_calib &tofCalib)
 {
@@ -258,7 +303,15 @@ bool QwDevTMF882X::setCalibration(struct tmf882x_mode_app_calib &tofCalib)
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+// getCalibration()
+//
+// Used to get the calibration data on the connected TMF882X device
+//
+//  Parameter    Description
+//  ---------    -----------------------------
+//  tofCalib     Struct to hold the calibration data.
+//  retval       True on success, false on error
 
 bool QwDevTMF882X::getCalibration(struct tmf882x_mode_app_calib &tofCalib)
 {
@@ -271,11 +324,27 @@ bool QwDevTMF882X::getCalibration(struct tmf882x_mode_app_calib &tofCalib)
 
     return true;
 }
-//////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////
 // factoryCalibration()
+//
+// Used to run a factory calibrary on the connected TMF882X device.
+//
+// The results of the calibration are returned in the pass in calibration
+// structure.
+//
+// Consult the TMF882X datasheet for details on performing a factory
+// calibration
+//
+//  Parameter    Description
+//  ---------    -----------------------------
+//  tofCalib     The results of the calibration process
+//  retval       True on success, false on error
 
 bool QwDevTMF882X::factoryCalibration(struct tmf882x_mode_app_calib &tofCalib)
 {
+    if (!_isInitialized)
+        return false;
 
     // Perform the factory calibration -- this returns the calibration data
     if (tmf882x_ioctl(&_TOF, IOCAPP_DO_FACCAL, NULL, &tofCalib))
@@ -283,10 +352,21 @@ bool QwDevTMF882X::factoryCalibration(struct tmf882x_mode_app_calib &tofCalib)
 
     return true;
 }
-//////////////////////////////////////////////////////////////////////////////
-//
-//////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////
 // startMeasuring()
+//
+// Start measuring distance/data on the TMF882X device. This method
+// returns after one measurement is performed.
+//
+// Measurement data is returned in the provided measurement struct.
+//
+//  Parameter         Description
+//  ---------         -----------------------------
+//  results           The results of the mesurement
+//  timeout           The time, in milliseconds, to take measurements. A
+//                    value of zero indicates no timeout set.
+//  retval            The number of measurements taken (1), or -1 on error.
 
 int QwDevTMF882X::startMeasuring(struct tmf882x_msg_meas_results &results, uint32_t timeout)
 {
@@ -310,13 +390,34 @@ int QwDevTMF882X::startMeasuring(struct tmf882x_msg_meas_results &results, uint3
     return 1;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// startMeasuring
+///////////////////////////////////////////////////////////////////////
+// startMeasuring()
 //
-// Take N number of measurements. The user should get the results via a callback
-// that was set.
+// Start measuring distance/data on the TMF882X device. This method
+// won't return until the measurement activity ends.
 //
-// If N is 0, this will r
+// Measurement data is passed to the library user via a callback function,
+// which is set using one of the set<type>Handler() methods on this object.
+//
+// Measurements continue, until one of the following conditions occurs:
+//
+//  - The specified number of measurements took place (set via reqMeasurements)
+//  - The specififed timeout value expires
+//  - The stopMeasuring() method was called in a Handler function.
+//
+// This method won't start measuring if a measurement limit isn't set, a timeout
+// isn't set and no callback handlers are not set.
+//
+// This method returns the number of measurements taken
+//
+//  Parameter         Description
+//  ---------         -----------------------------
+//  reqMeasurements   The number of measurements desired. A value of zero
+//                    indicates no limit.
+//  timeout           The time, in milliseconds, to take measurements. A
+//                    value of zero indicates no timeout set.
+//  retval            The number of measurements taken, or -1 on error
+
 int QwDevTMF882X::startMeasuring(uint32_t reqMeasurements, uint32_t timeout)
 {
 
@@ -327,17 +428,45 @@ int QwDevTMF882X::startMeasuring(uint32_t reqMeasurements, uint32_t timeout)
 
     return measurementLoop(reqMeasurements, timeout);
 }
-//////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////
 // stopMeasuring()
+//
+// Called to stop the device measuring loop. Normally called in a message
+// handler function.
+//
+//
+//  Parameter         Description
+//  ---------         -----------------------------
+//  None
 
 void QwDevTMF882X::stopMeasuring(void)
 {
     _stopMeasuring = true;
 }
+
 //////////////////////////////////////////////////////////////////////////////
-// start_measurements()
+// measurementLoop()
 //
-// Take N number of measurements. If N is 0, run forever (until stop is called)
+// Internal, private method. Peforms/manages the actual processing loop for the
+// TMF882X.
+//
+// Looks for the following stop conditions:
+//      - Reach the desired number of measurements
+//      - Reach a timeout value
+//      - A stop condition was set by calling stopMeasuring()
+//
+// Each measurement loop has a delay, set by the setSampleDelay() method.
+//
+// Note:
+//     If reqMeasurements and timeout are both 0, a callback method must be set
+//     so the loop can be stopped using stopMeasuring(). Otherwise, this could loop forever.
+//
+//  Parameter           Description
+//  ---------           -----------------------------
+//  reqMeasurements     The desired number of measurements. If 0, no limit
+//  timeout             The timeout value for taking measurments. If 0, not limit
+//  retval              The number of measurements taken
 
 int QwDevTMF882X::measurementLoop(uint16_t reqMeasurements, uint32_t timeout)
 {
@@ -396,6 +525,11 @@ int QwDevTMF882X::measurementLoop(uint16_t reqMeasurements, uint32_t timeout)
 // sdk_msg_handler()
 //
 // "Internal" method used to process messages from the SDK
+//
+// The methods in the sfe_shim call this, passing in the message structure from
+// the SDK.
+//
+// This method processes the message and dispatches to registered callback functions
 
 int32_t QwDevTMF882X::sdkMessageHandler(struct tmf882x_msg *msg)
 {
@@ -444,10 +578,18 @@ int32_t QwDevTMF882X::sdkMessageHandler(struct tmf882x_msg *msg)
     return 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 // setMeasurementHandler()
 //
-// Set a callback function that is called when a measurement is detected.
+// Data values from the TMF882X are sent from the AMS SDK using a
+// callback/message pattern.
+//
+// Call this method with a function to call when measurement data is
+// sent from the AMS sdk.
+//
+//  Parameter   Description
+//  ---------   -----------------------------
+//  handler     The function to call when measurement data is sent from the SDK
 
 void QwDevTMF882X::setMeasurementHandler(TMF882XMeasurementHandler handler)
 {
@@ -455,10 +597,18 @@ void QwDevTMF882X::setMeasurementHandler(TMF882XMeasurementHandler handler)
         _measurementHandlerCB = handler;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 // setHistogramHandler()
 //
-// Set a callback function that is called when a histogram is detected.
+// Data values from the TMF882X are sent from the AMS SDK using a
+// callback/message pattern.
+//
+// Call this method with a function to call when histogram data is
+// sent from the AMS sdk.
+//
+//  Parameter   Description
+//  ---------   -----------------------------
+//  handler     The function to call when histogram data is sent from the SDK
 
 void QwDevTMF882X::setHistogramHandler(TMF882XHistogramHandler handler)
 {
@@ -466,11 +616,18 @@ void QwDevTMF882X::setHistogramHandler(TMF882XHistogramHandler handler)
         _histogramHandlerCB = handler;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 // setStatsHandler()
 //
-// Set a callback function that is called when a measurement statistics message
-// is detected
+// Data values from the TMF882X are sent from the AMS SDK using a
+// callback/message pattern.
+//
+// Call this method with a function to call when measurement stats data is
+// sent from the AMS sdk.
+//
+//  Parameter   Description
+//  ---------   -----------------------------
+//  handler     The function to call when measurement stats data is sent from the SDK
 
 void QwDevTMF882X::setStatsHandler(TMF882XStatsHandler handler)
 {
@@ -478,10 +635,18 @@ void QwDevTMF882X::setStatsHandler(TMF882XStatsHandler handler)
         _statsHandlerCB = handler;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 // setErrorHandler()
 //
-// Set a callback function that is called when a error message is detected.
+// Data values from the TMF882X are sent from the AMS SDK using a
+// callback/message pattern.
+//
+// Call this method with a function to call when error information is
+// sent from the AMS sdk.
+//
+//  Parameter   Description
+//  ---------   -----------------------------
+//  handler     The function to call when error information is sent from the SDK
 
 void QwDevTMF882X::setErrorHandler(TMF882XErrorHandler handler)
 {
@@ -489,10 +654,19 @@ void QwDevTMF882X::setErrorHandler(TMF882XErrorHandler handler)
         _errorHandlerCB = handler;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 // setMessageHandler()
 //
-// Set a callback function that is called when any message is sent.
+// Data values from the TMF882X are sent from the AMS SDK using a
+// callback/message pattern.
+//
+// Call this methods with a function to call any message is sent from the
+// AMS sdk. The function passed into this method can be used to handle all
+// messages instead of using the other handlers for specific message types
+//
+//  Parameter   Description
+//  ---------   -----------------------------
+//  handler     The function to call when any message is sent from the SDK.
 
 void QwDevTMF882X::setMessageHandler(TMF882XMessageHandler handler)
 {
@@ -500,13 +674,15 @@ void QwDevTMF882X::setMessageHandler(TMF882XMessageHandler handler)
         _messageHandlerCB = handler;
 }
 
-////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 // getTMF882XConfig()
 //
-// Fills in the passed in config struct with the configuration of the connected
-// TMF882X device
+// Get the current configuration settings on the connected TMF882X
 //
-// Returns true on success, false on failure
+//  Parameter    Description
+//  ---------    -----------------------------
+//  tofConfig    Struct to hold the current configuration values.
+//  retval       True on success, false on error
 
 bool QwDevTMF882X::getTMF882XConfig(struct tmf882x_mode_app_config &tofConfig)
 {
@@ -520,12 +696,15 @@ bool QwDevTMF882X::getTMF882XConfig(struct tmf882x_mode_app_config &tofConfig)
     return true;
 }
 
-////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 // setTMF882XConfig()
 //
-// Sets the passed in configuration struct values in the device.
+// Set the current configuration settings on the connected TMF882X
 //
-// Returns true on success, false on failure
+//  Parameter    Description
+//  ---------    -----------------------------
+//  tofConfig    The config values to set on the TMF882X.
+//  retval       True on success, false on error
 
 bool QwDevTMF882X::setTMF882XConfig(struct tmf882x_mode_app_config &tofConfig)
 {
@@ -538,17 +717,23 @@ bool QwDevTMF882X::setTMF882XConfig(struct tmf882x_mode_app_config &tofConfig)
     return true;
 }
 
-////////////////////////////////////////////////////////////////////////////////////
-// getCurrentSPADMap()
+//////////////////////////////////////////////////////////////////////////////////
+// getCurrentSPAD()
 //
-// Returns the ID of the current SPAD in use on the device
+// Returns the ID of the current SPAD Map in use on the device.
 //
-// Returns 0 on error, > 0 is a valid SPAD map ID.
+// See the datatsheet for ID values
 //
-// See the datasheet for SPAD map ID values
+//  Parameter    Description
+//  ---------    -----------------------------
+//  retval       0 on error, > 0  on success - the SPAD id.
 
 uint8_t QwDevTMF882X::getCurrentSPADMap(void)
 {
+
+    if (!_isInitialized)
+        return 0;
+
     struct tmf882x_mode_app_config tofConfig;
 
     if (!getTMF882XConfig(tofConfig))
@@ -557,17 +742,23 @@ uint8_t QwDevTMF882X::getCurrentSPADMap(void)
     return tofConfig.spad_map_id;
 }
 
-////////////////////////////////////////////////////////////////////////////////////
-// setCurrentSPADMap()
+//////////////////////////////////////////////////////////////////////////////////
+// setCurrentSPAD()
 //
-// Change the current SPAD Map used by the device.
+// Set the current SPAD MAP in use by the device.
 //
-// Returns true on success, false on error
+// See the datatsheet for ID values
 //
-// See the datasheet for SPAD map ID values
+//  Parameter    Description
+//  ---------    -----------------------------
+//  idSPAD       The ID of the SPAD Map to use
+//  retval       true on success, false on error
 
 bool QwDevTMF882X::setCurrentSPADMap(uint8_t idSPAD)
 {
+    if (!_isInitialized)
+        return false;
+        
     struct tmf882x_mode_app_config tofConfig;
 
     if (!getTMF882XConfig(tofConfig))
@@ -578,13 +769,17 @@ bool QwDevTMF882X::setCurrentSPADMap(uint8_t idSPAD)
     return setTMF882XConfig(tofConfig);
 }
 
-////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 // getSPADConfig()
 //
-// Fills in the passed in SPAD config struct with the SPAD configuration of
-// the connected TMF882X device
+// Get the current SPAD configuration on the connected TMF882X
 //
-// Returns true on success, false on failure
+// See the TMF882X datasheet to fully understand the concept of SPAD
+//
+//  Parameter    Description
+//  ---------    -----------------------------
+//  tofSpad      Struct to hold the current SPAD configuration values.
+//  retval       True on success, false on error
 
 bool QwDevTMF882X::getSPADConfig(struct tmf882x_mode_app_spad_config &spadConfig)
 {
@@ -598,12 +793,20 @@ bool QwDevTMF882X::getSPADConfig(struct tmf882x_mode_app_spad_config &spadConfig
     return true;
 }
 
-////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 // setSPADConfig()
 //
-// Sets the passed in SPAD configuration struct values in the device.
+// Set the current SPAD configuration on the connected TMF882X. Used to set
+// a custom SPAD.
 //
-// Returns true on success, false on failure
+// To set a pre-defined SPAD, use the spad filed in the TMF882X Config structure.
+//
+// See the TMF882X datasheet to fully understand the concept of SPAD
+//
+//  Parameter    Description
+//  ---------    -----------------------------
+//  tofSpad      The config values for the on device SPAD settings
+//  retval       True on success, false on error
 
 bool QwDevTMF882X::setSPADConfig(struct tmf882x_mode_app_spad_config &spadConfig)
 {
@@ -618,13 +821,16 @@ bool QwDevTMF882X::setSPADConfig(struct tmf882x_mode_app_spad_config &spadConfig
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-// setCommBus()
+// setCommunicationBus()
 //
 // Method to set the bus object that is used to communicate with the device
 //
-// TODO -  In the *future*, generalize to match SDK
+//  Parameter    Description
+//  ---------    -----------------------------
+//  theBus       The communication bus object
+//  idBus        The id/address of the device on the bus
 
-void QwDevTMF882X::setCommBus(QwI2C &theBus, uint8_t idBus)
+void QwDevTMF882X::setCommunicationBus(QwI2C &theBus, uint8_t idBus)
 {
     _i2cBus = &theBus;
     _i2cAddress = idBus;

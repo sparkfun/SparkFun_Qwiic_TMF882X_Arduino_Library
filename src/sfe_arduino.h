@@ -45,7 +45,7 @@
 //
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// sfe_arduino_c.h
+// sfe_arduino.h
 //
 // This header file implements the C interface functions that the underlying TMF SDK/Library uses for platform
 // specific functionalty. The platform is Arduino in this scenario.

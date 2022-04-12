@@ -44,7 +44,7 @@
 //    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-// sfe_arduino_c.cpp
+// sfe_arduino.cpp
 //
 // This file implements the C interface functions that the underlying TMF SDK/Library uses for platform
 // specific functionalty. The platform is Arduino in this scenario.

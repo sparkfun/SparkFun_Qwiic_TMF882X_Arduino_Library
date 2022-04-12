@@ -71,8 +71,7 @@ const static uint16_t kChunkSize = kMaxTransferBuffer - 2;
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // Constructor
 
-QwI2C::QwI2C(void)
-    : m_i2cPort { nullptr }
+QwI2C::QwI2C(void) : _i2cPort{nullptr}
 {
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,14 +80,16 @@ QwI2C::QwI2C(void)
 // Methods to init/setup this device. The caller can provide a Wire Port, or this class
 // will use the default
 
-bool QwI2C::init(TwoWire& wirePort)
+bool QwI2C::init(TwoWire &wirePort, bool bInit)
 {
 
     // if we don't have a wire port already
-    if (!m_i2cPort) {
-        m_i2cPort = &wirePort;
+    if (!_i2cPort)
+    {
+        _i2cPort = &wirePort;
 
-        m_i2cPort->begin();
+        if (bInit)
+            _i2cPort->begin();
     }
 
     return true;
@@ -98,10 +99,9 @@ bool QwI2C::init(TwoWire& wirePort)
 
 bool QwI2C::init(void)
 {
-
     // do we already have a wire port?
-    if (!m_i2cPort)
-        return init(Wire); // no wire, send in Wire
+    if (!_i2cPort)
+        return init(Wire, true); // no wire, send in Wire and init it
 
     return true;
 }
@@ -113,11 +113,11 @@ bool QwI2C::init(void)
 bool QwI2C::ping(uint8_t i2c_address)
 {
 
-    if (!m_i2cPort)
+    if (!_i2cPort)
         return false;
 
-    m_i2cPort->beginTransmission(i2c_address);
-    return m_i2cPort->endTransmission() == 0;
+    _i2cPort->beginTransmission(i2c_address);
+    return _i2cPort->endTransmission() == 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,20 +128,20 @@ bool QwI2C::ping(uint8_t i2c_address)
 bool QwI2C::writeRegisterByte(uint8_t i2c_address, uint8_t offset, uint8_t dataToWrite)
 {
 
-    if (!m_i2cPort)
+    if (!_i2cPort)
         return false;
 
-    m_i2cPort->beginTransmission(i2c_address);
-    m_i2cPort->write(offset);
-    m_i2cPort->write(dataToWrite);
-    return m_i2cPort->endTransmission() == 0;
+    _i2cPort->beginTransmission(i2c_address);
+    _i2cPort->write(offset);
+    _i2cPort->write(dataToWrite);
+    return _i2cPort->endTransmission() == 0;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // writeRegisterRegion()
 //
 // Write a block of data to a device.
 
-int QwI2C::writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t* data, uint16_t length)
+int QwI2C::writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *data, uint16_t length)
 {
 
     // Note:
@@ -163,11 +163,11 @@ int QwI2C::writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t* dat
 
     // Just do a simple write transaction.
 
-    m_i2cPort->beginTransmission(i2c_address);
-    m_i2cPort->write(offset);
-    m_i2cPort->write(data, (int)length);
+    _i2cPort->beginTransmission(i2c_address);
+    _i2cPort->write(offset);
+    _i2cPort->write(data, (int)length);
 
-    return m_i2cPort->endTransmission() ? -1 : 0; // -1 = error, 0 = success
+    return _i2cPort->endTransmission() ? -1 : 0; // -1 = error, 0 = success
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,12 +178,12 @@ int QwI2C::writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t* dat
 // For large buffers, the data is chuncked over KMaxI2CBufferLength at a time
 //
 //
-int QwI2C::readRegisterRegion(uint8_t addr, uint8_t reg, uint8_t* data, uint16_t numBytes)
+int QwI2C::readRegisterRegion(uint8_t addr, uint8_t reg, uint8_t *data, uint16_t numBytes)
 {
     uint8_t nChunk;
     uint8_t nReturned;
 
-    if (!m_i2cPort)
+    if (!_i2cPort)
         return -1;
 
     // Chunk in the data from the bus. This allows efficient data transfer if
@@ -194,26 +194,27 @@ int QwI2C::readRegisterRegion(uint8_t addr, uint8_t reg, uint8_t* data, uint16_t
     // the next chunk is a standard I2C transaction, but you don't send the register
     // address
 
-    int i; // counter in loop
+    int i;                   // counter in loop
     bool bFirstInter = true; // Flag for first iteration - used to send register
 
-    while (numBytes > 0) {
+    while (numBytes > 0)
+    {
+        _i2cPort->beginTransmission(addr);
 
-        m_i2cPort->beginTransmission(addr);
-
-        if (bFirstInter) {
-            m_i2cPort->write(reg);
+        if (bFirstInter)
+        {
+            _i2cPort->write(reg);
             bFirstInter = false;
         }
 
-        if (m_i2cPort->endTransmission(false) != 0)
+        if (_i2cPort->endTransmission(false) != 0)
             return -1; // error with the end transmission
 
         // We're chunking in data - keeping the max chunk to kMaxI2CBufferLength
         nChunk = numBytes > kChunkSize ? kChunkSize : numBytes;
 
         // For this device, we always send the stop condition - or it won't chunk data.
-        nReturned = m_i2cPort->requestFrom((int)addr, (int)nChunk, (int)true);
+        nReturned = _i2cPort->requestFrom((int)addr, (int)nChunk, (int)true);
 
         // No data returned, no dice
         if (nReturned == 0)
@@ -221,7 +222,7 @@ int QwI2C::readRegisterRegion(uint8_t addr, uint8_t reg, uint8_t* data, uint16_t
 
         // Copy the retrieved data chunk to the current index in the data segment
         for (i = 0; i < nReturned; i++)
-            *data++ = m_i2cPort->read();
+            *data++ = _i2cPort->read();
 
         // Decrement the amount of data recieved from the overall data request amount
         numBytes = numBytes - nReturned;

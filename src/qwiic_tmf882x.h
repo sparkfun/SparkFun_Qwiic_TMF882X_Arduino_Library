@@ -110,6 +110,12 @@ class QwDevTMF882X
           _debug{false}, _measurementHandlerCB{nullptr}, _histogramHandlerCB{nullptr}, _statsHandlerCB{nullptr},
           _errorHandlerCB{nullptr}, _messageHandlerCB{nullptr}, _i2cBus{nullptr}, _i2cAddress{0} {};
 
+    ///////////////////////////////////////////////////////////////////////
+    // init()
+    //
+    // Called to init the system. Connects to the device and sets it up for 
+    // operation
+
     bool init();
 
     ///////////////////////////////////////////////////////////////////////
@@ -153,6 +159,7 @@ class QwDevTMF882X
     {
         return _i2cAddress;
     }
+
     ///////////////////////////////////////////////////////////////////////
     // getApplicationVersion()
     //
@@ -258,6 +265,7 @@ class QwDevTMF882X
     //  Parameter   Description
     //  ---------   -----------------------------
     //  handler     The function to call when error information is sent from the SDK
+
     void setErrorHandler(TMF882XErrorHandler handler);
 
     ///////////////////////////////////////////////////////////////////////
@@ -649,7 +657,7 @@ class QwDevTMF882X
     int32_t readRegisterRegion(uint8_t reg, uint8_t *data, uint16_t length);
 
     //////////////////////////////////////////////////////////////////////////////////
-    // setCommBus()
+    // setCommunicationBus()
     //
     // Called to set the Communication Bus object to use
     //
@@ -659,7 +667,7 @@ class QwDevTMF882X
     //  idBus        The bus ID for the target device.
     //
 
-    void setCommBus(QwI2C &theBus, uint8_t idBus);
+    void setCommunicationBus(QwI2C &theBus, uint8_t idBus);
 
   private:
     // The internal method to initialize the device

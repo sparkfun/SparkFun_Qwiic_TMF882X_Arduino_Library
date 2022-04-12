@@ -61,7 +61,7 @@ public:
     QwI2C(void);
 
     bool init(void);
-    bool init(TwoWire& wirePort);
+    bool init(TwoWire& wirePort, bool bInit=false);
 
     // see if a device exists
     bool ping(uint8_t address);
@@ -74,5 +74,5 @@ public:
     int readRegisterRegion(uint8_t addr, uint8_t reg, uint8_t* data, uint16_t numBytes);
 
 private:
-    TwoWire* m_i2cPort;
+    TwoWire* _i2cPort;
 };
