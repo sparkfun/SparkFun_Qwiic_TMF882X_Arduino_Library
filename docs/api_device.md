@@ -154,3 +154,16 @@ uint8_t getMessageLevel(void)
 | Parameter | Type | Description |
 | :------------ | :---------- | :---------------------------------------------- |
 | return value | `uint8_t` |   The current message level settings|
+
+### setOutputDevice()
+This method is called to provide an output Serial device that the is used to output messages from the underlying AMS SDK.
+
+This is needed when debug or info messages are enabled in the library
+
+```C++ 
+void setOutputDevice(Stream& theStream)
+```
+
+| Parameter | Type | Description |
+| :------------ | :---------- | :---------------------------------------------- |
+| `theStream` | `Stream` |   The output stream device - normally a Serial port. |
