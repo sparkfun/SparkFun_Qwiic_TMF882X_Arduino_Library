@@ -18,7 +18,6 @@
 //
 // Repository:
 //     https://github.com/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library
-//k
 //
 // SparkFun code, firmware, and software is released under the MIT
 // License(http://opensource.org/licenses/MIT).
@@ -57,17 +56,19 @@
 // Arduino things
 #include <Wire.h>
 
-class SparkFun_TMF882X : public QwDevTMF882X {
+class SparkFun_TMF882X : public QwDevTMF882X
+{
 
-public:
+  public:
     // Default noop constructor
-    SparkFun_TMF882X() {};
+    SparkFun_TMF882X(){};
 
     ///////////////////////////////////////////////////////////////////////
     // begin()
     //
-    // This method is called to initialize the TMF882X library and connection to
-    // the TMF882X device. This method must be called before calling any other method.
+    // This method is called to initialize the TMF882X library and connect to
+    // the TMF882X device. This method must be called before calling any other method
+    // that interacts with the device.
     //
     // This method follows the standard startup pattern in SparkFun Arduino
     // libraries.
@@ -78,12 +79,12 @@ public:
     //  address     optional. I2C Address. If not provided, the default address is used.
     //  retval      true on success, false on startup failure
     //
-    // Two versions  - the methods is overridden
+    // This methond is overridden, implementing two versions.
     //
     // Version 1:
-    // User passes in an aready setup wirePort
+    // User passes in an aready setup wirePort object
 
-    bool begin(TwoWire& wirePort, uint8_t deviceAddress = kDefaultTMF882XAddress)
+    bool begin(TwoWire &wirePort, uint8_t deviceAddress = kDefaultTMF882XAddress)
     {
         // Setup  I2C object and pass into the superclass
         _i2cBus.init(wirePort);
@@ -91,24 +92,26 @@ public:
 
         // Initialize the system - return results
         return this->QwDevTMF882X::init();
-    };
+    }
 
     ///////////////////////////////////////////////////////////////////////
     // begin()
     //
     // Version 2:
     //
-    // User doesn't provide a wireport
-    bool begin(uint8_t deviceAddress = kDefaultTMF882XAddress){
+    // User doesn't provide a wireport object.
 
+    bool begin(uint8_t deviceAddress = kDefaultTMF882XAddress)
+    {
         _i2cBus.init();
         setCommunicationBus(_i2cBus, deviceAddress);
-        return this->QwDevTMF882X::init();        
+        return this->QwDevTMF882X::init();
     }
+
     ///////////////////////////////////////////////////////////////////////
     // setOutputDevice()
     //
-    // This method is called to provide an output Serial device that the 
+    // This method is called to provide an output Serial device that the
     // is used to output messages from the underlying AMS SDK.
     //
     // This is helpful when debug or info messages are enabled in the library
@@ -117,11 +120,11 @@ public:
     //  ---------   ----------------------------
     //  theStream   The output stream device - normally a Serial port.
 
-    void setOutputDevice(Stream& theStream)
+    void setOutputDevice(Stream &theStream)
     {
-        sfe_set_output_device((void*)&theStream);
+        sfe_set_output_device((void *)&theStream);
     }
 
-private:
+  private:
     QwI2C _i2cBus;
 };
