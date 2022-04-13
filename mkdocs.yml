@@ -79,6 +79,6 @@ nav:
   - API Reference:
     - Device: api_device.md
     - Setup: api_setup.md
-    - Operation: api_tmf882x.md
+    - Operation: api_operation.md
 
     
