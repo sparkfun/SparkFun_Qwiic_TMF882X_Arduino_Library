@@ -207,7 +207,7 @@ int QwI2C::readRegisterRegion(uint8_t addr, uint8_t reg, uint8_t *data, uint16_t
             bFirstInter = false;
         }
 
-        if (_i2cPort->endTransmission(false) != 0)
+        if (_i2cPort->endTransmission(true) != 0)
             return -1; // error with the end transmission
 
         // We're chunking in data - keeping the max chunk to kMaxI2CBufferLength
