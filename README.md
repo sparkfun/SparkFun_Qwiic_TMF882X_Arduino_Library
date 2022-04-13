@@ -1,4 +1,4 @@
-SparkFun TMF882X dToF Arduino Library
+SparkFun Qwiic TMF882X dToF Arduino Library
 ========================================
 
 <table class="table table-hover table-striped table-bordered">
