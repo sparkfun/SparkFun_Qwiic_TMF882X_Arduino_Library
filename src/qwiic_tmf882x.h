@@ -692,7 +692,7 @@ class QwDevTMF882X
     // for processing messages from SDK
     uint16_t _nMeasurements;
 
-    // Cache of our last measurement taking
+    // Cache of our last measurement taken
     struct tmf882x_msg_meas_results *_lastMeasurement;
 
     // Flag to indicate to the system to stop measurements
