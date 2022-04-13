@@ -75,7 +75,7 @@ bool getApplicationVersion(char *Version, uint8_t vlen)
 Returns the unique ID of the connected TMF882X.
 
 !!! note
-    This method uses a ID structure as defined by the AMS TMF882X SDK to
+    This method uses an ID structure as defined by the AMS TMF882X SDK to
     store the ID value.
 
 ```C++ 
@@ -167,3 +167,19 @@ void setOutputDevice(Stream& theStream)
 | Parameter | Type | Description |
 | :------------ | :---------- | :---------------------------------------------- |
 | `theStream` | `Stream` |   The output stream device - normally a Serial port. |
+
+### getTMF882XContext()
+Returns the context structure used by this library when accessing the underlying TMF882X SDK.
+
+With this structure,  users of this library can make direct calls to the interface functions of the TMF882X SDK.
+
+!!! warning
+    Calling the TMF882X SDK functions directly could impact the operation of this library. Use this option with caution.
+
+```C++ 
+tmf882x_tof &getTMF882XContext(void)
+```
+
+| Parameter | Type | Description |
+| :------------ | :---------- | :---------------------------------------------- |
+| return value | `tmf882x_tof` |   The TMF882X Context being used by this library. |
