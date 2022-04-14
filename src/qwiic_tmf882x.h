@@ -274,7 +274,7 @@ class QwDevTMF882X
     // Data values from the TMF882X are sent from the AMS SDK using a
     // callback/message pattern.
     //
-    // Call this methods with a function to call any message is sent from the
+    // Call this method with a function to call any message is sent from the
     // AMS sdk. The function passed into this method can be used to handle all
     // messages instead of using the other handlers for specific message types
     //
@@ -296,7 +296,7 @@ class QwDevTMF882X
     // Measurements continue, until one of the following conditions occurs:
     //
     //  - The specified number of measurements took place (set via reqMeasurements)
-    //  - The specififed timeout value expires
+    //  - The specified timeout value expires
     //  - The stopMeasuring() method was called in a Handler function.
     //
     // This method won't start measuring if a measurement limit isn't set, a timeout
@@ -347,9 +347,9 @@ class QwDevTMF882X
     ///////////////////////////////////////////////////////////////////////
     // factoryCalibration()
     //
-    // Used to run a factory calibrary on the connected TMF882X device.
+    // Used to run a factory calibration on the connected TMF882X device.
     //
-    // The results of the calibration are returned in the pass in calibration
+    // The results of the calibration are returned in the passed in calibration
     // structure.
     //
     // Consult the TMF882X datasheet for details on performing a factory
