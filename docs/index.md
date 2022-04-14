@@ -1,6 +1,6 @@
 # The Qwiic OLED Arduino Library
 
-![SparkFun Qwiic OLED Arduino Library](img/OLEDLibBanner.png "SparkFun Qwiic OLED Arduino Library")
+![SparkFun Qwiic OLED Arduino Library](img/TMF882XLibBanner.png "SparkFun Qwiic TMF882X Arduino Library")
 
 The SparkFun Qwiic OLED Arduino Library is a single graphics module that supports all SparkFun OLED boards based on the SSD1306 from Solomon Systech. Prior to this library, three different libraries were used to support our four different OLED boards. 
 

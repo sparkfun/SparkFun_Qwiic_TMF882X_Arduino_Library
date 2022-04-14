@@ -1,5 +1,17 @@
+![SparkFun Qwiic TMF882X Arduino Library](https://github.com/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library/blob/main/docs/img/TMF882XLibBanner.png "SparkFun Qwiic TMF882X Arduino Library")
+
 SparkFun Qwiic TMF882X dToF Arduino Library
 ========================================
+
+<p align="center">
+  <a href="https://github.com/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library/issues" alt="Issues">
+    <img src="https://img.shields.io/github/issues/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library.svg" /></a>
+  <a href="https://github.com/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library/blob/master/LICENSE" alt="License">
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg" /></a>
+  <a href="https://twitter.com/intent/follow?screen_name=sparkfun">
+          <img src="https://img.shields.io/twitter/follow/sparkfun.svg?style=social&logo=twitter"
+             alt="follow on Twitter"></a>
+</p>
 
 <table class="table table-hover table-striped table-bordered">
   <tr align="center">
