@@ -93,7 +93,7 @@ void loop()
 {
     delay(2000);
 
-    // get a measurment
+    // get a measurement
     // Have the sensor take NUMBER_OF_SAMPLES_TO_TAKE measurements. 
     // 
     // As measurements are taken, the results are sent to the above function, 
