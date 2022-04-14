@@ -19,7 +19,7 @@
      https://github.com/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library
 
   Documentation:
-     https://sparkfun.github.io/SparkFun_Qwiic_OLED_Arduino_Library/
+     https://sparkfun.github.io/SparkFun_Qwiic_TMF882X_Arduino_Library/
 
   SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
 */
@@ -88,7 +88,7 @@ void setup()
     Serial.println(factoryCal.calib_len);
 
     Serial.println("Calibration Data:");
-    for (int i=0; i < factoryCal.calib_len; i++)
+    for (int i = 0; i < factoryCal.calib_len; i++)
     {
         Serial.print("   "); Serial.print(factoryCal.data[i]);
 

@@ -18,7 +18,7 @@
      https://github.com/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library
 
   Documentation:
-     https://sparkfun.github.io/SparkFun_Qwiic_OLED_Arduino_Library/
+     https://sparkfun.github.io/SparkFun_Qwiic_TMF882X_Arduino_Library/
 
   SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
 */
@@ -29,7 +29,7 @@ SparkFun_TMF882X  myTMF882X;
 
 #define NUMBER_OF_SAMPLES_TO_TAKE  4
 
-int nSample =0;
+int nSample = 0;
 
 // For our histogram printout 
 #define MAX_BIN_LEN 128
@@ -45,15 +45,14 @@ void onHistogramCallback(struct tmf882x_msg_histogram *myHistogram)
     Serial.println(nSample);
 
     uint8_t zone_count = 0;
-    for (uint32_t tdc_idx = 0; tdc_idx < myHistogram->num_tdc; ++tdc_idx) 
+    for (int tdc_idx = 0; tdc_idx < myHistogram->num_tdc; ++tdc_idx) 
     {
-    
         // Histogram tag for zones, #HLONG01,#HLONG02....
         Serial.println();
         Serial.print("#HLONG");
         Serial.print(zone_count++);
 
-        for (uint32_t bin_idx = 0; bin_idx < myHistogram->num_bins; ++bin_idx) {
+        for (int bin_idx = 0; bin_idx < myHistogram->num_bins; ++bin_idx) {
 
             Serial.print((unsigned long)myHistogram->bins[tdc_idx][bin_idx]);
 

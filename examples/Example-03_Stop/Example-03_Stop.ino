@@ -22,7 +22,7 @@
      https://github.com/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library
 
   Documentation:
-     https://sparkfun.github.io/SparkFun_Qwiic_OLED_Arduino_Library/
+     https://sparkfun.github.io/SparkFun_Qwiic_TMF882X_Arduino_Library/
 
   SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
 */
@@ -36,7 +36,7 @@ SparkFun_TMF882X  myTMF882X;
 
 #define NUMBER_OF_SAMPLES_TO_TAKE  4
 
-int nSample =0;
+int nSample = 0;
 
 // Define our measurement callback function. The Library calls this when a 
 // measurment is taken.
@@ -53,7 +53,7 @@ void onMeasurementCallback(struct tmf882x_msg_meas_results *myResults)
     Serial.print("Result Number: "); Serial.print(myResults->result_num);
     Serial.print(" Number of Results: "); Serial.println(myResults->num_results);       
 
-    for(uint32_t i = 0; i < myResults->num_results; ++i) 
+    for(int i = 0; i < myResults->num_results; ++i) 
     {
         Serial.print("    conf: "); Serial.print(myResults->results[i].confidence);
         Serial.print(" distance mm: "); Serial.print(myResults->results[i].distance_mm);
@@ -110,7 +110,7 @@ void loop()
     Serial.println(" data samples.");
     Serial.println();
 
-    nSample=0;
+    nSample = 0;
 
     // Start taking samples. Note - no stop condition is specified. This is handled
     // in the measurement callback function above.

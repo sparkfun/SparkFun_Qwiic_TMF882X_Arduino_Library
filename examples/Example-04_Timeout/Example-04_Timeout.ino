@@ -25,7 +25,7 @@
      https://github.com/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library
 
   Documentation:
-     https://sparkfun.github.io/SparkFun_Qwiic_OLED_Arduino_Library/
+     https://sparkfun.github.io/SparkFun_Qwiic_TMF882X_Arduino_Library/
 
   SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
 */

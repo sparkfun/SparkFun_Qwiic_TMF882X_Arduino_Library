@@ -21,7 +21,7 @@
      https://github.com/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library
 
   Documentation:
-     https://sparkfun.github.io/SparkFun_Qwiic_OLED_Arduino_Library/
+     https://sparkfun.github.io/SparkFun_Qwiic_TMF882X_Arduino_Library/
 
   SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
 */
@@ -68,7 +68,7 @@ void setup()
 
     // printout a message 
     Serial.print("The update of the TMF882X Report Period ");
-    Serial.println( (bConfigSet ? "Succeeded" : "Failed"));
+    Serial.println( (bConfigSet ? "Succeeded" : "Failed") );
 
     // Get the unique identifier from our connected device.
     struct tmf882x_mode_app_dev_UID devUID;

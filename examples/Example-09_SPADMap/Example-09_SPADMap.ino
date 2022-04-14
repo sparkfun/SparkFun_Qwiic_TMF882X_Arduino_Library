@@ -23,7 +23,7 @@
      https://github.com/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library
 
   Documentation:
-     https://sparkfun.github.io/SparkFun_Qwiic_OLED_Arduino_Library/
+     https://sparkfun.github.io/SparkFun_Qwiic_TMF882X_Arduino_Library/
 
   SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
 */
@@ -89,7 +89,9 @@ void setup()
 
     // Now set some config parameters to support the spad map
     struct tmf882x_mode_app_config tofConfig;
-    if (!myTMF882X.getTMF882XConfig(tofConfig)) {
+
+    if (!myTMF882X.getTMF882XConfig(tofConfig)) 
+    {
         Serial.println("Error - unable to get device configuration.");
         while(1){}
     }
@@ -98,7 +100,8 @@ void setup()
     //  - set the reporting period to 500 milliseconds
     tofConfig.report_period_ms = 500;
 
-    if (!myTMF882X.setTMF882XConfig(tofConfig)) {
+    if (!myTMF882X.setTMF882XConfig(tofConfig)) 
+    {
         Serial.println("Error - unable to set device configuration.");
         while(1){}
     }
@@ -117,7 +120,7 @@ void loop()
         Serial.print("     Result Number: "); Serial.print(myResults.result_num);
         Serial.print("  Number of Results: "); Serial.println(myResults.num_results);       
 
-        for (uint32_t i = 0; i < myResults.num_results; ++i) 
+        for (int i = 0; i < myResults.num_results; ++i) 
         {
             Serial.print("       conf: "); Serial.print(myResults.results[i].confidence);
             Serial.print(" distance mm: "); Serial.print(myResults.results[i].distance_mm);
