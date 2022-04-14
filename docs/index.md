@@ -21,7 +21,7 @@ A full [API Reference](api_device.md) is also provided for the library.
 
 ### Supported Products
 
-The SparkFun Qwiic TMF882X Arduino Library supports the following SparFun Products
+The SparkFun Qwiic TMF882X Arduino Library supports the following SparKFun Products
 
 <table class="table table-hover table-striped table-bordered">
     <tr>
