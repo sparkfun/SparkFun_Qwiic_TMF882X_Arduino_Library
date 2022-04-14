@@ -1,7 +1,7 @@
 ![SparkFun Qwiic TMF882X Arduino Library](https://github.com/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library/blob/main/docs/img/TMF882XLibBanner.png "SparkFun Qwiic TMF882X Arduino Library")
 
-SparkFun Qwiic TMF882X dToF Arduino Library
-========================================+
+# SparkFun Qwiic TMF882X dToF Arduino Library
+
 
 <p align="center">
   <a href="https://github.com/sparkfun/SparkFun_Qwiic_TMF882X_Arduino_Library/issues" alt="Issues">
