@@ -64,6 +64,53 @@ bool setTMF882XConfig(struct tmf882x_mode_app_config tofConfig)
 | tofConfig | `struct tmf882x_mode_app_config` | A configuration structure that has the desired settings for the device|
 | return value| `bool` | `true` on success, `false` on an error |
 
+## Calibration 
+
+### factoryCalibration()
+
+Used to run a factory calibration on the connected TMF882X device. The results of the calibration are returned in the passed in calibration structure.
+
+Consult the TMF882X datasheet for details on performing a factory calibration
+
+```c++
+bool factoryCalibration(struct tmf882x_mode_app_calib tofCalib);
+```
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| tofCalib | `struct tmf882x_mode_app_calib` | The results of the calibration process |
+| return value| `bool` | `true` on success, `false` on an error |
+
+### setCalibration()
+
+Used to set the calibration data on the connected TMF882X device.
+
+Consult the TMF882X datasheet for details on calibration data.
+
+```c++
+bool setCalibration(struct tmf882x_mode_app_calib tofCalib)
+```
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| tofCalib | `struct tmf882x_mode_app_calib` | The calibration data to set |
+| return value| `bool` | `true` on success, `false` on an error |
+
+### getCalibration()
+
+Used to get the calibration data on the connected TMF882X device.
+
+Consult the TMF882X datasheet for details on calibration data.
+
+```c++
+bool setCalibration(struct tmf882x_mode_app_calib tofCalib)
+```
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| tofCalib | `struct tmf882x_mode_app_calib` | The calibration data |
+| return value| `bool` | `true` on success, `false` on an error |
+
 ## SPAD Settings
 
 

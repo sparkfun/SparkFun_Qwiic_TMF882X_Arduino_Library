@@ -2,7 +2,7 @@
 
 Methods used to read data from the connected TMF882X device.
 
-## Message Callback Functions
+## Data Callback Functions
 
 The TMF882X SDK returns data via a message structure passed to a user provided C function. This library allows the user to register callback functions that are called during the measurement operation. 
 
@@ -219,3 +219,82 @@ void setErrorHandler(TMF882XErrorHandler handler)
 | handler | `TMF882XErrorHandler` | The message handler callback C function |
 
 ## Measurement Methods
+
+### startMeasuring()
+
+Start measuring distance/data on the TMF882X device. This method returns after one measurement is performed.
+
+Measurement data is returned in the provided measurement struct.
+
+```c++
+int startMeasuring(struct tmf882x_msg_meas_results results, uint32_t timeout = 0)
+```
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| results| `struct tmf882x_msg_meas_results` | The results of the measurement |
+| timeout| `uint32_t` | [OPTIONAL] The time, in milliseconds, to take measurements. A value of zero [default value] indicates no timeout set |
+| return value| `int` | The number of measurements taken (1), or -1 on error. |
+
+### startMeasuring()
+
+Start measuring distance/data on the TMF882X device. This method won't return until the measurement activity ends.
+
+Measurement data is passed to the library user via a callback function, which is set using one of the set<type>Handler() methods on this object.
+
+Measurements continue, until one of the following conditions occurs:
+
+* The specified number of measurements took place (set via reqMeasurements)
+* The specified timeout value expires
+* The stopMeasuring() method was called in a Handler function.
+
+This method won't start measuring if a measurement limit isn't set, a timeout isn't set and no callback handlers are not set.
+
+This method returns the number of measurements taken
+
+```c++
+int startMeasuring(uint32_t reqMeasurements = 0, uint32_t timeout = 0)
+```
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| reqMeasurements| `uint32_t` | [OPTIONAL] The number of measurements desired. A value of zero [the default value] indicates no limit |
+| timeout| `uint32_t` | [OPTIONAL] The time, in milliseconds, to take measurements. A value of zero [default value] indicates no timeout set |
+| return value| `int` | The number of measurements taken, or -1 on error. |
+
+### stopMeasuring()
+
+Called to stop the device measuring loop. Normally called in a message handler function.
+
+```c++
+void stopMeasuring(void)
+```
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| None|  |  |
+
+
+### setSampleDelay()
+
+Set the delay used in the libraries sample loop used when processing samples/reading from the device.
+
+```c++
+void setSampleDelay(uint16_t delay)
+```
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| delay| `uint16_t` | The delay to use, in milli-seconds. |
+
+### getSampleDelay()
+
+Returns the current value of the library processing loop delay. The value is ib milliseconds..
+
+```c++
+uint16_t getSampleDelay(void)
+```
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| return value| `uint16_t` | The current delay, in milli-seconds. |
