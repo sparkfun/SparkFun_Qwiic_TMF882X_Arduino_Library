@@ -1,6 +1,6 @@
 # Used to run mkdocs on the repo
 
-name: ci 
+name: Documentation
 on:
   push:
     branches:
