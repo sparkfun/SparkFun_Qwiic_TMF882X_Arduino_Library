@@ -128,7 +128,7 @@ int32_t tmf882x_mode_bl_read_status(struct tmf882x_mode_bl *bl,
             continue;
         }
         /* if we have reached here, the command has either succeeded or failed */
-        if ( *rdata_size >= 0 ) {
+        if ( *rdata_size > 0 ) {
             /* read in data part and csum */
             error = tof_i2c_read(priv(bl), BL_REG_CMD_STATUS,
                     rbuf, BL_CALC_RSP_SIZE(*rdata_size));
