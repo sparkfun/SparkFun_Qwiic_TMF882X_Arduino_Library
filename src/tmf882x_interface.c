@@ -96,8 +96,7 @@ int32_t tmf882x_open(struct tmf882x_tof * tof)
 
     if (tof->state.ops->open &&
         tof->state.ops->open(&tof->state)) {
-        tof_err(to_priv(&tof->state), "Error opening mode: %#x",
-                mode);
+        tof_err(to_priv(&tof->state), "Error opening mode");
         tmf882x_init(tof, to_priv(&tof->state));
         return -1;
     }

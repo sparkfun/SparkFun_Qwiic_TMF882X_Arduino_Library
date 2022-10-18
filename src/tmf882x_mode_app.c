@@ -417,7 +417,7 @@ static uint8_t get_app_cmd_stat(struct tmf882x_mode_app *app)
 }
 
 static int32_t check_cmd_status(struct tmf882x_mode_app *app,
-                            uint32_t retries)
+                            int32_t retries)
 {
     int32_t num_retries;
     uint8_t status;

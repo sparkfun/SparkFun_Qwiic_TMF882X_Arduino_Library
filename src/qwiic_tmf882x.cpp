@@ -195,7 +195,7 @@ bool QwDevTMF882X::setI2CAddress(uint8_t address)
 {
     // Initialized? Is the address legal?
     if (!_isInitialized || address < 0x08 || address > 0x77)
-        false;
+        return false;
 
     // is the address the same as already set?
     if (address == _i2cAddress)

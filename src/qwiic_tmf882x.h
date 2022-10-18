@@ -679,12 +679,23 @@ class QwDevTMF882X
     // Library initialized flag
     bool _isInitialized;
 
+    // Delay for the read sample loop
+    uint16_t _sampleDelayMS;
+
+    // for managing message output levels
+    uint8_t _outputSettings;
+    bool _debug;
+
+    // Callback function pointers
+    TMF882XMeasurementHandler _measurementHandlerCB;
+    TMF882XHistogramHandler _histogramHandlerCB;
+    TMF882XStatsHandler _statsHandlerCB;
+    TMF882XErrorHandler _errorHandlerCB;
+    TMF882XMessageHandler _messageHandlerCB;
+
     // I2C  things
     QwI2C *_i2cBus;      // pointer to our i2c bus object
     uint8_t _i2cAddress; // address of the device
-
-    // Delay for the read sample loop
-    uint16_t _sampleDelayMS;
 
     // Structure/state for the underlying TOF SDK
     tmf882x_tof _TOF;
@@ -698,16 +709,4 @@ class QwDevTMF882X
     // Flag to indicate to the system to stop measurements
     bool _stopMeasuring;
 
-    // Callbacks
-    //
-    // Callback function pointers
-    TMF882XMeasurementHandler _measurementHandlerCB;
-    TMF882XHistogramHandler _histogramHandlerCB;
-    TMF882XStatsHandler _statsHandlerCB;
-    TMF882XErrorHandler _errorHandlerCB;
-    TMF882XMessageHandler _messageHandlerCB;
-
-    // for managing message output levels
-    uint8_t _outputSettings;
-    bool _debug;
 };
