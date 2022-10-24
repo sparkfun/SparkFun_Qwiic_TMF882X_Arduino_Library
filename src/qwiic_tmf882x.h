@@ -667,7 +667,7 @@ class QwDevTMF882X
     //  idBus        The bus ID for the target device.
     //
 
-    void setCommunicationBus(QwI2C &theBus, uint8_t idBus);
+    void setCommunicationBus(sfe_TMF882X::QwI2C &theBus, uint8_t idBus);
 
   private:
     // The internal method to initialize the device
@@ -694,7 +694,7 @@ class QwDevTMF882X
     TMF882XMessageHandler _messageHandlerCB;
 
     // I2C  things
-    QwI2C *_i2cBus;      // pointer to our i2c bus object
+    sfe_TMF882X::QwI2C *_i2cBus;      // pointer to our i2c bus object
     uint8_t _i2cAddress; // address of the device
 
     // Structure/state for the underlying TOF SDK

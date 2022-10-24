@@ -126,5 +126,5 @@ class SparkFun_TMF882X : public QwDevTMF882X
     }
 
   private:
-    QwI2C _i2cBus;
+    sfe_TMF882X::QwI2C _i2cBus;
 };

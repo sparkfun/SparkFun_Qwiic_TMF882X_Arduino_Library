@@ -68,6 +68,7 @@
 
 const static uint16_t kChunkSize = kMaxTransferBuffer - 2;
 
+namespace sfe_TMF882X {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // Constructor
 
@@ -230,4 +231,6 @@ int QwI2C::readRegisterRegion(uint8_t addr, uint8_t reg, uint8_t *data, uint16_t
     } // end while
 
     return 0; // Success
+}
+
 }

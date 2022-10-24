@@ -55,6 +55,9 @@
 
 #include <Wire.h>
 
+namespace sfe_TMF882X {
+
+
 class QwI2C {
 
 public:
@@ -75,4 +78,6 @@ public:
 
 private:
     TwoWire* _i2cPort;
+};
+
 };

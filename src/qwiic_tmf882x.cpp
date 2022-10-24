@@ -833,7 +833,7 @@ bool QwDevTMF882X::setSPADConfig(struct tmf882x_mode_app_spad_config &spadConfig
 //  theBus       The communication bus object
 //  idBus        The id/address of the device on the bus
 
-void QwDevTMF882X::setCommunicationBus(QwI2C &theBus, uint8_t idBus)
+void QwDevTMF882X::setCommunicationBus(sfe_TMF882X::QwI2C &theBus, uint8_t idBus)
 {
     _i2cBus = &theBus;
     _i2cAddress = idBus;
