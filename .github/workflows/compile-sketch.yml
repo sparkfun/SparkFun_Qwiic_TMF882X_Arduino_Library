@@ -16,12 +16,12 @@ jobs:
 
       matrix:
         board:
-          # Uno
+          # Uno - FAILS - NOT ENOUGH MEMORY
           # https://github.com/arduino/ArduinoCore-avr/blob/master/boards.txt
-          - fqbn: arduino:avr:uno
-            platforms: |
-              - name: arduino:avr
-                source-url: https://downloads.arduino.cc/packages/package_index.json
+          #- fqbn: arduino:avr:uno
+          #  platforms: |
+          #    - name: arduino:avr
+          #      source-url: https://downloads.arduino.cc/packages/package_index.json
 
           # ESP32
           # https://github.com/espressif/arduino-esp32/blob/master/boards.txt
@@ -64,7 +64,10 @@ jobs:
           #  platforms: |
           #    - name: arduino:samd
           #      # source-url: https://downloads.arduino.cc/packages/package_index.json
-          - fqbn: arduino:samd:nano33iot
+
+          # SAMD
+          # https://github.com/arduino/ArduinoCore-samd/blob/master/boards.txt
+          - fqbn: arduino:samd:nano_33_iot
             platforms: |
               - name: arduino:samd
                 # source-url: https://downloads.arduino.cc/packages/package_index.json
