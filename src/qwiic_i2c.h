@@ -51,8 +51,9 @@
 //
 // This is following a pattern for future implementations
 //
-// This class is focused on Aurduino..
+// This class is focused on Arduino..
 
+#include "Arduino.h"
 #include <Wire.h>
 
 namespace sfe_TMF882X {
