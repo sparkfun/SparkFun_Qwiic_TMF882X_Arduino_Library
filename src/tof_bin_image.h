@@ -1,8 +1,6 @@
 #ifndef TOF_BIN_IMAGE_H
 #define TOF_BIN_IMAGE_H
 
-#define _HAS_BUILTIN_FW
-
 extern const unsigned long tof_bin_image_termination;
 extern const unsigned long tof_bin_image_start;
 extern const unsigned long tof_bin_image_finish;
