@@ -65,6 +65,23 @@
 #define TMF882X_MSG_ALL 0x07
 #define TMF882X_MSG_NONE 0x00
 
+///////////////////////////////////////////////////////////////////////
+// TMF882XRange
+//
+// enum used to set and get the current range value.
+//
+//  Property    Description
+//  --------    -----------------------------
+//  FAILED      Attempt to get the range accuracy value failed
+//  SHORT_RANGE Short range accuracy. (<=1m range, higher accuracy)
+//  LONG_RANGE  Long range accuracy. (<=5m range, default accuracy)
+
+enum TMF882XRange {
+    FAILED = 0,
+    SHORT_RANGE = 0x6E,
+    LONG_RANGE = 0x6F
+};
+
 //////////////////////////////////////////////////////////////////////////////
 // Messaage Callback Types
 //
@@ -498,6 +515,42 @@ class QwDevTMF882X
     //  retval       True on success, false on error
 
     bool setSPADConfig(struct tmf882x_mode_app_spad_config &tofSpad);
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // getRange()
+    //
+    // Get the range accuracy mode on the connected TMF882X
+    //
+    // The range can either be long range (default setting, 5m distance), or short
+    // range (higher accuracy, 1m distance)
+    //
+    // See the TMF882X datasheet for data on the accuracy of each mode
+    //
+    //  Parameter    Description
+    //  ---------    -----------------------------
+    //  range        enum to hold the range setting
+    //  retval       True on success, false on error
+
+    bool getRange(TMF882XRange &range);
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // setRange()
+    //
+    // Set the range accuracy mode on the connected TMF882X
+    //
+    // Range accuracy can be either short range or long range. Long range is
+    // the default setting which is able to detect objects up to 5 meters away.
+    // The short range setting gives higher accuracy up to 1 meter. The range
+    // setting will also have an effect on the histogram output.
+    //
+    // See the TMF882X datasheet for data on the accuracy of each mode
+    //
+    //  Parameter    Description
+    //  ---------    -----------------------------
+    //  range        The range setting
+    //  retval       True on success, false on error
+
+    bool setRange(TMF882XRange &range);
 
     //////////////////////////////////////////////////////////////////////////////////
     // getTMF882XContext()
