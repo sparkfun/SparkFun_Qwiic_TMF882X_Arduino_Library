@@ -65,23 +65,6 @@
 #define TMF882X_MSG_ALL 0x07
 #define TMF882X_MSG_NONE 0x00
 
-///////////////////////////////////////////////////////////////////////
-// TMF882XRange
-//
-// enum used to set and get the current range value.
-//
-//  Property    Description
-//  --------    -----------------------------
-//  FAILED      Attempt to get the range accuracy value failed
-//  SHORT_RANGE Short range accuracy. (<=1m range, higher accuracy)
-//  LONG_RANGE  Long range accuracy. (<=5m range, default accuracy)
-
-enum TMF882XRange {
-    FAILED = 0,
-    SHORT_RANGE = 0x6E,
-    LONG_RANGE = 0x6F
-};
-
 //////////////////////////////////////////////////////////////////////////////
 // Messaage Callback Types
 //
