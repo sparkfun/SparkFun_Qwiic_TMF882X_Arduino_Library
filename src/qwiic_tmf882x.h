@@ -517,7 +517,7 @@ class QwDevTMF882X
     bool setSPADConfig(struct tmf882x_mode_app_spad_config &tofSpad);
 
     //////////////////////////////////////////////////////////////////////////////////
-    // getRange()
+    // isShortRange()
     //
     // Get the range accuracy mode on the connected TMF882X
     //
@@ -528,13 +528,13 @@ class QwDevTMF882X
     //
     //  Parameter    Description
     //  ---------    -----------------------------
-    //  range        enum to hold the range setting
+    //  shortRange   bool to hold the range setting
     //  retval       True on success, false on error
 
-    bool getRange(TMF882XRange &range);
+    bool isShortRange(bool &shortRange);
 
     //////////////////////////////////////////////////////////////////////////////////
-    // setRange()
+    // setShortRange()
     //
     // Set the range accuracy mode on the connected TMF882X
     //
@@ -547,10 +547,10 @@ class QwDevTMF882X
     //
     //  Parameter    Description
     //  ---------    -----------------------------
-    //  range        The range setting
+    //  shortRange   The range setting
     //  retval       True on success, false on error
 
-    bool setRange(TMF882XRange &range);
+    bool setShortRange(bool shortRange);
 
     //////////////////////////////////////////////////////////////////////////////////
     // getTMF882XContext()

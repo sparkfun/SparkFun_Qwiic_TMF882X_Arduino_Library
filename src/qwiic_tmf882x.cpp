@@ -824,7 +824,7 @@ bool QwDevTMF882X::setSPADConfig(struct tmf882x_mode_app_spad_config &spadConfig
 }
 
 //////////////////////////////////////////////////////////////////////////////////
-// getRange()
+// isShortRange()
 //
 // Get the range accuracy mode on the connected TMF882X
 //
@@ -835,25 +835,22 @@ bool QwDevTMF882X::setSPADConfig(struct tmf882x_mode_app_spad_config &spadConfig
 //
 //  Parameter    Description
 //  ---------    -----------------------------
-//  range        enum to hold the range setting
+//  shortRange   bool to hold the range setting
 //  retval       True on success, false on error
 
-bool QwDevTMF882X::getRange(TMF882XRange &range)
+bool QwDevTMF882X::isShortRange(bool &shortRange)
 {
     if (!_isInitialized)
         return false;
 
-    bool shortRange = false;
     if (tmf882x_ioctl(&_TOF, IOCAPP_IS_SHORTRANGE, NULL, &shortRange))
         return false;
-
-    range = shortRange ? SHORT_RANGE : LONG_RANGE;
 
     return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
-// setRange()
+// setShortRange()
 //
 // Set the range accuracy mode on the connected TMF882X
 //
@@ -869,15 +866,11 @@ bool QwDevTMF882X::getRange(TMF882XRange &range)
 //  range        The range setting
 //  retval       True on success, false on error
 
-bool QwDevTMF882X::setRange(TMF882XRange &range)
+bool QwDevTMF882X::setShortRange(bool shortRange)
 {
-    if (range == FAILED)
-        return false;
-
     if (!_isInitialized)
         return false;
 
-    bool shortRange = range == SHORT_RANGE;
     if (tmf882x_ioctl(&_TOF, IOCAPP_SET_SHORTRANGE, &shortRange, NULL))
         return false;
 
