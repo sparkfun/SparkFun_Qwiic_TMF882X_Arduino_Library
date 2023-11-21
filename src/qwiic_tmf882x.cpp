@@ -2,7 +2,7 @@
 //
 // This is a library written for SparkFun Qwiic TMF882X boards
 //
-// SparkFun sells these bpards at its website: www.sparkfun.com
+// SparkFun sells these boards at its website: www.sparkfun.com
 //
 // Do you like this library? Help support SparkFun. Buy a board!
 //
@@ -127,7 +127,7 @@ bool QwDevTMF882X::loadFirmware(const unsigned char *firmwareBinImage, unsigned 
         return false;
     }
 
-    // Load the fireware.
+    // Load the firmware.
     if (tmf882x_fwdl(&_TOF, FWDL_TYPE_BIN, firmwareBinImage, length))
     {
         tof_err((void *)this, "ERROR - Upload of firmware image failed");
