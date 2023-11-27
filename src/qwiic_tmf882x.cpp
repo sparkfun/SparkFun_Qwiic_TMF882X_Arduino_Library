@@ -823,6 +823,60 @@ bool QwDevTMF882X::setSPADConfig(struct tmf882x_mode_app_spad_config &spadConfig
     return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////////
+// isShortRange()
+//
+// Get the range accuracy mode on the connected TMF882X
+//
+// The range can either be long range (default setting, 5m distance), or short
+// range (higher accuracy, 1m distance)
+//
+// See the TMF882X datasheet for data on the accuracy of each mode
+//
+//  Parameter    Description
+//  ---------    -----------------------------
+//  shortRange   bool to hold the range setting
+//  retval       True on success, false on error
+
+bool QwDevTMF882X::isShortRange(bool &shortRange)
+{
+    if (!_isInitialized)
+        return false;
+
+    if (tmf882x_ioctl(&_TOF, IOCAPP_IS_SHORTRANGE, NULL, &shortRange))
+        return false;
+
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// setShortRange()
+//
+// Set the range accuracy mode on the connected TMF882X
+//
+// Range accuracy can be either short range or long range. Long range is
+// the default setting which is able to detect objects up to 5 meters away.
+// The short range setting gives higher accuracy up to 1 meter. The range
+// setting will also take effect on the histogram output.
+//
+// See the TMF882X datasheet for data on the accuracy of each mode
+//
+//  Parameter    Description
+//  ---------    -----------------------------
+//  range        The range setting
+//  retval       True on success, false on error
+
+bool QwDevTMF882X::setShortRange(bool shortRange)
+{
+    if (!_isInitialized)
+        return false;
+
+    if (tmf882x_ioctl(&_TOF, IOCAPP_SET_SHORTRANGE, &shortRange, NULL))
+        return false;
+
+    return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 // setCommunicationBus()
 //

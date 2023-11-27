@@ -72,6 +72,8 @@ enum _tmf882x_mode_app_iocnr{
     APP_SET_CLKADJ,
     APP_SET_8X8MODE,
     APP_IS_8X8MODE,
+    APP_SET_SHORTRANGE,
+    APP_IS_SHORTRANGE,
     NUM_APP_IOCTL
 };
 
@@ -335,6 +337,30 @@ struct tmf882x_mode_app_dev_UID {
 #define IOCAPP_IS_8X8MODE     _IOCTL_R( TMF882X_IOCTL_APP_MODE, \
                                         APP_IS_8X8MODE, \
                                         bool )
+
+/**
+ * @brief
+ *      IOCTL command code to Set the short-range mode
+ * @param[in] input type: bool *
+ * @param[out] output type: none
+ * @return zero for success, fail otherwise
+ * @warn Note that changing to/from short-range mode will clear the device
+ *       calibration
+ */
+#define IOCAPP_SET_SHORTRANGE     _IOCTL_W( TMF882X_IOCTL_APP_MODE, \
+                                            APP_SET_SHORTRANGE, \
+                                            bool )
+
+/**
+ * @brief
+ *      IOCTL command code to Read the short-range operating mode state
+ * @param[in] input type: none
+ * @param[out] output type: bool *
+ * @return zero for success, fail otherwise
+ */
+#define IOCAPP_IS_SHORTRANGE     _IOCTL_R( TMF882X_IOCTL_APP_MODE, \
+                                           APP_IS_SHORTRANGE, \
+                                           bool )
 
 #ifdef __cplusplus
 }

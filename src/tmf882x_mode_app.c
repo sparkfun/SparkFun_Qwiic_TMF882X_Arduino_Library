@@ -1893,6 +1893,72 @@ static int32_t tmf882x_mode_app_set_calib_data(struct tmf882x_mode_app *app,
     return rc;
 }
 
+static bool tmf882x_mode_app_is_shortrange_mode(struct tmf882x_mode_app *app)
+{
+    int32_t error = 0;
+    uint8_t reg = 0;
+    if (!app) return false;
+
+    // register 0x19 is short-range mode state
+    //  0x6e: short range
+    //  0x6f: long range
+    //  0: no short-range support
+    error = tof_get_register(priv(app), 0x19, &reg);
+    if (error) {
+        tof_err(priv(app), "Error reading shortrange mode register (%d)", error);
+        return false;
+    }
+
+    return (reg == 0x6E);
+}
+
+static int32_t tmf882x_mode_app_set_shortrange_mode(struct tmf882x_mode_app *app, bool is_shortrange)
+{
+    int32_t rc = 0;
+    struct tmf882x_mode_app_i2c_msg *i2c_msg;
+    bool capture_state = false;
+
+    // issue cmd 0x6e -> short range mode
+    // issue cmd 0x6f -> long range mode (default)
+
+    if (is_shortrange == tmf882x_mode_app_is_shortrange_mode(app))
+        return 0; // nothing to do, already in correct mode
+
+    if ((capture_state = is_measuring(app))) {
+        rc = tmf882x_mode_app_stop_measurements(&app->mode);
+        if (rc) {
+            tof_err(priv(app), "Error (%d) stopping measurements "
+                               "switching shortrange mode", rc);
+            return -1;
+        }
+    }
+
+    i2c_msg = to_i2cmsg(app);
+    i2c_msg->cmd = is_shortrange ? 0x6E : 0x6F;
+    i2c_msg->size = 0;
+    rc = tmf882x_mode_app_i2c_msg_send_timeout(app, i2c_msg, CMD_DEF_TIMEOUT_MS);
+    if (rc) {
+        tof_err(priv(app), "Error (%d) setting shortrange mode to %u", rc, is_shortrange);
+        return -1;
+    }
+
+    // check if the switch was successful
+    if (is_shortrange != tmf882x_mode_app_is_shortrange_mode(app)) {
+        tof_err(priv(app), "Error (%d) setting shortrange mode to '%u'", rc, is_shortrange);
+        return -1;
+    }
+
+    if (capture_state) {
+        rc = tmf882x_mode_app_start_measurements(&app->mode);
+        if (rc) {
+            tof_err(priv(app), "Error (%d) re-starting measurements", rc);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
 static int32_t tmf882x_mode_app_do_factory_calib(struct tmf882x_mode_app *app,
                                                  struct tmf882x_mode_app_calib *calib)
 {
@@ -2126,6 +2192,13 @@ static int32_t tmf882x_mode_app_ioctl(struct tmf882x_mode *self, uint32_t cmd,
             break;
         case APP_IS_8X8MODE:
             (*(bool *)output) = tmf882x_mode_app_is_8x8_mode(app);
+            rc = 0;
+            break;
+        case APP_SET_SHORTRANGE:
+            rc = tmf882x_mode_app_set_shortrange_mode(app, (*(bool *)input));
+            break;
+        case APP_IS_SHORTRANGE:
+            (*(bool *)output) = tmf882x_mode_app_is_shortrange_mode(app);
             rc = 0;
             break;
         default:

@@ -500,6 +500,42 @@ class QwDevTMF882X
     bool setSPADConfig(struct tmf882x_mode_app_spad_config &tofSpad);
 
     //////////////////////////////////////////////////////////////////////////////////
+    // isShortRange()
+    //
+    // Get the range accuracy mode on the connected TMF882X
+    //
+    // The range can either be long range (default setting, 5m distance), or short
+    // range (higher accuracy, 1m distance)
+    //
+    // See the TMF882X datasheet for data on the accuracy of each mode
+    //
+    //  Parameter    Description
+    //  ---------    -----------------------------
+    //  shortRange   bool to hold the range setting
+    //  retval       True on success, false on error
+
+    bool isShortRange(bool &shortRange);
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // setShortRange()
+    //
+    // Set the range accuracy mode on the connected TMF882X
+    //
+    // Range accuracy can be either short range or long range. Long range is
+    // the default setting which is able to detect objects up to 5 meters away.
+    // The short range setting gives higher accuracy up to 1 meter. The range
+    // setting will also have an effect on the histogram output.
+    //
+    // See the TMF882X datasheet for data on the accuracy of each mode
+    //
+    //  Parameter    Description
+    //  ---------    -----------------------------
+    //  shortRange   The range setting
+    //  retval       True on success, false on error
+
+    bool setShortRange(bool shortRange);
+
+    //////////////////////////////////////////////////////////////////////////////////
     // getTMF882XContext()
     //
     // Returns the context structure used by this library when accessing the
