@@ -17,7 +17,7 @@ theme:
     - content.code.annotate
     - navigation.tracking
     - navigation.tabs.sticky
-    - navigation.tabs    
+    - navigation.tabs
 
   icon:
     repo: fontawesome/brands/github
@@ -69,9 +69,30 @@ extra:
       link: https://www.github.com/sparkfun
     - icon: fontawesome/brands/facebook
       link: https://www.facebook.com/SparkFun
-    - icon: fontawesome/brands/twitter
+    - icon: fontawesome/brands/x-twitter
       link: https://twitter.com/sparkfun
-  
+    - icon: fontawesome/solid/cookie-bite
+      link: /#__consent
+      name: Change cookie settings
+
+  # Configures Google Analytics
+  analytics:
+    provider: google
+    property: G-7Y7EYCZVC1
+
+  consent:
+    cookies:
+      analytics:
+        name: Google Analytics
+        checked: true
+    title: Cookie consent
+    description:
+      We use cookies to recognize your repeated visits and preferences, as well as to measure the effectiveness of our documentation and whether users find what they're searching for. With your consent, you're helping us to make our documentation better.
+    actions:
+      - accept
+      - manage
+      - reject
+
 nav:
   - Home: index.md
   - Getting Started:
@@ -80,5 +101,3 @@ nav:
     - Device: api_device.md
     - Setup: api_setup.md
     - Operation: api_operation.md
-
-    
